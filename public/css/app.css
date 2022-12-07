@@ -1,0 +1,63 @@
+.tfoot.input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+.td.highlight {
+        font-weight: bold;
+        background-color: #3c8dbc;
+        color: blue;
+    }
+
+.buttons-copy {
+  background-color: lightgrey;
+  color: black;
+}
+
+.buttons-excel {
+  background-color: lightgrey;
+  color: black;
+}
+
+.buttons-pdf {
+  background-color: lightgrey;
+  color: black;
+}
+
+.buttons-csv {
+  background-color: lightgrey;
+  color: black;
+}
+
+.table thead th {
+    background-image: none !important;
+    background-color: lightgrey !important;
+    color: black !important;
+    font-family: Palatino, URW Palladio L, serif !important;
+    font-weight: bold !important;
+    font-size: 15px !important;
+}
+
+.table tfoot th {
+    background-image: none !important;
+    background-color: lightgrey !important;
+    color: black !important;
+    font-family: Palatino, URW Palladio L, serif !important;
+    font-weight: bold !important;
+    font-size: 15px !important;
+}
+
+.table tbody tr td {
+    background-image: none !important;
+    color: black !important;
+    font-family: Palatino, URW Palladio L, serif !important;
+    font-size: 15px !important;
+}
+
+label {
+    height:30px !important;
+    font-weight: bold !important;
+    font-size:15px !important;
+    font-family: 'Palatino, URW Palladio L, serif' !important;
+}

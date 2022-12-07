@@ -21,3 +21,16 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+
+/plugins/
+/bootstrap/
+/vendor/
+/storage/
+/.env
+/.env.docker
+/.env.example
+/.gitattributes
+/.gitignore
+/docker.dev/
+/dist/
+/temp/

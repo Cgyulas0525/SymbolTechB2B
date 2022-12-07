@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ProductQuantities>
+    <ProductQuantity>
+        <Warehouse>-1</Warehouse>
+        <WarehouseName>Központ</WarehouseName>
+		<WarehouseSite>1</WarehouseSite>
+		<Product>482</Product>
+		<ProductCode>547P</ProductCode>
+        <Quantity>48</Quantity>
+        <StrictAllocate>5</StrictAllocate>
+        <NonStrictAllocate>12</NonStrictAllocate>
+    </ProductQuantity>
+	<ProductQuantity>
+        <Warehouse>-1</Warehouse>
+        <WarehouseName>Központ</WarehouseName>
+		<WarehouseSite>1</WarehouseSite>
+		<Product>582</Product>
+		<ProductCode>547FGP</ProductCode>
+        <Quantity>53</Quantity>
+        <StrictAllocate>3</StrictAllocate>
+        <NonStrictAllocate>10</NonStrictAllocate>
+    </ProductQuantity>
+</ProductQuantities>
