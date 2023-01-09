@@ -40,7 +40,7 @@ foreach ( $files as $file ) {
 
 //$utility->httpPost(PATH_XML, "OK");
 
-$curl = new CurlPost('http://127.0.0.1:80/Laravel/B2B/public/xml');
+$curl = new CurlPost('http://localhost/Laravel/SymbolB2B/public/xml');
 
 try {
     // execute the request

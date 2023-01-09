@@ -14,6 +14,8 @@ use DB;
 use DataTables;
 use myUser;
 
+use Illuminate\Support\Facades\Cache;
+
 use App\Models\CustomerContactFavoriteProduct;
 
 class CustomerContactFavoriteProductController extends AppBaseController
@@ -54,7 +56,11 @@ class CustomerContactFavoriteProductController extends AppBaseController
 
             if ($request->ajax()) {
 
-                $data = CustomerContactFavoriteProduct::all();
+//                $data = CustomerContactFavoriteProduct::all();
+
+                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
+                    return CustomerContactFavoriteProduct::all();
+                });
                 return $this->dwData($data);
 
             }
