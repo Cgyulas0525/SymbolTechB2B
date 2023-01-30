@@ -32,7 +32,7 @@ class CustomerContactFavoriteProductController extends AppBaseController
     {
         return Datatables::of($data)
               ->addIndexColumn()
-              ->addColumn('ProductName', function($data) { return $data->product->Name; })
+//              ->addColumn('ProductName', function($data) { return $data->product->Name; })
               ->addColumn('action', function($row){
                   $btn = '<a href="' . route('cCFPDestroyMe', [$row->id]) . '"
                              class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="far fa-heart"></i></a>';
@@ -52,15 +52,29 @@ class CustomerContactFavoriteProductController extends AppBaseController
      */
     public function index(Request $request)
     {
-        if( \myUser::check() ){
+        if( myUser::check() ){
 
             if ($request->ajax()) {
 
 //                $data = CustomerContactFavoriteProduct::all();
 
-                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
-                    return CustomerContactFavoriteProduct::all();
-                });
+                $data = DB::table('CustomerContactFavoriteProduct as t1')
+                          ->join('Product as t2', 't2.id', '=', 't1.Product_id')
+                          ->select('t1.id', 't2.Name as ProductName')
+                          ->whereNull('t1.deleted_at')
+                          ->get();
+
+//                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
+//                    return CustomerContactFavoriteProduct::all();
+//                });
+//                Cache::pull('allCustomerContactFavoriteProduct');
+//                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
+//                    return DB::table('CustomerContactFavoriteProduct as t1')
+//                        ->join('Product as t2', 't2.id', '=', 't1.Product_id')
+//                        ->select('t1.id', 't2.Name as ProductName')
+//                        ->whereNull('t1.deleted_at')
+//                        ->get();
+//                });
                 return $this->dwData($data);
 
             }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use ddwClass;
+use myUser;
 
 /**
  * Class LogItem
@@ -101,7 +102,7 @@ class LogItem extends Model
 
     public function getCustomerNameAttribute()
     {
-        return (!empty($this->customer_id) && ($this->customer_id != -9999)) ? Customer::find($this->customer_id)->Name : session('customer_name');
+        return (!empty($this->customer_id) && ($this->customer_id != -9999)) ? Customer::find($this->customer_id)->Name : myUser::user()->name;
     }
 
     public function getUserNameAttribute()

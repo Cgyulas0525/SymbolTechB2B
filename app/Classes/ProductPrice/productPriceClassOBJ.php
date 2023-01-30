@@ -20,7 +20,7 @@ Class productPriceClassOBJ {
         $this->quantity = $quantity;
         $this->quantityUnit = $quantityUnit;
         $this->currency = $currency;
-        $this->customer = !empty(session('customer_id')) ? session('customer_id') : 3;
+        $this->customer = !empty(myUser::user()->customerId) ? myUser::user()->customerId : 3;
     }
 
     public function getProductPrice() {

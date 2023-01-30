@@ -81,15 +81,15 @@ class ShoppingCartController extends AppBaseController
     {
         return Datatables::of($data)
             ->addIndexColumn()
-            ->addColumn('DetailNumber', function($data) { return $data->DetailNumber; })
-            ->addColumn('CustomerName', function($data) { return $data->CustomerName; })
-            ->addColumn('CustomerAddressName', function($data) { return $data->CustomerAddressName; })
-            ->addColumn('CustomerContactName', function($data) { return $data->CustomerContactName; })
-            ->addColumn('PaymentMethodName', function($data) { return $data->PaymentMethodName; })
-            ->addColumn('CurrencyName', function($data) { return $data->CurrencyName; })
-            ->addColumn('CustomerContractVoucherNumber', function($data) { return $data->CustomerContractVoucherNumber; })
-            ->addColumn('TransportModeName', function($data) { return $data->TransportModeName; })
-            ->addColumn('CustomerOrderVoucherNumber', function($data) { return $data->CustomerOrderVoucherNumber; })
+//            ->addColumn('DetailNumber', function($data) { return $data->DetailNumber; })
+//            ->addColumn('CustomerName', function($data) { return $data->CustomerName; })
+//            ->addColumn('CustomerAddressName', function($data) { return $data->CustomerAddressName; })
+//            ->addColumn('CustomerContactName', function($data) { return $data->CustomerContactName; })
+//            ->addColumn('PaymentMethodName', function($data) { return $data->PaymentMethodName; })
+//            ->addColumn('CurrencyName', function($data) { return $data->CurrencyName; })
+//            ->addColumn('CustomerContractVoucherNumber', function($data) { return $data->CustomerContractVoucherNumber; })
+//            ->addColumn('TransportModeName', function($data) { return $data->TransportModeName; })
+//            ->addColumn('CustomerOrderVoucherNumber', function($data) { return $data->CustomerOrderVoucherNumber; })
             ->addColumn('action', function($row){
                   $btn = '';
                   if ($row->Opened == 0) {
@@ -126,7 +126,21 @@ class ShoppingCartController extends AppBaseController
 
             if ($request->ajax()) {
 
-                $data = ShoppingCart::all();
+//                $data = ShoppingCart::all();
+                $data = DB::table('ShoppingCart as t1')
+                    ->join('ShoppingCartDetail as t2', 't2.ShoppingCart', '=', 't1.Id')
+                    ->join('Currency as t3', 't3.Id', '=', 't1.Currency')
+                    ->join('PaymentMethod as t4', 't4.Id', '=', 't1.PaymentMethod')
+                    ->join('TransportMode as t5', 't5.Id', '=', 't1.TransportMode')
+                    ->leftJoin('CustomerOrder as t6', 't6.Id', '=', 't1.CustomerOrder')
+                    ->select(DB::raw('t1.Id, t1.VoucherNumber, t1.VoucherDate, t1.DeliveryDate, t1.NetValue, t1.GrossValue, t1.VatValue, t1.Opened,
+                                  t3.Name as CurrencyName, t4.Name as PaymentMethodName, t5.Name as TransportModeName, t6.VoucherNumber as CustomerOrderVoucherNumber,
+                                  sum(1) as DetailNumber'))
+                    ->whereNull('t1.deleted_at')
+                    ->whereNull('t2.deleted_at')
+                    ->groupBy('t1.Id', 't1.VoucherNumber', 't1.VoucherDate', 't1.DeliveryDate', 't1.NetValue', 't1.GrossValue', 't1.VatValue', 't1.Opened',
+                        'CurrencyName', 'PaymentMethodName', 'TransportModeName', 'CustomerOrderVoucherNumber')
+                    ->get();
                 return $this->dwData($data);
 
             }
@@ -196,7 +210,7 @@ class ShoppingCartController extends AppBaseController
         $shoppingCart = new ShoppingCart;
 
         $shoppingCart->VoucherNumber    = $input['VoucherNumber'];
-        $shoppingCart->Customer         = session('customer_id');
+        $shoppingCart->Customer         = myUser::user()->customerId;
         $shoppingCart->CustomerAddress  = $input['CustomerAddress'];
         $shoppingCart->CustomerContact  = myUser::user()->customercontact_id;
         $shoppingCart->VoucherNumber    = $input['VoucherNumber'];

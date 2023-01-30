@@ -22,7 +22,7 @@
                 {!! Form::label('CustomerAddress', \App\Classes\langClass::trans('Telephely:')) !!}
             </div>
             <div class="mylabel col-sm-10">
-                {!! Form::select('CustomerAddress', ddwClass::customerAddressDDW(session('customer_id')), null,['class'=>'select2 form-control', 'required' => 'true', 'id' => 'CustomerAddress']) !!}
+                {!! Form::select('CustomerAddress', ddwClass::customerAddressDDW(myUser::user()->customerId), null,['class'=>'select2 form-control', 'required' => 'true', 'id' => 'CustomerAddress']) !!}
             </div>
         </div>
     </div>

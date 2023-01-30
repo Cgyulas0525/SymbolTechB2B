@@ -48,6 +48,7 @@
                 serverSide: true,
                 scrollY: 390,
                 scrollX: true,
+                paging: false,
                 order: [[1, 'desc']],
                 ajax: "{{ route('shoppingCarts.index') }}",
                 columns: [
@@ -64,7 +65,8 @@
                     {title: <?php echo "'" . App\Classes\langClass::trans('Fizetési mód') . "'"; ?>, data: 'PaymentMethodName', name: 'PaymentMethodName'},
                     {title: <?php echo "'" . App\Classes\langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
                     {title: <?php echo "'" . App\Classes\langClass::trans('Rendelésszám') . "'"; ?>, data: 'CustomerOrderVoucherNumber', name: 'CustomerOrderVoucherNumber'},
-                ]
+                ],
+                buttons: []
             });
 
         });

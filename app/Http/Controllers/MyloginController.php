@@ -60,7 +60,7 @@ class MyloginController extends Controller
         session(['user_rendszergazda' => $user->rendszergazda]);
         session(['noAviablePicture' => utilityClass::noAviablePicture()]);
         if (!empty($user->employee_id)) {
-            session(['user_picture' => $employee->Picture]);
+            session(['user_picture' => !empty($employee) ? $employee->Picture : null]);
         } else {
             session(['user_picture' => NULL ]);
         }

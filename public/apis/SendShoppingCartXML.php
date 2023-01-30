@@ -21,21 +21,27 @@ if ($smtp) {
         $xml->startDocument('1.0', 'UTF-8');
         $xml->startElement('customerorders');
         foreach ($shoppingCarts as $shoppingCart) {
-            echo $shoppingCart['VoucherNumber'] . "\n";
+
+            $customer = $pdo->recordFromId('customer', $shoppingCart['Customer']);
+            $transportmode = $pdo->recordFromId('transportmode', $shoppingCart['TransportMode']);
+            $currency = $pdo->recordFromId('currency', $shoppingCart['Currency']);
+            $paymentmethod = $pdo->recordFromId('paymentmethod', $shoppingCart['PaymentMethod']);
+
             $xml->startElement('customerorder');
             $xml->writeElement('date', $shoppingCart['VoucherDate']);
             $xml->writeElement('expirationdays', '');
             $xml->writeElement('orderid', $shoppingCart['Id']);
             $xml->writeElement('customer', '');
             $xml->writeElement('customerid', $shoppingCart['Customer']);
-            $xml->writeElement('customercode', '');
-            $xml->writeElement('customeremail', '');
-            $xml->writeElement('country', '');
-            $xml->writeElement('region', '');
-            $xml->writeElement('zip', '');
-            $xml->writeElement('city', '');
-            $xml->writeElement('street', '');
-            $xml->writeElement('housenumber', '');
+            $xml->writeElement('customercode', $customer['Code']);
+            $xml->writeElement('customeremail', $customer['Email']);
+            $xml->writeElement('country', $customer['InvoiceCountry']);
+            $xml->writeElement('region', $customer['InvoiceRegion']);
+            $xml->writeElement('zip', $customer['InvoiceZip']);
+            $xml->writeElement('city', $customer['InvoiceCity']);
+            $xml->writeElement('street', $customer['InvoiceStreet']);
+            $xml->writeElement('housenumber', $customer['InvoiceHouseNumber']);
+
             $xml->writeElement('transportid', '');
             $xml->writeElement('transportname', '');
             $xml->writeElement('transportcountry', '');
@@ -45,22 +51,24 @@ if ($smtp) {
             $xml->writeElement('transportstreet', '');
             $xml->writeElement('transporthousenumber', '');
             $xml->writeElement('transportcontactname', '');
-            $xml->writeElement('currency', '');
-		    $xml->writeElement('currencyrate', '');
-		    $xml->writeElement('transportmode', '');
+
+            $xml->writeElement('currency', $currency['Name']);
+		    $xml->writeElement('currencyrate', $shoppingCart['CurrencyRate']);
+
+            $xml->writeElement('transportmode', $transportmode['Name']);
             $xml->writeElement('transporttargetid', '');
             $xml->writeElement('transportdate', '');
             $xml->writeElement('vouchersequencecode', '');
-            $xml->writeElement('paymentmethod', '');
-            $xml->writeElement('paymentmethodtolerance', '');
+            $xml->writeElement('paymentmethod', $paymentmethod['Name']);
+            $xml->writeElement('paymentmethodtolerance', $paymentmethod['ToleranceDay']);
             $xml->writeElement('warehouse', '');
 		    $xml->writeElement('notifyphone', '');
             $xml->writeElement('notifysms', '');
             $xml->writeElement('notifyemail', '');
             $xml->writeElement('splitforbid', '');
             $xml->writeElement('banktrid', '');
-            $xml->writeElement('comment', '');
-            $xml->writeElement('closedmanually', '');
+            $xml->writeElement('comment', $shoppingCart['Comment']);
+            $xml->writeElement('closedmanually', 0);
             $xml->writeElement('strexa', '');
             $xml->writeElement('strexb', '');
             $xml->writeElement('strexc', '');
@@ -89,41 +97,44 @@ if ($smtp) {
             $shoppingCartDetails = $smtp->fetchAll();
             if (count($shoppingCartDetails) > 0) {
                 foreach ($shoppingCartDetails as $shoppingCartDetail) {
-                    $xml->startElement('deatil');
-                        $xml->writeElement('productid', $shoppingCartDetail['Product']);
-                        $xml->writeElement('productname', '');
-                        $xml->writeElement('quantity', '');
-                        $xml->writeElement('vat', '');
-                        $xml->writeElement('vatname', '');
-                        $xml->writeElement('unipricenet', '');
-                        $xml->writeElement('uniprice', '');
-                        $xml->writeElement('netvalue', '');
-                        $xml->writeElement('grossvalue', '');
-                        $xml->writeElement('discountpercent', '');
-                        $xml->writeElement('mustmanufacturing', '');
-                        $xml->writeElement('allocate', '');
-                        $xml->writeElement('detailstatus', '');
-                        $xml->writeElement('comment', '');
-                        $xml->writeElement('strexa', '');
-                        $xml->writeElement('strexb', '');
-                        $xml->writeElement('strexc', '');
-                        $xml->writeElement('strexd', '');
-                        $xml->writeElement('dateexa', '');
-                        $xml->writeElement('dateexb', '');
-                        $xml->writeElement('dateexc', '');
-                        $xml->writeElement('dateexd', '');
-                        $xml->writeElement('numexa', '');
-                        $xml->writeElement('numexb', '');
-                        $xml->writeElement('numexc', '');
-                        $xml->writeElement('numexd', '');
-                        $xml->writeElement('boolexa', '');
-                        $xml->writeElement('boolexb', '');
-                        $xml->writeElement('boolexc', '');
-                        $xml->writeElement('boolexd', '');
-                        $xml->writeElement('lookupexa', '');
-                        $xml->writeElement('lookupexb', '');
-                        $xml->writeElement('lookupexc', '');
-                        $xml->writeElement('lookupexd', '');
+
+                    $vat = $pdo->recordFromId('vat', $shoppingCartDetail['Vat']);
+
+                    $xml->startElement('detail');
+                    $xml->writeElement('productid', $shoppingCartDetail['Product']);
+                    $xml->writeElement('productname', '');
+                    $xml->writeElement('quantity', $shoppingCartDetail['Quantity']);
+                    $xml->writeElement('vat', $vat['Rate']);
+                    $xml->writeElement('vatname', $vat['Name']);
+                    $xml->writeElement('unipricenet', '');
+                    $xml->writeElement('uniprice', $shoppingCartDetail['UnitPrice']);
+                    $xml->writeElement('netvalue', $shoppingCartDetail['NetValue']);
+                    $xml->writeElement('grossvalue', $shoppingCartDetail['GrossValue']);
+                    $xml->writeElement('discountpercent', $shoppingCartDetail['DiscountPercent']);
+                    $xml->writeElement('mustmanufacturing', '');
+                    $xml->writeElement('allocate', '');
+                    $xml->writeElement('detailstatus', '');
+                    $xml->writeElement('comment', $shoppingCartDetail['Comment']);
+                    $xml->writeElement('strexa', '');
+                    $xml->writeElement('strexb', '');
+                    $xml->writeElement('strexc', '');
+                    $xml->writeElement('strexd', '');
+                    $xml->writeElement('dateexa', '');
+                    $xml->writeElement('dateexb', '');
+                    $xml->writeElement('dateexc', '');
+                    $xml->writeElement('dateexd', '');
+                    $xml->writeElement('numexa', '');
+                    $xml->writeElement('numexb', '');
+                    $xml->writeElement('numexc', '');
+                    $xml->writeElement('numexd', '');
+                    $xml->writeElement('boolexa', '');
+                    $xml->writeElement('boolexb', '');
+                    $xml->writeElement('boolexc', '');
+                    $xml->writeElement('boolexd', '');
+                    $xml->writeElement('lookupexa', '');
+                    $xml->writeElement('lookupexb', '');
+                    $xml->writeElement('lookupexc', '');
+                    $xml->writeElement('lookupexd', '');
                     $xml->endElement();
                 }
             }

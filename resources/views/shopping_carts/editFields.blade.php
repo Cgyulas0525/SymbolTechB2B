@@ -50,7 +50,7 @@
                     {!! Form::label('CustomerAddress', \App\Classes\langClass::trans('Telephely:')) !!}
                 </div>
                 <div class="mylabel8 col-sm-11">
-                    {!! Form::select('CustomerAddress', ddwClass::customerAddressDDW(session('customer_id')), $shoppingCart->CustomerAddress,['class'=>'select2 form-control cellLabel', 'required' => 'true', 'id' => 'CustomerAddress']) !!}
+                    {!! Form::select('CustomerAddress', ddwClass::customerAddressDDW(myUser::user()->customerId), $shoppingCart->CustomerAddress,['class'=>'select2 form-control cellLabel', 'required' => 'true', 'id' => 'CustomerAddress']) !!}
                 </div>
             </div>
         </div>
@@ -151,10 +151,13 @@
     {!! Form::hidden('Customer', $shoppingCart->Customer, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'Customer']) !!}
     {!! Form::hidden('CustomerContact', $shoppingCart->CustomerContact, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'CustomerContact']) !!}
     {!! Form::hidden('Currency', $shoppingCart->Currency, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'Currency']) !!}
-    {!! Form::hidden('CurrencyRate', $shoppingCart->Currency, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'Currency']) !!}
+    {!! Form::hidden('CurrencyRate', $shoppingCart->CurrencyRate, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'CurrencyRate']) !!}
     {!! Form::hidden('CustomerContract', $shoppingCart->CustomerContract, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'CustomerContract']) !!}
     {!! Form::hidden('Opened', $shoppingCart->Opened, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'Opened']) !!}
+    {!! Form::hidden('PaymentMethod', $shoppingCart->PaymentMethod, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'PaymentMethod']) !!}
     {!! Form::hidden('CustomerOrder', $shoppingCart->CustomerOrder, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'CustomerOrder']) !!}
+    {!! Form::hidden('DepositValue', $shoppingCart->DepositValue, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'DepositValue']) !!}
+    {!! Form::hidden('DepositPercent', $shoppingCart->DepositPercent, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'DepositPercent']) !!}
 
     <div class="card-footer">
         {!! Form::submit('Ment', ['class' => 'btn btn-primary']) !!}

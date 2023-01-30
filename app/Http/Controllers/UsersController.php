@@ -91,34 +91,34 @@ class UsersController extends AppBaseController
 
             if ($request->ajax()) {
 
-                $data = Users::where('rendszergazda', '>', 0)->where('id', '>', 0)->get();
-                return $this->dwData($data);
+//                $data = Users::where('rendszergazda', '>', 0)->where('id', '>', 0)->get();
+//                return $this->dwData($data);
 
 
-//                $data = DB::table('users as t1')
-//                        ->join('customercontact as t2', 't2.Id', '=', 't1.employee_id')
-//                        ->join('customer as t3', 't3.Id', '=', 't2.Customer')
-//                        ->join('dictionaries as t4', 't4.id', '=', 't1.rendszergazda')
-//                        ->leftJoin('transportmode as t5', 't5.Id', '=', 't1.TransportMode')
-//                        ->leftJoin('customeraddress as t6', 't6.Id', '=', 't1.CustomerAddress')
-//                        ->select('t1.*', 't3.Name as customerName', 't4.nev as rgnev', 't5.Name as TransportModeName', 't6.Name as CustomerAddress', DB::raw('1 as B2BLoginCount'))
-//                        ->where('t1.rendszergazda', '>', 0)->where('t1.id', '>', 0)->get();
-//
-//                return Datatables::of($data)
-//                    ->addIndexColumn()
-//                    ->addColumn('action', function($row){
-//                        $btn = '<a href="' . route('users.edit', [$row->id]) . '"
-//                             class="edit btn btn-success btn-sm editProduct" title="Módosítás"><i class="fa fa-paint-brush"></i></a>';
-//                        $btn = $btn.'<a href="' . route('users.destroy', [$row->id]) . '"
-//                             class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="fa fa-trash"></i></a>';
-//                        return $btn;
-//                    })
-//                    ->addColumn('kep', function($row){
-//                        $image = '<img class="brand-image elevation-3 picture-small" src="data:image/png;base64,' . utilityClass::echoPicture(utilityClass::getEmployeePicture($row->id)) .'">';
-//                        return $image;
-//                    })
-//                    ->rawColumns(['action', 'kep'])
-//                    ->make(true);
+                $data = DB::table('users as t1')
+                        ->join('customercontact as t2', 't2.Id', '=', 't1.employee_id')
+                        ->join('customer as t3', 't3.Id', '=', 't2.Customer')
+                        ->join('dictionaries as t4', 't4.id', '=', 't1.rendszergazda')
+                        ->leftJoin('transportmode as t5', 't5.Id', '=', 't1.TransportMode')
+                        ->leftJoin('customeraddress as t6', 't6.Id', '=', 't1.CustomerAddress')
+                        ->select('t1.*', 't3.Name as customerName', 't4.nev as rgnev', 't5.Name as TransportModeName', 't6.Name as CustomerAddress', DB::raw('1 as B2BLoginCount'))
+                        ->where('t1.rendszergazda', '>', 0)->where('t1.id', '>', 0)->get();
+
+                return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($row){
+                        $btn = '<a href="' . route('users.edit', [$row->id]) . '"
+                             class="edit btn btn-success btn-sm editProduct" title="Módosítás"><i class="fa fa-paint-brush"></i></a>';
+                        $btn = $btn.'<a href="' . route('users.destroy', [$row->id]) . '"
+                             class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="fa fa-trash"></i></a>';
+                        return $btn;
+                    })
+                    ->addColumn('kep', function($row){
+                        $image = '<img class="brand-image elevation-3 picture-small" src="data:image/png;base64,' . utilityClass::echoPicture(utilityClass::getEmployeePicture($row->id)) .'">';
+                        return $image;
+                    })
+                    ->rawColumns(['action', 'kep'])
+                    ->make(true);
 
             }
 

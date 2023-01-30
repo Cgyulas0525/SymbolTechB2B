@@ -92,7 +92,7 @@ Class shoppingCartClass {
                 $scId = DB::table('ShoppingCart')
                     ->insertGetId([
                         'VoucherNumber' => voucherNumber::nextB2BVoucherNumber(),
-                        'Customer' => session('customer_id'),
+                        'Customer' => myUser::user()->customerId,
                         'CustomerAddress' => myUser::user()->CustomerAddressId,
                         'CustomerContact' => myUser::user()->customercontact_id,
                         'VoucherDate' => \Carbon\Carbon::now(),
@@ -156,7 +156,7 @@ Class shoppingCartClass {
                 $scId = DB::table('ShoppingCart')
                     ->insertGetId([
                         'VoucherNumber' => voucherNumber::nextB2BVoucherNumber(),
-                        'Customer' => session('customer_id'),
+                        'Customer' => myUser::user()->customerId,
                         'CustomerAddress' => myUser::user()->CustomerAddressId,
                         'CustomerContact' => myUser::user()->customercontact_id,
                         'VoucherDate' => \Carbon\Carbon::now(),
@@ -212,7 +212,7 @@ Class shoppingCartClass {
                     return $query->from('productcustomercode')
                                  ->select('Product')
                                  ->where('Code', $excelImport->Name)
-                                 ->where('Customer', session('customer_id'))
+                                 ->where('Customer', myUser::user()->customerId)
                                  ->first();
                 })->first();
                 if (!empty($product)) {

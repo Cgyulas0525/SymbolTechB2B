@@ -216,7 +216,7 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             type:"GET",
-                            url:"http://localhost/Laravel/SymbolB2B/public/apis/SendShoppingCartXMLB2B.php",
+                            url:"http://localhost/Laravel/SymbolB2B/public/apis/SendShoppingCartXML.php",
                             // data: { Customer: 2},
                             success: function (response) {
                                 alert(response);

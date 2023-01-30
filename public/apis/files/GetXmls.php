@@ -166,7 +166,7 @@ class XML {
         foreach ($files as $file) {
             $this->api->insert($file);
             $phpDataArray = $this->utility->fileLoader(PATH_XML . $file);
-            for ($j = 0;$j < count($phpDataArray); $j++) {
+            for ($j = 0; $j < count($phpDataArray); $j++) {
                 $model = array_keys($phpDataArray)[$j];
                 if ($model != "PlugIn") {
 

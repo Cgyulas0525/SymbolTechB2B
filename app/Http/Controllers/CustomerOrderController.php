@@ -53,7 +53,7 @@ class CustomerOrderController extends AppBaseController
             ->join('customerorderdetail as t2', 't2.CustomerOrder', '=', 't1.Id')
             ->join('currency as t3', 't3.Id', '=', 't1.Currency')
             ->leftJoin('customerorderstatus as t4', 't4.Id', '=', 't1.CustomerOrderStatus')
-            ->where('t1.Customer', session('customer_id'))
+            ->where('t1.Customer', myUser::user()->customerId)
             ->groupBy('t1.Id', 't1.VoucherNumber', 't1.VoucherDate', 't1.NetValue', 't1.VatValue', 't1.GrossValue', 't3.Name', 't4.Name')
             ->get();
     }
@@ -128,7 +128,7 @@ class CustomerOrderController extends AppBaseController
             if ($request->ajax()) {
                 $kezdo = date('Y-m-d', strtotime('first day of january last year'));
                 $veg   = date('Y-m-d', strtotime('last day of december this year'));
-                $data = $this->allData()->where('t1.Customer', session('customer_id'))->where('t1.CustomerContact', myUser::user()->customercontact_id)->whereBetween('VoucherDate', [$kezdo, $veg]);
+                $data = $this->allData()->where('t1.Customer', myUser::user()->customerId)->where('t1.CustomerContact', myUser::user()->customercontact_id)->whereBetween('VoucherDate', [$kezdo, $veg]);
                 return $this->dwData($data->where('tetelszam', '>', 0)->where('NetValue', '>', 0));
             }
             return view('customer_orders.index');
@@ -141,7 +141,7 @@ class CustomerOrderController extends AppBaseController
             ->selectRaw('t1.Id, t1.VoucherNumber, t1.VoucherDate, t1.NetValue, t1.VatValue, t1.GrossValue , t3.Name as currencyName, SUM(1) as tetelszam')
             ->join('shoppingcartdetail as t2', 't2.ShoppingCart', '=', 't1.Id')
             ->join('currency as t3', 't3.Id', '=', 't1.Currency')
-            ->where('t1.Customer', session('customer_id'))
+            ->where('t1.Customer', myUser::user()->customerId)
             ->where('t1.CustomerContact', myUser::user()->customercontact_id)
             ->where('t1.Opened', 1)
             ->groupBy('t1.Id', 't1.VoucherNumber', 't1.VoucherDate', 't1.NetValue', 't1.VatValue', 't1.GrossValue', 't3.Name')

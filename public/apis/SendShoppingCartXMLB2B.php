@@ -48,7 +48,7 @@ if ($smtp) {
             $shoppingCartDetails = $smtp->fetchAll();
             if (count($shoppingCartDetails) > 0) {
                 foreach ($shoppingCartDetails as $shoppingCartDetail) {
-                    $xml->startElement('deatil');
+                    $xml->startElement('detail');
 
                     $xml->writeElement('id', $shoppingCartDetail['Id']);
                     $xml->writeElement('shoppingcart', $shoppingCartDetail['ShoppingCart']);

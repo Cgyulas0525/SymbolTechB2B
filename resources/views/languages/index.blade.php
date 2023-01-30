@@ -50,11 +50,11 @@
                 ajax: "{{ route('languages.index') }}",
                 columns: [
                     {title: '', data: 'action', sClass: "text-center", width: '200px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'shortname', name: 'shortname'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Nemzetiség') . "'"; ?>, data: 'name', name: 'name'},
+                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'lname', name: 'lname'},
+                    {title: <?php echo "'" . App\Classes\langClass::trans('Nemzetiség') . "'"; ?>, data: 'nemz', name: 'nemz'},
                     {title: <?php echo "'" . App\Classes\langClass::trans('Tétel') . "'"; ?>, data: 'DetailNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'DetailNumber'},
                     {title: <?php echo "'" . App\Classes\langClass::trans('Fordított') . "'"; ?>, data: 'TranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'TranslatedNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Fordítatlan') . "'"; ?>, data: 'UntranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'UntranslatedNumber'},
+                    {title: <?php echo "'" . App\Classes\langClass::trans('Fordítatlan') . "'"; ?>, data: 'UnTranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'UnTranslatedNumber'},
                 ]
             });
 

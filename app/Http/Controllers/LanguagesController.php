@@ -35,20 +35,20 @@ class LanguagesController extends AppBaseController
     {
         return Datatables::of($data)
             ->addIndexColumn()
-            ->addColumn('DetailNumber', function($data) { return $data->DetailNumber; })
-            ->addColumn('TranslatedNumber', function($data) { return $data->TranslatedNumber; })
-            ->addColumn('UntranslatedNumber', function($data) { return $data->UntranslatedNumber; })
+            ->addColumn('DetailNumber', function($data) { return $data->DetailNumber - 1; })
+//            ->addColumn('TranslatedNumber', function($data) { return $data->TranslatedNumber; })
+//            ->addColumn('UntranslatedNumber', function($data) { return $data->UntranslatedNumber; })
             ->addColumn('action', function($row){
                 $btn = '';
-                if ($row->DetailNumber == 0) {
+                if ($row->DetailNumber - 1 == 0) {
                     $btn = $btn.'<a href="' . route('beforeOn', [$row->id]) . '"
                              class="edit btn btn-success btn-sm editProduct" title="Bekapcsolás"><i class="fas fa-toggle-on"></i></a>';
                 }
-                if ($row->DetailNumber > 0 && $row->TranslatedNumber == 0) {
+                if ($row->DetailNumber - 1 > 0 && $row->TranslatedNumber == 0) {
                     $btn = $btn.'<a href="' . route('beforeOff', [$row->id]) . '"
                              class="edit btn btn-danger btn-sm editProduct" title="Kikapcsolás"><i class="fas fa-toggle-on"></i></a>';
                 }
-                if ($row->DetailNumber > 0 && $row->shortname != 'hu') {
+                if ($row->DetailNumber - 1 > 0 && $row->lname != 'hu') {
                     $btn = $btn.'<a href="' . route('languages.edit', [$row->id]) . '"
                              class="btn btn-primary btn-sm deleteProduct" title="Fordítás"><i class="fas fa-sign-language"></i></a>';
                 }
@@ -105,7 +105,41 @@ class LanguagesController extends AppBaseController
 
             if ($request->ajax()) {
 
-                $data = Languages::all();
+                $query1 = DB::table('languages as t1')
+                    ->leftJoin('translations as t2', 't2.language', '=', 't1.shortname')
+                    ->selectRaw('t1.id, t1.shortname as lname, t1.name as nemz, sum(1) as DetailNumber, 0 as TranslatedNumber, 0 as UnTranslatedNumber')
+                    ->whereNull('t1.deleted_at')
+                    ->whereNull('t2.deleted_at')
+                    ->groupBy('t1.id', 'lname', 'nemz');
+
+                $query2 = DB::table('languages as t1')
+                    ->leftJoin('translations as t2', 't2.language', '=', 't1.shortname')
+                    ->selectRaw('t1.id, t1.shortname as lname, t1.name as nemz, 0 as DetailNumber, sum(1) as TranslatedNumber, 0 as UnTranslatedNumber')
+                    ->whereNull('t1.deleted_at')
+                    ->whereNull('t2.deleted_at')
+                    ->whereColumn('t2.huname', '!=', 't2.name')
+                    ->groupBy('t1.id', 'lname', 'nemz');
+
+                $query3 = DB::table('languages as t1')
+                    ->leftJoin('translations as t2', 't2.language', '=', 't1.shortname')
+                    ->selectRaw('t1.id, t1.shortname as lname, t1.name as nemz, 0 as DetailNumber, 0 as TranslatedNumber, sum(1) as UnTranslatedNumber')
+                    ->whereNull('t1.deleted_at')
+                    ->whereNull('t2.deleted_at')
+                    ->whereColumn('t2.huname', '=', 't2.name')
+                    ->groupBy('t1.id', 'lname', 'nemz')
+                    ->unionAll($query1)
+                    ->unionAll($query2);
+
+                $data = DB::query()->fromSub($query3, 'p_pn')
+                    ->select('id','lname', 'nemz', DB::raw('ROUND( SUM(DetailNumber), 0) as DetailNumber,
+                                        ROUND( SUM(TranslatedNumber), 0) as TranslatedNumber,
+                                        ROUND( SUM(UnTranslatedNumber), 0) as UnTranslatedNumber'))
+                    ->groupBy('id', 'lname', 'nemz')
+                    ->orderBy('lname')
+                    ->get();
+
+
+//                $data = Languages::all();
                 return $this->dwData($data);
 
             }

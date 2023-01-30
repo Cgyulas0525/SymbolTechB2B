@@ -377,7 +377,7 @@ class MyApiController extends Controller
                 return $query->from('productcustomercode')
                     ->select('Product')
                     ->where('Code', $request->get('code'))
-                    ->where('Customer', session('customer_id'))
+                    ->where('Customer', myUser::user()->customerId)
                     ->first();
             })->first();
             if (!empty($product)) {

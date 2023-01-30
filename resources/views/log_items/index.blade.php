@@ -23,7 +23,7 @@
                         </div>
                         <div class="col-sm-4">
                             {!! Form::label('customer', \App\Classes\langClass::trans('Partner:')) !!}
-                            {!! Form::select('customer', ddwClass::logItemCustomerDDw(), empty($_COOKIE['logCustomer']) ? session('customer_id') : $_COOKIE['logCustomer'], ['class'=>'select2 form-control', 'required' => 'true', 'id' => 'customer']) !!}
+                            {!! Form::select('customer', ddwClass::logItemCustomerDDw(), empty($_COOKIE['logCustomer']) ? myUser::user()->customerId : $_COOKIE['logCustomer'], ['class'=>'select2 form-control', 'required' => 'true', 'id' => 'customer']) !!}
                         </div>
                         <div class="col-sm-4">
                             {!! Form::label('felhasznalo', \App\Classes\langClass::trans('Felhasználó:')) !!}
@@ -193,7 +193,7 @@
                 customerChange(this);
             });
 
-            $('#customer').val(<?php echo !empty($_COOKIE['logCustomer']) ? ($_COOKIE['logCustomer'] == 0 ? session('customer_id') : $_COOKIE['logCustomer'] )  : session('customer_id'); ?>);
+            $('#customer').val(<?php echo !empty($_COOKIE['logCustomer']) ? ($_COOKIE['logCustomer'] == 0 ? myUser::user()->customerId : $_COOKIE['logCustomer'] )  : myUser::user()->customerId; ?>);
             customerChange('#customer');
 
         });

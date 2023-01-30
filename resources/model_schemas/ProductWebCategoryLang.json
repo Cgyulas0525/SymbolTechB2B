@@ -3,8 +3,8 @@
         "name": "Id",
         "dbType": "bigInteger,false",
         "htmlType": null,
-        "validations": null,
-        "searchable": false,
+        "validations": null,0
+        "searchable": false,0
         "fillable": false,
         "primary": true,
         "inForm": false,

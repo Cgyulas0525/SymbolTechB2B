@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use ddwClass;
+use myUser;
 
 /**
  * Class LogItemTable
@@ -101,7 +102,7 @@ class LogItemTable extends Model
         if ( $customer_id != -9999 ) {
             return Customer::find($customer_id)->Name;
         } else {
-            return session('customer_name');
+            return myUser::user()->name;
         }
     }
 

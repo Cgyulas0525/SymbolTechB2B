@@ -81,9 +81,9 @@ class ShoppingCartDetailController extends AppBaseController
     }
 
     public function dbRaw($Id) {
-        return DB::raw('getLastProductPrice('.  session('customer_id') .','.$Id.', -1, -1) as lastPrice,
-                                     getProductPrice('. session('customer_id') .','.$Id.', 1, -1, -1) as productPrice,
-                                     discountPercentage('. session('customer_id') .','.$Id.', 1, -1, -1) as discountPercent' );
+        return DB::raw('getLastProductPrice('.  myUser::user()->customerId .','.$Id.', -1, -1) as lastPrice,
+                                     getProductPrice('. myUser::user()->customerId .','.$Id.', 1, -1, -1) as productPrice,
+                                     discountPercentage('. myUser::user()->customerId .','.$Id.', 1, -1, -1) as discountPercent' );
     }
 
     public function productIndex(Request $request)
@@ -92,9 +92,9 @@ class ShoppingCartDetailController extends AppBaseController
 
             if ($request->ajax()) {
 
-//                $vmi = DB::raw('MAX(t2.ValidFrom) as rc, getLastProductPrice('.  session('customer_id') .', t1.Id, -1, -1) as lastPrice,
-//                                     getProductPrice('. session('customer_id') .', t1.Id, 1, -1, -1) as productPrice,
-//                                     discountPercentage('. session('customer_id') .', t1.Id, 1, -1, -1) as discountPercent' );
+//                $vmi = DB::raw('MAX(t2.ValidFrom) as rc, getLastProductPrice('.  myUser::user()->customerId .', t1.Id, -1, -1) as lastPrice,
+//                                     getProductPrice('. myUser::user()->customerId .', t1.Id, 1, -1, -1) as productPrice,
+//                                     discountPercentage('. myUser::user()->customerId .', t1.Id, 1, -1, -1) as discountPercent' );
 
 
                 $data = DB::table('Product as t1')
@@ -108,11 +108,11 @@ class ShoppingCartDetailController extends AppBaseController
                             ->where('t1.Deleted', 0)
                             ->where('t1.ProductCategory', $request->ProductCategory)
                             ->where('t2.PriceCategory', function($query) {
-                                    $query->from('Customer as t5')->select('t5.PriceCategory')->where('Id', session('customer_id'))->first();
+                                    $query->from('Customer as t5')->select('t5.PriceCategory')->where('Id', myUser::user()->customerId)->first();
                                 })
 //                            ->where('t2.PriceCategory', 2)
                             ->where('t2.Currency', -1)
-                            ->where(DB::raw('getProductPrice('.session('customer_id'). ', t1.Id, 1, -1, -1)'), '>', 0)
+                            ->where(DB::raw('getProductPrice('.myUser::user()->customerId. ', t1.Id, 1, -1, -1)'), '>', 0)
                             ->groupBy('t1.Id', 't1.Code', 't1.Barcode', 't1.Name', 't3.Name', 't4.Name')
                             ->get();
 

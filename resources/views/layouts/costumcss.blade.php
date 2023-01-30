@@ -13,6 +13,16 @@
         width: 90%;
     }
 
+    .firstSUDataUploadButton {
+        border: 2px solid gray;
+        box-shadow: 0px 8px 15px rgba(0,0,0,0.1);
+        font-size: 15px;
+        margin-left: 5px;
+        margin-top: 250px;
+        margin-bottom: 250px;
+        width: 90%;
+    }
+
     .swCancelButton {
         background-repeat: no-repeat;
         background-size: 98px 84px;

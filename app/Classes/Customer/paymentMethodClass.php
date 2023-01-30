@@ -11,20 +11,20 @@ class paymentMethodClass {
     public static function customerPaymentMethod()
     {
         $paymentMethod = NULL;
-        if ( !is_null(myUser::user()->CustomerAddress) ) {
+        if ( !empty(myUser::user()->CustomerAddress) ) {
             $paymentMethod = CustomerAddress::where('Id', myUser::user()->CustomerAddress)->first()->PaymentMethod;
-            if ( is_null($paymentMethod) ) {
-                if ( !is_null(session('customer_id')) ) {
-                    $paymentMethod = Customer::where('Id', session('customer_id'))->first()->PaymentMethod;
+            if ( empty($paymentMethod) ) {
+                if ( !empty(myUser::user()->customerId) ) {
+                    $paymentMethod = Customer::where('Id', myUser::user()->customerId)->first()->PaymentMethod;
                 }
             }
         } else {
-            if ( !is_null(session('customer_id')) ) {
-                $paymentMethod = Customer::where('Id', session('customer_id'))->first()->PaymentMethod;
+            if ( !empty(myUser::user()->customerId) ) {
+                $paymentMethod = Customer::where('Id', myUser::user()->customerId)->first()->PaymentMethod;
             }
         }
 
-        return !empty($paymentMethod) ? $paymentMethod : NULL;
+        $data = !empty($paymentMethod) ? $paymentMethod : NULL;
     }
 
 

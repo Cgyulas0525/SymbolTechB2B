@@ -8,7 +8,7 @@
 @endsection
 
 <?php
-    $coffers = App\Classes\customerOfferClass::customerOffers(session('customer_id'));
+    $coffers = App\Classes\customerOfferClass::customerOffers(myUser::user()->customerId);
 ?>
 @section('content')
     <div class="row">
@@ -37,15 +37,15 @@
                        <tbody>
                        <tr>
                            <td>{{ \App\Classes\langClass::trans('Nyitott') }}</td>
-                           <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesek(session('customer_id')), 0, ',', '.')}}</td>
+                           <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesek(myUser::user()->customerId), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
                            <td>{{ \App\Classes\langClass::trans('Tétel') }}</td>
-                           <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesTetelSzam(session('customer_id')), 0, ',', '.')}}</td>
+                           <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesTetelSzam(myUser::user()->customerId), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
                            <td>{{ \App\Classes\langClass::trans('Érték') }}</td>
-                           <td class="text-right">{{ number_format(customerOrderClass::openCustomerOrderValue(session('customer_id')), 0, ',', '.')}}</td>
+                           <td class="text-right">{{ number_format(customerOrderClass::openCustomerOrderValue(myUser::user()->customerId), 0, ',', '.')}}</td>
                        </tr>
                        </tbody>
                    </table>
@@ -63,7 +63,7 @@
                         <tbody>
                         <tr>
                             <td>{{ \App\Classes\langClass::trans('Nyitott') }}</td>
-                            <td class="text-right">{{ number_format(customerClass::CustomerDebitQuotaValue(session('customer_id'), 'MaxCredit'), 0, ',', '.')}}</td>
+                            <td class="text-right">{{ number_format(customerClass::CustomerDebitQuotaValue(myUser::user()->customerId, 'MaxCredit'), 0, ',', '.')}}</td>
                         </tr>
                         <tr>
                             <td>{{ \App\Classes\langClass::trans('Felhasznált') }}</td>

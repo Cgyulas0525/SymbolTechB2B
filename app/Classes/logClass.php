@@ -10,6 +10,7 @@ use App\Models\CustomerOrder;
 use App\Classes\utilityClass;
 use Carbon\Carbon;
 use function Symfony\Component\String\b;
+use myUser;
 
 Class logClass{
 
@@ -17,7 +18,7 @@ Class logClass{
     {
         return LogItem::create([
             "customer_id" => session('customer_id'),
-            "user_id" => session('user_id'),
+            "user_id" => myUser::user()->id,
             "eventtype" => $type,
             "eventdatetime" => now(),
             "remoteaddress" => '127.0.0.1'

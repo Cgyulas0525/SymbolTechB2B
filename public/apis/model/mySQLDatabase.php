@@ -127,6 +127,31 @@ class mySQLDatabase {
         }
     }
 
+    /*
+     * Id of record, record
+     *
+     * @param $table - table name
+     * @param $id - integer
+     *
+     * @return record
+     */
+    public function recordFromId($table = "", $id = -9999) {
+        $sql = "SELECT * FROM " . $table . " WHERE Id = '" . $id . "'";
+        $smtp = $this->executeStatement($sql);
+        if ($smtp) {
+            $record = $smtp->fetchAll();
+            if (count($record) > 0) {
+                foreach ($record as $row) {
+                    $record = $row;
+                }
+                return $record;
+            } else {
+                return "Error: not found record!";
+            }
+        } else {
+            return "Error: not found record!";
+        }
+    }
 
 }
 
