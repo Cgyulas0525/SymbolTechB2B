@@ -166,4 +166,5 @@ class Users extends Model
     public function getB2BLoginCountAttribute() {
         return LogItem::where('user_id', $this->id)->get()->count();
     }
+
 }
