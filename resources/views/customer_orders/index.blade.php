@@ -80,17 +80,13 @@
             // $('[data-widget="pushmenu"]').PushMenu('collapse');
 
             table = $('.partners-table').DataTable({
-                // language: {
-                //     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-                // },
                 serverSide: true,
                 scrollY: 450,
                 scrollX: true,
                 order: [2, 'desc'],
-                "sDom": 'Rlfrtip',
+                // "sDom": 'Rlfrtip',
                 "bStateSave": true,
                 ajax: "{{ route('customerOrders.index') }}",
-                buttons: [],
                 columns: [
                     {title: <?php echo "'" . App\Classes\langClass::trans('Tételek') . "'"; ?>, data: 'action', sClass: "text-center", width: '45px', name: 'action', orderable: false, searchable: false},
                     {title: <?php echo "'" . App\Classes\langClass::trans('Másolás') . "'"; ?>, data: 'tetelszam', sClass: "text-center", width: '45px', name: 'tetelszam1', orderable: false, searchable: false},
@@ -111,6 +107,7 @@
                         }
                     }
                 ],
+                buttons: [],
             });
 
             $('.all').click(function () {

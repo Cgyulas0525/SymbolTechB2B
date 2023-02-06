@@ -97,10 +97,14 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                 <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
+
         <div class="col-lg-1 col-md-6 col-xs-12 margintop10">
             <h1><a href="{!! route('settingIndex') !!}" class="btn btn-warning adminDBButton">{{ \App\Classes\langClass::trans('Beállítások') }}</a></h1>
             <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ \App\Classes\langClass::trans('Árfolyam') }}</a></h1>
         </div>
+
+
+
         <div class="col-lg-6 col-md-6 col-xs-12 margintop10">
             <!-- small box -->
             <div class="small-box bg-default">

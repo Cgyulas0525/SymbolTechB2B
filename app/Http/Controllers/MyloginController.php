@@ -69,7 +69,9 @@ class MyloginController extends Controller
             session(['customer_name' => $customer->Name]);
         }
 
-        logClass::insertLogIn(1);
+        if (Employee::count() != 0) {
+            logClass::insertLogIn(1);
+        }
 
         return view('home');
     }

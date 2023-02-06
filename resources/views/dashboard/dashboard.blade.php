@@ -176,10 +176,8 @@
                 serverSide: true,
                 scrollY: 300,
                 scollX: true,
-                colReorder: true,
                 ajax: "{{ route('indexCOLastTreeMonth') }}",
-                order: [1, 'desc'],
-                buttons: [],
+                order: [0, 'desc'],
                 paging: false,
                 select: false,
                 filter: false,
@@ -196,6 +194,8 @@
                 fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
                     RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);
                 },
+                buttons: [],
+
             });
 
             var coiTable = $('.CustomerOrderInterval-table').DataTable({

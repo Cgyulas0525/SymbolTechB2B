@@ -175,6 +175,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 {{--<script src="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.min.js"></script>--}}
 
+<!-- Progress bar -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+
 <script>
     $(function () {
         bsCustomFileInput.init();
