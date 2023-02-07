@@ -59,14 +59,23 @@ class MyloginController extends Controller
         session(['user_id' => $user->id]);
         session(['user_rendszergazda' => $user->rendszergazda]);
         session(['noAviablePicture' => utilityClass::noAviablePicture()]);
-        if (!empty($user->employee_id)) {
-            session(['user_picture' => !empty($employee) ? $employee->Picture : null]);
+        if ($user->id == 0) {
+                session(['user_picture' => NULL ]);
+
+                /* ide kell a systemsetting tábla customer oszlopából a partner */
+
+                session(['customer_id' => -9999]);
+                session(['customer_name' => '']);
         } else {
-            session(['user_picture' => NULL ]);
-        }
-        if (!empty($customer->Id)) {
-            session(['customer_id' => $customer->Id]);
-            session(['customer_name' => $customer->Name]);
+            if (!empty($user->employee_id)) {
+                session(['user_picture' => !empty($employee) ? $employee->Picture : null]);
+            } else {
+                session(['user_picture' => NULL ]);
+            }
+            if (!empty($customer->Id)) {
+                session(['customer_id' => $customer->Id]);
+                session(['customer_name' => $customer->Name]);
+            }
         }
 
         if (Employee::count() != 0) {
