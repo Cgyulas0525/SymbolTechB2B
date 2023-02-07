@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Gép: 127.0.0.1:3306
--- Létrehozás ideje: 2023. Feb 07. 12:29
--- Kiszolgáló verziója: 8.0.27
--- PHP verzió: 8.1.0
+-- Gï¿½p: 127.0.0.1:3306
+-- Lï¿½trehozï¿½s ideje: 2023. Feb 07. 12:29
+-- Kiszolgï¿½lï¿½ verziï¿½ja: 8.0.27
+-- PHP verziï¿½: 8.1.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,24 +18,24 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Adatbázis: `b2b`
+-- Adatbï¿½zis: `b2b`
 --
 
 DELIMITER $$
 --
--- Függvények
+-- Fï¿½ggvï¿½nyek
 --
 DROP FUNCTION IF EXISTS `discountPercentage`$$
 CREATE DEFINER=`b2b`@`localhost` FUNCTION `discountPercentage` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS INT DETERMINISTIC BEGIN
 	DECLARE mPercent INT;
 	DECLARE mLastPrice decimal(18,4);
 	DECLARE mProductPrice decimal(18,4);
-    
-    /* Az utolsó végfelhasználói ár */
+
+    /* Az utolsï¿½ vï¿½gfelhasznï¿½lï¿½i ï¿½r */
     SET mLastPrice = getLastProductPrice($customer, $product, $quantityUnit, $currency);
-    /* A kedvezményes ár */
+    /* A kedvezmï¿½nyes ï¿½r */
     SET mProductPrice = getProductPrice($customer, $product, $quantity, $quantityUnit, $currency);
-    /* A százalék */
+    /* A szï¿½zalï¿½k */
     IF mLastPrice > 0 THEN
 		SET mPercent = ROUND((100 - (mProductPrice / (mLastPrice / 100))), 0);
 		IF mPercent IS NULL THEN
@@ -52,7 +52,7 @@ CREATE DEFINER=`b2b`@`localhost` FUNCTION `getContractPrice` (`$customer` INT, `
 	DECLARE mPrice DECIMAL(18,4);
 
     SELECT t2.Price INTO mPrice
-      FROM CustomerContract as t1, CustomerContractDetail as t2 
+      FROM CustomerContract as t1, CustomerContractDetail as t2
 	 WHERE t2.CustomerContract = t1.Id AND
            t2.ValidFrom <= now() and
            ( t2.ValidTo >= now() OR t2.ValidTo IS NULL) AND
@@ -60,8 +60,8 @@ CREATE DEFINER=`b2b`@`localhost` FUNCTION `getContractPrice` (`$customer` INT, `
            t2.Product = $product AND
            t2.QuantityUnit = $quantityUnit AND
            t2.Currency = $currency;
-           
-	IF mPrice IS NOT NULL THEN		
+
+	IF mPrice IS NOT NULL THEN
 		RETURN mPrice;
 	ELSE
 		RETURN 0;
@@ -71,16 +71,16 @@ END$$
 DROP FUNCTION IF EXISTS `getLastProductPrice`$$
 CREATE DEFINER=`b2b`@`localhost` FUNCTION `getLastProductPrice` (`$customer` INT, `$product` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
 	DECLARE mPrice DECIMAL(18,4);
-    
-    SELECT Price INTO mPrice FROM ProductPrice 
+
+    SELECT Price INTO mPrice FROM ProductPrice
      WHERE Product = $product AND
-		   PriceCategory = (SELECT PriceCategory FROM Customer WHERE Id = $customer LIMIT 1) AND	
+		   PriceCategory = (SELECT PriceCategory FROM Customer WHERE Id = $customer LIMIT 1) AND
            Currency = $currency AND
            QuantityUnit = $quantityUnit AND
            ValidFrom <= now()
 	ORDER BY ValidFrom DESC
-    LIMIT 1;   
-    
+    LIMIT 1;
+
     IF mPrice IS NOT NULL THEN
 		RETURN mPrice;
 	ELSE
@@ -91,36 +91,35 @@ END$$
 DROP FUNCTION IF EXISTS `getLastProductPriceId`$$
 CREATE DEFINER=`b2b`@`localhost` FUNCTION `getLastProductPriceId` (`$Product` INT, `$QuantityUnit` INT, `$PriceCategory` INT, `$Currency` INT) RETURNS INT DETERMINISTIC BEGIN
 	DECLARE mId INT;
-    
-    SELECT MAX(t5.Id) INTO mId FROM ProductPrice AS t5 
-	 WHERE t5.QuantityUnit = $QuantityUnit 
-	   AND t5.PriceCategory = $PriceCategory 
-	   AND t5.Currency = $Currency 
+
+    SELECT MAX(t5.Id) INTO mId FROM ProductPrice AS t5
+	 WHERE t5.QuantityUnit = $QuantityUnit
+	   AND t5.PriceCategory = $PriceCategory
+	   AND t5.Currency = $Currency
 	   AND t5.Product = $Product
 	GROUP BY t5.Product, t5.QuantityUnit, t5.Currency, t5.PriceCategory;
-    
+
 	RETURN mId;
 END$$
 
 DROP FUNCTION IF EXISTS `getOfferPrice`$$
 CREATE DEFINER=`b2b`@`localhost` FUNCTION `getOfferPrice` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
 	declare mPrice decimal(18,4);
-    
+
     SELECT t1.SalesPrice INTO mPrice FROM CustomerOfferDetail as t1, CustomerOffer as t2, CustomerOfferCustomer as t3
      WHERE t2.Id = t1.CustomerOffer AND
-		   t3.CustomerOffer = t2.Id AND	
+		   t3.CustomerOffer = t2.Id AND
            t1.Product = $product AND
            t2.ValidFrom <= now() AND
            t2.ValidTo >= now() AND
            t3.Forbid = 0 AND
            t1.Currency = $currency AND
            t1.QuantityUnit = $quantityUnit AND
-           (t3.Customer = $customer OR
-            t3.CustomerCategory = (SELECT t4.CustomerCategory FROM Customer AS t4 WHERE t4.Id = $customer LIMIT 1)) AND
+           (t3.Customer = $customer OR t3.CustomerCategory = (SELECT t4.CustomerCategory FROM Customer AS t4 WHERE t4.Id = $customer LIMIT 1)) AND
            ((t1.QuantityMinimum <= 1) OR t1.QuantityMinimum IS NULL)
 	ORDER BY t1.QuantityMinimum DESC, t1.QuantityMaximum DESC
     LIMIT 1;
-    
+
     IF mPrice IS NOT NULL THEN
 		RETURN mPrice;
     ELSE
@@ -131,7 +130,7 @@ END$$
 DROP FUNCTION IF EXISTS `getProductCustomerCode`$$
 CREATE DEFINER=`b2b`@`localhost` FUNCTION `getProductCustomerCode` (`$customer` INT, `$product` INT) RETURNS VARCHAR(40) CHARSET utf32 DETERMINISTIC BEGIN
 	DECLARE mCode VARCHAR(40);
-    
+
     SELECT Code INTO mCode FROM productcustomercode WHERE Product = $product AND Customer = $customer;
     IF mCode IS NULL THEN
 		SET mCode = "";
@@ -145,22 +144,22 @@ CREATE DEFINER=`b2b`@`localhost` FUNCTION `getProductPrice` (`$customer` INT, `$
 	DECLARE mOfferPrice decimal(18,4);
 	DECLARE mLastPrice decimal(18,4);
 	DECLARE mContractPrice decimal(18,4);
-    
-    /* Az utolsó végfelhasználói ár */
+
+    /* Az utolsï¿½ vï¿½gfelhasznï¿½lï¿½i ï¿½r */
     SET mLastPrice = getLastProductPrice($customer, $product, $quantityUnit, $currency);
     IF mLastPrice > 0 THEN
 		SET mPrice = mLastPrice;
     END IF;
-    
-    /* Az akciós ár */
+
+    /* Az akciï¿½s ï¿½r */
     SET mOfferPrice = getOfferPrice($customer, $product, $quantity, $quantityUnit, $currency);
     IF mOfferPrice != 0 THEN
 		IF mOfferPrice < mPrice THEN
 			SET mPrice = mOfferPrice;
         END IF;
     END IF;
-    
-    /* A szerzõdéses ár */
+
+    /* A szerzï¿½dï¿½ses ï¿½r */
     SET mContractPrice = getContractPrice($customer, $product, $quantityUnit, $currency);
     IF mContractPrice != 0 THEN
 		IF mContractPrice < mPrice THEN
@@ -179,7 +178,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `api`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `api`
 --
 
 DROP TABLE IF EXISTS `api`;
@@ -195,7 +194,7 @@ CREATE TABLE IF NOT EXISTS `api` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `apimodel`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `apimodel`
 --
 
 DROP TABLE IF EXISTS `apimodel`;
@@ -217,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `apimodel` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `apimodelerror`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `apimodelerror`
 --
 
 DROP TABLE IF EXISTS `apimodelerror`;
@@ -236,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `apimodelerror` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `currency`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `currency`
 --
 
 DROP TABLE IF EXISTS `currency`;
@@ -261,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `currency` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `currencyrate`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `currencyrate`
 --
 
 DROP TABLE IF EXISTS `currencyrate`;
@@ -283,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `currencyrate` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customer`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customer`
 --
 
 DROP TABLE IF EXISTS `customer`;
@@ -466,7 +465,7 @@ CREATE TABLE IF NOT EXISTS `customer` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customeraddress`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customeraddress`
 --
 
 DROP TABLE IF EXISTS `customeraddress`;
@@ -525,7 +524,7 @@ CREATE TABLE IF NOT EXISTS `customeraddress` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customercategory`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customercategory`
 --
 
 DROP TABLE IF EXISTS `customercategory`;
@@ -561,7 +560,7 @@ CREATE TABLE IF NOT EXISTS `customercategory` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customercontact`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customercontact`
 --
 
 DROP TABLE IF EXISTS `customercontact`;
@@ -599,7 +598,7 @@ CREATE TABLE IF NOT EXISTS `customercontact` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customercontactfavoriteproduct`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customercontactfavoriteproduct`
 --
 
 DROP TABLE IF EXISTS `customercontactfavoriteproduct`;
@@ -618,7 +617,7 @@ CREATE TABLE IF NOT EXISTS `customercontactfavoriteproduct` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customercontract`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customercontract`
 --
 
 DROP TABLE IF EXISTS `customercontract`;
@@ -659,7 +658,7 @@ CREATE TABLE IF NOT EXISTS `customercontract` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customercontractdetail`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customercontractdetail`
 --
 
 DROP TABLE IF EXISTS `customercontractdetail`;
@@ -699,7 +698,7 @@ CREATE TABLE IF NOT EXISTS `customercontractdetail` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customeroffer`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customeroffer`
 --
 
 DROP TABLE IF EXISTS `customeroffer`;
@@ -725,7 +724,7 @@ CREATE TABLE IF NOT EXISTS `customeroffer` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customeroffercustomer`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customeroffercustomer`
 --
 
 DROP TABLE IF EXISTS `customeroffercustomer`;
@@ -745,7 +744,7 @@ CREATE TABLE IF NOT EXISTS `customeroffercustomer` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customerofferdetail`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customerofferdetail`
 --
 
 DROP TABLE IF EXISTS `customerofferdetail`;
@@ -781,7 +780,7 @@ CREATE TABLE IF NOT EXISTS `customerofferdetail` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customerorder`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customerorder`
 --
 
 DROP TABLE IF EXISTS `customerorder`;
@@ -950,7 +949,7 @@ CREATE TABLE IF NOT EXISTS `customerorder` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customerorderdetail`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customerorderdetail`
 --
 
 DROP TABLE IF EXISTS `customerorderdetail`;
@@ -1093,7 +1092,7 @@ CREATE TABLE IF NOT EXISTS `customerorderdetail` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customerorderdetailstatus`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customerorderdetailstatus`
 --
 
 DROP TABLE IF EXISTS `customerorderdetailstatus`;
@@ -1116,7 +1115,7 @@ CREATE TABLE IF NOT EXISTS `customerorderdetailstatus` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `customerorderstatus`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `customerorderstatus`
 --
 
 DROP TABLE IF EXISTS `customerorderstatus`;
@@ -1137,7 +1136,7 @@ CREATE TABLE IF NOT EXISTS `customerorderstatus` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `datatables_states`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `datatables_states`
 --
 
 DROP TABLE IF EXISTS `datatables_states`;
@@ -1154,7 +1153,7 @@ CREATE TABLE IF NOT EXISTS `datatables_states` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `dictionaries`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `dictionaries`
 --
 
 DROP TABLE IF EXISTS `dictionaries`;
@@ -1171,18 +1170,18 @@ CREATE TABLE IF NOT EXISTS `dictionaries` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2116 DEFAULT CHARSET=utf8mb3;
 
 --
--- A tábla adatainak kiíratása `dictionaries`
+-- A tï¿½bla adatainak kiï¿½ratï¿½sa `dictionaries`
 --
 
 INSERT INTO `dictionaries` (`id`, `tipus`, `nev`, `leiras`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (3, 1, 'Rendszergazda', 'Rendszergazda', NULL, NULL, NULL),
-(2, 1, 'Belsõ felhasználó', 'Belsõ felhasználó', NULL, NULL, NULL),
-(1, 1, 'B2B felhasználó', 'B2B felhasználó', NULL, NULL, NULL);
+(2, 1, 'Belsï¿½ felhasznï¿½lï¿½', 'Belsï¿½ felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1, 1, 'B2B felhasznï¿½lï¿½', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `employee`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `employee`
 --
 
 DROP TABLE IF EXISTS `employee`;
@@ -1250,7 +1249,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `excelimport`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `excelimport`
 --
 
 DROP TABLE IF EXISTS `excelimport`;
@@ -1286,7 +1285,7 @@ CREATE TABLE IF NOT EXISTS `excelimport` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `failed_jobs`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `failed_jobs`
 --
 
 DROP TABLE IF EXISTS `failed_jobs`;
@@ -1305,7 +1304,7 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `guaranteemode`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `guaranteemode`
 --
 
 DROP TABLE IF EXISTS `guaranteemode`;
@@ -1324,7 +1323,7 @@ CREATE TABLE IF NOT EXISTS `guaranteemode` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `languages`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `languages`
 --
 
 DROP TABLE IF EXISTS `languages`;
@@ -1339,7 +1338,7 @@ CREATE TABLE IF NOT EXISTS `languages` (
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf32;
 
 --
--- A tábla adatainak kiíratása `languages`
+-- A tï¿½bla adatainak kiï¿½ratï¿½sa `languages`
 --
 
 INSERT INTO `languages` (`id`, `shortname`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -1347,7 +1346,7 @@ INSERT INTO `languages` (`id`, `shortname`, `name`, `created_at`, `updated_at`, 
 (3, 'en', 'English', NULL, NULL, NULL),
 (4, 'de', 'Deutch', NULL, NULL, NULL),
 (5, 'bg', 'B???????', NULL, NULL, NULL),
-(6, 'cz', 'Èešké', NULL, NULL, NULL),
+(6, 'cz', 'ï¿½eï¿½kï¿½', NULL, NULL, NULL),
 (7, 'dk', 'Dansk', NULL, NULL, NULL),
 (8, 'ee', 'Eesti', NULL, NULL, NULL),
 (9, 'fi', 'Suomi', NULL, NULL, NULL),
@@ -1364,17 +1363,17 @@ INSERT INTO `languages` (`id`, `shortname`, `name`, `created_at`, `updated_at`, 
 (20, 'it', 'Italiano', NULL, NULL, NULL),
 (21, 'ru', '???????', NULL, NULL, NULL),
 (22, 'pt', 'Portugal', NULL, NULL, NULL),
-(23, 'ro', 'Românã', NULL, NULL, NULL),
+(23, 'ro', 'Romï¿½nï¿½', NULL, NULL, NULL),
 (24, 'es', 'Espanol', NULL, NULL, NULL),
 (25, 'se', 'Svenska', NULL, NULL, NULL),
 (26, 'rs', '??????', NULL, NULL, NULL),
-(27, 'sk', 'Slovenský', NULL, NULL, NULL),
-(28, 'si', 'Slovenšèina', NULL, NULL, NULL);
+(27, 'sk', 'Slovenskï¿½', NULL, NULL, NULL),
+(28, 'si', 'Slovenï¿½ï¿½ina', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `logitem`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `logitem`
 --
 
 DROP TABLE IF EXISTS `logitem`;
@@ -1396,7 +1395,7 @@ CREATE TABLE IF NOT EXISTS `logitem` (
 ) ENGINE=InnoDB AUTO_INCREMENT=995 DEFAULT CHARSET=utf32;
 
 --
--- A tábla adatainak kiíratása `logitem`
+-- A tï¿½bla adatainak kiï¿½ratï¿½sa `logitem`
 --
 
 INSERT INTO `logitem` (`id`, `customer_id`, `user_id`, `eventtype`, `eventdatetime`, `remoteaddress`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -1405,7 +1404,7 @@ INSERT INTO `logitem` (`id`, `customer_id`, `user_id`, `eventtype`, `eventdateti
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `logitemtable`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `logitemtable`
 --
 
 DROP TABLE IF EXISTS `logitemtable`;
@@ -1426,7 +1425,7 @@ CREATE TABLE IF NOT EXISTS `logitemtable` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `logitemtabledetail`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `logitemtabledetail`
 --
 
 DROP TABLE IF EXISTS `logitemtabledetail`;
@@ -1453,7 +1452,7 @@ CREATE TABLE IF NOT EXISTS `logitemtabledetail` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `migrations`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `migrations`
 --
 
 DROP TABLE IF EXISTS `migrations`;
@@ -1465,7 +1464,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
 ) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
 
 --
--- A tábla adatainak kiíratása `migrations`
+-- A tï¿½bla adatainak kiï¿½ratï¿½sa `migrations`
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -1482,7 +1481,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `password_resets`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `password_resets`
 --
 
 DROP TABLE IF EXISTS `password_resets`;
@@ -1496,7 +1495,7 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `paymentmethod`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `paymentmethod`
 --
 
 DROP TABLE IF EXISTS `paymentmethod`;
@@ -1524,7 +1523,7 @@ CREATE TABLE IF NOT EXISTS `paymentmethod` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `paymentmethodlang`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `paymentmethodlang`
 --
 
 DROP TABLE IF EXISTS `paymentmethodlang`;
@@ -1546,7 +1545,7 @@ CREATE TABLE IF NOT EXISTS `paymentmethodlang` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `personal_access_tokens`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `personal_access_tokens`
 --
 
 DROP TABLE IF EXISTS `personal_access_tokens`;
@@ -1568,7 +1567,7 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `pricecategory`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `pricecategory`
 --
 
 DROP TABLE IF EXISTS `pricecategory`;
@@ -1593,7 +1592,7 @@ CREATE TABLE IF NOT EXISTS `pricecategory` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `product`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `product`
 --
 
 DROP TABLE IF EXISTS `product`;
@@ -1783,7 +1782,7 @@ CREATE TABLE IF NOT EXISTS `product` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productassociation`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productassociation`
 --
 
 DROP TABLE IF EXISTS `productassociation`;
@@ -1805,7 +1804,7 @@ CREATE TABLE IF NOT EXISTS `productassociation` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productassociationtype`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productassociationtype`
 --
 
 DROP TABLE IF EXISTS `productassociationtype`;
@@ -1824,7 +1823,7 @@ CREATE TABLE IF NOT EXISTS `productassociationtype` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productattribute`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productattribute`
 --
 
 DROP TABLE IF EXISTS `productattribute`;
@@ -1848,7 +1847,7 @@ CREATE TABLE IF NOT EXISTS `productattribute` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productattributelang`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productattributelang`
 --
 
 DROP TABLE IF EXISTS `productattributelang`;
@@ -1870,7 +1869,7 @@ CREATE TABLE IF NOT EXISTS `productattributelang` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productattributes`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productattributes`
 --
 
 DROP TABLE IF EXISTS `productattributes`;
@@ -1900,7 +1899,7 @@ CREATE TABLE IF NOT EXISTS `productattributes` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productcategory`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productcategory`
 --
 
 DROP TABLE IF EXISTS `productcategory`;
@@ -1949,7 +1948,7 @@ CREATE TABLE IF NOT EXISTS `productcategory` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productcategorydiscount`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productcategorydiscount`
 --
 
 DROP TABLE IF EXISTS `productcategorydiscount`;
@@ -1972,7 +1971,7 @@ CREATE TABLE IF NOT EXISTS `productcategorydiscount` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productcustomercode`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productcustomercode`
 --
 
 DROP TABLE IF EXISTS `productcustomercode`;
@@ -1996,7 +1995,7 @@ CREATE TABLE IF NOT EXISTS `productcustomercode` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productcustomerdiscount`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productcustomerdiscount`
 --
 
 DROP TABLE IF EXISTS `productcustomerdiscount`;
@@ -2013,7 +2012,7 @@ CREATE TABLE IF NOT EXISTS `productcustomerdiscount` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productlang`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productlang`
 --
 
 DROP TABLE IF EXISTS `productlang`;
@@ -2040,7 +2039,7 @@ CREATE TABLE IF NOT EXISTS `productlang` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `productprice`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `productprice`
 --
 
 DROP TABLE IF EXISTS `productprice`;
@@ -2065,7 +2064,7 @@ CREATE TABLE IF NOT EXISTS `productprice` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `quantityunit`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `quantityunit`
 --
 
 DROP TABLE IF EXISTS `quantityunit`;
@@ -2087,7 +2086,7 @@ CREATE TABLE IF NOT EXISTS `quantityunit` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `quantityunitlang`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `quantityunitlang`
 --
 
 DROP TABLE IF EXISTS `quantityunitlang`;
@@ -2108,7 +2107,7 @@ CREATE TABLE IF NOT EXISTS `quantityunitlang` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `shoppingcart`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `shoppingcart`
 --
 
 DROP TABLE IF EXISTS `shoppingcart`;
@@ -2157,7 +2156,7 @@ CREATE TABLE IF NOT EXISTS `shoppingcart` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `shoppingcartdetail`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `shoppingcartdetail`
 --
 
 DROP TABLE IF EXISTS `shoppingcartdetail`;
@@ -2203,7 +2202,7 @@ CREATE TABLE IF NOT EXISTS `shoppingcartdetail` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `systemsetting`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `systemsetting`
 --
 
 DROP TABLE IF EXISTS `systemsetting`;
@@ -2219,7 +2218,7 @@ CREATE TABLE IF NOT EXISTS `systemsetting` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `systemsettingvalue`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `systemsettingvalue`
 --
 
 DROP TABLE IF EXISTS `systemsettingvalue`;
@@ -2244,7 +2243,7 @@ CREATE TABLE IF NOT EXISTS `systemsettingvalue` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `translations`
+-- Tï¿½bla szerkezet ehhez a tï¿½blï¿½hoz `translations`
 --
 
 DROP TABLE IF EXISTS `translations`;
@@ -2264,337 +2263,337 @@ CREATE TABLE IF NOT EXISTS `translations` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2035 DEFAULT CHARSET=utf32;
 
 --
--- A tábla adatainak kiíratása `translations`
+-- A tï¿½bla adatainak kiï¿½ratï¿½sa `translations`
 --
 
 INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Profil', 'hu', 'Profil', NULL, NULL, NULL),
 (2, 'Profil', 'en', 'Profil', NULL, NULL, NULL),
-(3, 'Kilépés', 'hu', 'Kilépés', NULL, NULL, NULL),
-(4, 'Kilépés', 'en', 'Logout', NULL, NULL, NULL),
-(5, 'Kosár', 'hu', 'Kosár', NULL, NULL, NULL),
-(6, 'Kosár', 'en', 'Shopping cart', NULL, NULL, NULL),
-(9, 'Van már nyitott kosara!', 'hu', 'Van már nyitott kosara!', NULL, NULL, NULL),
-(10, 'Van már nyitott kosara!', 'en', 'Van már nyitott kosara!', NULL, NULL, NULL),
-(11, 'Vezérlõ', 'hu', 'Vezérlõ', NULL, NULL, NULL),
-(12, 'Vezérlõ', 'en', 'Dashboard', NULL, NULL, NULL),
-(13, 'Kedvenc termékek', 'hu', 'Kedvenc termékek', NULL, NULL, NULL),
-(14, 'Kedvenc termékek', 'en', 'Favorite products', NULL, NULL, NULL),
-(15, 'Új Kosár', 'hu', 'Új Kosár', NULL, NULL, NULL),
-(16, 'Új Kosár', 'en', 'New shopping cart', NULL, NULL, NULL),
-(17, 'Megrendelések', 'hu', 'Megrendelések', NULL, NULL, NULL),
-(18, 'Megrendelések', 'en', 'Orders', NULL, NULL, NULL),
-(19, 'Termék', 'hu', 'Termék', NULL, NULL, NULL),
-(20, 'Termék', 'en', 'Product', NULL, NULL, NULL),
-(21, 'Kedvenc termék kiválasztás', 'hu', 'Kedvenc termék kiválasztás', NULL, NULL, NULL),
-(22, 'Kedvenc termék kiválasztás', 'en', 'Favorite product selection', NULL, NULL, NULL),
-(23, 'Termék kategória', 'hu', 'Termék kategória', NULL, NULL, NULL),
-(24, 'Termék kategória', 'en', 'Product category', NULL, NULL, NULL),
-(25, 'Minden termék', 'hu', 'Minden termék', NULL, NULL, NULL),
-(26, 'Minden termék', 'en', 'All products', NULL, NULL, NULL),
+(3, 'Kilï¿½pï¿½s', 'hu', 'Kilï¿½pï¿½s', NULL, NULL, NULL),
+(4, 'Kilï¿½pï¿½s', 'en', 'Logout', NULL, NULL, NULL),
+(5, 'Kosï¿½r', 'hu', 'Kosï¿½r', NULL, NULL, NULL),
+(6, 'Kosï¿½r', 'en', 'Shopping cart', NULL, NULL, NULL),
+(9, 'Van mï¿½r nyitott kosara!', 'hu', 'Van mï¿½r nyitott kosara!', NULL, NULL, NULL),
+(10, 'Van mï¿½r nyitott kosara!', 'en', 'Van mï¿½r nyitott kosara!', NULL, NULL, NULL),
+(11, 'Vezï¿½rlï¿½', 'hu', 'Vezï¿½rlï¿½', NULL, NULL, NULL),
+(12, 'Vezï¿½rlï¿½', 'en', 'Dashboard', NULL, NULL, NULL),
+(13, 'Kedvenc termï¿½kek', 'hu', 'Kedvenc termï¿½kek', NULL, NULL, NULL),
+(14, 'Kedvenc termï¿½kek', 'en', 'Favorite products', NULL, NULL, NULL),
+(15, 'ï¿½j Kosï¿½r', 'hu', 'ï¿½j Kosï¿½r', NULL, NULL, NULL),
+(16, 'ï¿½j Kosï¿½r', 'en', 'New shopping cart', NULL, NULL, NULL),
+(17, 'Megrendelï¿½sek', 'hu', 'Megrendelï¿½sek', NULL, NULL, NULL),
+(18, 'Megrendelï¿½sek', 'en', 'Orders', NULL, NULL, NULL),
+(19, 'Termï¿½k', 'hu', 'Termï¿½k', NULL, NULL, NULL),
+(20, 'Termï¿½k', 'en', 'Product', NULL, NULL, NULL),
+(21, 'Kedvenc termï¿½k kivï¿½lasztï¿½s', 'hu', 'Kedvenc termï¿½k kivï¿½lasztï¿½s', NULL, NULL, NULL),
+(22, 'Kedvenc termï¿½k kivï¿½lasztï¿½s', 'en', 'Favorite product selection', NULL, NULL, NULL),
+(23, 'Termï¿½k kategï¿½ria', 'hu', 'Termï¿½k kategï¿½ria', NULL, NULL, NULL),
+(24, 'Termï¿½k kategï¿½ria', 'en', 'Product category', NULL, NULL, NULL),
+(25, 'Minden termï¿½k', 'hu', 'Minden termï¿½k', NULL, NULL, NULL),
+(26, 'Minden termï¿½k', 'en', 'All products', NULL, NULL, NULL),
 (27, 'Kedvenc', 'hu', 'Kedvenc', NULL, NULL, NULL),
 (28, 'Kedvenc', 'en', 'Favorite', NULL, NULL, NULL),
-(31, 'Kilép', 'hu', 'Kilép', NULL, NULL, NULL),
-(32, 'Kilép', 'en', 'Cancel', NULL, NULL, NULL),
-(41, 'Nem jelölt ki sort', 'hu', 'Nem jelölt ki sort', NULL, NULL, NULL),
-(42, 'Nem jelölt ki sort', 'en', 'You have not selected a row', NULL, NULL, NULL),
-(43, 'Nettó', 'hu', 'Nettó', NULL, NULL, NULL),
-(44, 'Nettó', 'en', 'Net', NULL, NULL, NULL),
-(45, 'ÁFA', 'hu', 'ÁFA', NULL, NULL, NULL),
-(46, 'ÁFA', 'en', 'VAT', NULL, NULL, NULL),
-(47, 'Bruttó', 'hu', 'Bruttó', NULL, NULL, NULL),
-(48, 'Bruttó', 'en', 'Gross', NULL, NULL, NULL),
-(49, 'Kosárba', 'hu', 'Kosárba', NULL, NULL, NULL),
-(50, 'Kosárba', 'en', 'To cart', NULL, NULL, NULL),
-(51, 'Tételek', 'hu', 'Tételek', NULL, NULL, NULL),
-(52, 'Tételek', 'en', 'Tételek', NULL, NULL, NULL),
-(53, 'Mennyiség', 'hu', 'Mennyiség', NULL, NULL, NULL),
-(54, 'Mennyiség', 'en', 'Mennyiség', NULL, NULL, NULL),
+(31, 'Kilï¿½p', 'hu', 'Kilï¿½p', NULL, NULL, NULL),
+(32, 'Kilï¿½p', 'en', 'Cancel', NULL, NULL, NULL),
+(41, 'Nem jelï¿½lt ki sort', 'hu', 'Nem jelï¿½lt ki sort', NULL, NULL, NULL),
+(42, 'Nem jelï¿½lt ki sort', 'en', 'You have not selected a row', NULL, NULL, NULL),
+(43, 'Nettï¿½', 'hu', 'Nettï¿½', NULL, NULL, NULL),
+(44, 'Nettï¿½', 'en', 'Net', NULL, NULL, NULL),
+(45, 'ï¿½FA', 'hu', 'ï¿½FA', NULL, NULL, NULL),
+(46, 'ï¿½FA', 'en', 'VAT', NULL, NULL, NULL),
+(47, 'Bruttï¿½', 'hu', 'Bruttï¿½', NULL, NULL, NULL),
+(48, 'Bruttï¿½', 'en', 'Gross', NULL, NULL, NULL),
+(49, 'Kosï¿½rba', 'hu', 'Kosï¿½rba', NULL, NULL, NULL),
+(50, 'Kosï¿½rba', 'en', 'To cart', NULL, NULL, NULL),
+(51, 'Tï¿½telek', 'hu', 'Tï¿½telek', NULL, NULL, NULL),
+(52, 'Tï¿½telek', 'en', 'Tï¿½telek', NULL, NULL, NULL),
+(53, 'Mennyisï¿½g', 'hu', 'Mennyisï¿½g', NULL, NULL, NULL),
+(54, 'Mennyisï¿½g', 'en', 'Mennyisï¿½g', NULL, NULL, NULL),
 (55, 'Me.egys', 'hu', 'Me.egys', NULL, NULL, NULL),
 (56, 'Me.egys', 'en', 'Me.egys', NULL, NULL, NULL),
-(57, 'Egys.ár', 'hu', 'Egys.ár', NULL, NULL, NULL),
-(58, 'Egys.ár', 'en', 'Egys.ár', NULL, NULL, NULL),
-(59, 'Pénznem', 'hu', 'Pénznem', NULL, NULL, NULL),
-(60, 'Pénznem', 'en', 'Pénznem', NULL, NULL, NULL),
+(57, 'Egys.ï¿½r', 'hu', 'Egys.ï¿½r', NULL, NULL, NULL),
+(58, 'Egys.ï¿½r', 'en', 'Egys.ï¿½r', NULL, NULL, NULL),
+(59, 'Pï¿½nznem', 'hu', 'Pï¿½nznem', NULL, NULL, NULL),
+(60, 'Pï¿½nznem', 'en', 'Pï¿½nznem', NULL, NULL, NULL),
 (61, 'Id', 'hu', 'Id', NULL, NULL, NULL),
 (62, 'Id', 'en', 'Id', NULL, NULL, NULL),
 (65, 'Product', 'hu', 'Product', NULL, NULL, NULL),
-(67, 'Tétetek kosárba másolás!', 'hu', 'Tétetek kosárba másolás!', NULL, NULL, NULL),
-(68, 'Tétetek kosárba másolás!', 'en', 'Tétetek kosárba másolás!', NULL, NULL, NULL),
-(69, 'Biztosan kosárba másolja a tételeket?', 'hu', 'Biztosan kosárba másolja a tételeket?', NULL, NULL, NULL),
-(70, 'Biztosan kosárba másolja a tételeket?', 'en', 'Are you sure you want to copy the items to cart?', NULL, NULL, NULL),
-(71, 'Nincs kijelölt tétel!', 'hu', 'Nincs kijelölt tétel!', NULL, NULL, NULL),
-(72, 'Nincs kijelölt tétel!', 'en', 'Nincs kijelölt tétel!', NULL, NULL, NULL),
-(73, 'Összes megrendelés', 'hu', 'Összes megrendelés', NULL, NULL, NULL),
-(74, 'Összes megrendelés', 'en', 'Összes megrendelés', NULL, NULL, NULL),
-(75, 'Másolás', 'hu', 'Másolás', NULL, NULL, NULL),
-(76, 'Másolás', 'en', 'Másolás', NULL, NULL, NULL),
-(77, 'Megrendelés szám', 'hu', 'Megrendelés szám', NULL, NULL, NULL),
-(78, 'Megrendelés szám', 'en', 'Megrendelés szám', NULL, NULL, NULL),
-(79, 'Dátum', 'hu', 'Dátum', NULL, NULL, NULL),
-(80, 'Dátum', 'en', 'Dátum', NULL, NULL, NULL),
-(81, 'Tétel', 'hu', 'Tétel', NULL, NULL, NULL),
-(82, 'Tétel', 'en', 'Tétel', NULL, NULL, NULL),
-(83, 'Idei megrendelések', 'hu', 'Idei megrendelések', NULL, NULL, NULL),
-(84, 'Idei megrendelések', 'en', 'This year\'s orders', NULL, NULL, NULL),
-(85, 'Saját megrendelés', 'hu', 'Saját megrendelés', NULL, NULL, NULL),
-(86, 'Saját megrendelés', 'en', 'Saját megrendelés', NULL, NULL, NULL),
-(87, 'Idei saját megrendelések', 'hu', 'Idei saját megrendelések', NULL, NULL, NULL),
-(88, 'Idei saját megrendelések', 'en', 'Idei saját megrendelések', NULL, NULL, NULL),
-(89, 'Összes kosár', 'hu', 'Összes kosár', NULL, NULL, NULL),
-(90, 'Összes kosár', 'en', 'Összes kosár', NULL, NULL, NULL),
-(91, 'Idei kosár', 'hu', 'Idei kosár', NULL, NULL, NULL),
-(92, 'Idei kosár', 'en', 'Idei kosár', NULL, NULL, NULL),
-(93, 'Megrendelés kosárba másolás!', 'hu', 'Megrendelés kosárba másolás!', NULL, NULL, NULL),
-(94, 'Megrendelés kosárba másolás!', 'en', 'Megrendelés kosárba másolás!', NULL, NULL, NULL),
-(95, 'Biztosan kosárba másolja a megrendelés összes tételét?', 'hu', 'Biztosan kosárba másolja a megrendelés összes tételét?', NULL, NULL, NULL),
-(96, 'Biztosan kosárba másolja a megrendelés összes tételét?', 'en', 'Biztosan kosárba másolja a megrendelés összes tételét?', NULL, NULL, NULL),
-(97, 'Idei megrendelés', 'hu', 'Idei megrendelés', NULL, NULL, NULL),
-(98, 'Idei megrendelés', 'en', 'Idei megrendelés', NULL, NULL, NULL),
-(103, 'Összes', 'hu', 'Összes', NULL, NULL, NULL),
-(104, 'Összes', 'en', 'Összes', NULL, NULL, NULL),
+(67, 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', 'hu', 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(68, 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', 'en', 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(69, 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', 'hu', 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', NULL, NULL, NULL),
+(70, 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', 'en', 'Are you sure you want to copy the items to cart?', NULL, NULL, NULL),
+(71, 'Nincs kijelï¿½lt tï¿½tel!', 'hu', 'Nincs kijelï¿½lt tï¿½tel!', NULL, NULL, NULL),
+(72, 'Nincs kijelï¿½lt tï¿½tel!', 'en', 'Nincs kijelï¿½lt tï¿½tel!', NULL, NULL, NULL),
+(73, 'ï¿½sszes megrendelï¿½s', 'hu', 'ï¿½sszes megrendelï¿½s', NULL, NULL, NULL),
+(74, 'ï¿½sszes megrendelï¿½s', 'en', 'ï¿½sszes megrendelï¿½s', NULL, NULL, NULL),
+(75, 'Mï¿½solï¿½s', 'hu', 'Mï¿½solï¿½s', NULL, NULL, NULL),
+(76, 'Mï¿½solï¿½s', 'en', 'Mï¿½solï¿½s', NULL, NULL, NULL),
+(77, 'Megrendelï¿½s szï¿½m', 'hu', 'Megrendelï¿½s szï¿½m', NULL, NULL, NULL),
+(78, 'Megrendelï¿½s szï¿½m', 'en', 'Megrendelï¿½s szï¿½m', NULL, NULL, NULL),
+(79, 'Dï¿½tum', 'hu', 'Dï¿½tum', NULL, NULL, NULL),
+(80, 'Dï¿½tum', 'en', 'Dï¿½tum', NULL, NULL, NULL),
+(81, 'Tï¿½tel', 'hu', 'Tï¿½tel', NULL, NULL, NULL),
+(82, 'Tï¿½tel', 'en', 'Tï¿½tel', NULL, NULL, NULL),
+(83, 'Idei megrendelï¿½sek', 'hu', 'Idei megrendelï¿½sek', NULL, NULL, NULL),
+(84, 'Idei megrendelï¿½sek', 'en', 'This year\'s orders', NULL, NULL, NULL),
+(85, 'Sajï¿½t megrendelï¿½s', 'hu', 'Sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(86, 'Sajï¿½t megrendelï¿½s', 'en', 'Sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(87, 'Idei sajï¿½t megrendelï¿½sek', 'hu', 'Idei sajï¿½t megrendelï¿½sek', NULL, NULL, NULL),
+(88, 'Idei sajï¿½t megrendelï¿½sek', 'en', 'Idei sajï¿½t megrendelï¿½sek', NULL, NULL, NULL),
+(89, 'ï¿½sszes kosï¿½r', 'hu', 'ï¿½sszes kosï¿½r', NULL, NULL, NULL),
+(90, 'ï¿½sszes kosï¿½r', 'en', 'ï¿½sszes kosï¿½r', NULL, NULL, NULL),
+(91, 'Idei kosï¿½r', 'hu', 'Idei kosï¿½r', NULL, NULL, NULL),
+(92, 'Idei kosï¿½r', 'en', 'Idei kosï¿½r', NULL, NULL, NULL),
+(93, 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', 'hu', 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(94, 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', 'en', 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(95, 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', 'hu', 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', NULL, NULL, NULL),
+(96, 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', 'en', 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', NULL, NULL, NULL),
+(97, 'Idei megrendelï¿½s', 'hu', 'Idei megrendelï¿½s', NULL, NULL, NULL),
+(98, 'Idei megrendelï¿½s', 'en', 'Idei megrendelï¿½s', NULL, NULL, NULL),
+(103, 'ï¿½sszes', 'hu', 'ï¿½sszes', NULL, NULL, NULL),
+(104, 'ï¿½sszes', 'en', 'ï¿½sszes', NULL, NULL, NULL),
 (105, 'Idei', 'hu', 'Idei', NULL, NULL, NULL),
 (106, 'Idei', 'en', 'Idei', NULL, NULL, NULL),
-(107, 'Idei saját megrendelés', 'hu', 'Idei saját megrendelés', NULL, NULL, NULL),
-(108, 'Idei saját megrendelés', 'en', 'Idei saját megrendelés', NULL, NULL, NULL),
-(109, 'Felhasználók összesen', 'hu', 'Felhasználók összesen', NULL, NULL, NULL),
-(110, 'Felhasználók összesen', 'en', 'Felhasználók összesen', NULL, NULL, NULL),
-(111, 'felhasználók', 'hu', 'felhasználók', NULL, NULL, NULL),
-(112, 'felhasználók', 'en', 'felhasználók', NULL, NULL, NULL),
+(107, 'Idei sajï¿½t megrendelï¿½s', 'hu', 'Idei sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(108, 'Idei sajï¿½t megrendelï¿½s', 'en', 'Idei sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(109, 'Felhasznï¿½lï¿½k ï¿½sszesen', 'hu', 'Felhasznï¿½lï¿½k ï¿½sszesen', NULL, NULL, NULL),
+(110, 'Felhasznï¿½lï¿½k ï¿½sszesen', 'en', 'Felhasznï¿½lï¿½k ï¿½sszesen', NULL, NULL, NULL),
+(111, 'felhasznï¿½lï¿½k', 'hu', 'felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(112, 'felhasznï¿½lï¿½k', 'en', 'felhasznï¿½lï¿½k', NULL, NULL, NULL),
 (113, 'B2B partnerek', 'hu', 'B2B partnerek', NULL, NULL, NULL),
 (114, 'B2B partnerek', 'en', 'B2B partnerek', NULL, NULL, NULL),
-(115, 'Partner felhasználók', 'hu', 'Partner felhasználók', NULL, NULL, NULL),
-(116, 'Partner felhasználók', 'en', 'Partner felhasználók', NULL, NULL, NULL),
-(117, 'Tovább', 'hu', 'Tovább', NULL, NULL, NULL),
-(118, 'Tovább', 'en', 'Tovább', NULL, NULL, NULL),
-(119, 'Belépés 3 hónap', 'hu', 'Belépés 3 hónap', NULL, NULL, NULL),
-(120, 'Belépés 3 hónap', 'en', 'Belépés 3 hónap', NULL, NULL, NULL),
-(121, 'Beállítások', 'hu', 'Beállítások', NULL, NULL, NULL),
-(122, 'Beállítások', 'en', 'Beállítások', NULL, NULL, NULL),
-(123, 'Belépés 3 hónap<', 'hu', 'Belépés 3 hónap<', NULL, NULL, NULL),
-(124, 'Belépés 3 hónap<', 'en', 'Belépés 3 hónap<', NULL, NULL, NULL),
-(125, 'Név', 'hu', 'Név', NULL, NULL, NULL),
-(126, 'Név', 'en', 'Név', NULL, NULL, NULL),
+(115, 'Partner felhasznï¿½lï¿½k', 'hu', 'Partner felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(116, 'Partner felhasznï¿½lï¿½k', 'en', 'Partner felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(117, 'Tovï¿½bb', 'hu', 'Tovï¿½bb', NULL, NULL, NULL),
+(118, 'Tovï¿½bb', 'en', 'Tovï¿½bb', NULL, NULL, NULL),
+(119, 'Belï¿½pï¿½s 3 hï¿½nap', 'hu', 'Belï¿½pï¿½s 3 hï¿½nap', NULL, NULL, NULL),
+(120, 'Belï¿½pï¿½s 3 hï¿½nap', 'en', 'Belï¿½pï¿½s 3 hï¿½nap', NULL, NULL, NULL),
+(121, 'Beï¿½llï¿½tï¿½sok', 'hu', 'Beï¿½llï¿½tï¿½sok', NULL, NULL, NULL),
+(122, 'Beï¿½llï¿½tï¿½sok', 'en', 'Beï¿½llï¿½tï¿½sok', NULL, NULL, NULL),
+(123, 'Belï¿½pï¿½s 3 hï¿½nap<', 'hu', 'Belï¿½pï¿½s 3 hï¿½nap<', NULL, NULL, NULL),
+(124, 'Belï¿½pï¿½s 3 hï¿½nap<', 'en', 'Belï¿½pï¿½s 3 hï¿½nap<', NULL, NULL, NULL),
+(125, 'Nï¿½v', 'hu', 'Nï¿½v', NULL, NULL, NULL),
+(126, 'Nï¿½v', 'en', 'Nï¿½v', NULL, NULL, NULL),
 (127, 'Email', 'hu', 'Email', NULL, NULL, NULL),
 (128, 'Email', 'en', 'Email', NULL, NULL, NULL),
-(129, 'Kép', 'hu', 'Kép', NULL, NULL, NULL),
-(130, 'Kép', 'en', 'Kép', NULL, NULL, NULL),
-(131, 'Beosztás', 'hu', 'Beosztás', NULL, NULL, NULL),
-(132, 'Beosztás', 'en', 'Beosztás', NULL, NULL, NULL),
-(133, 'Belépett', 'hu', 'Belépett', NULL, NULL, NULL),
-(134, 'Belépett', 'en', 'Belépett', NULL, NULL, NULL),
-(135, 'B2B felhasználók', 'hu', 'B2B felhasználók', NULL, NULL, NULL),
-(136, 'B2B felhasználók', 'en', 'B2B felhasználók', NULL, NULL, NULL),
-(137, 'Belsõ felhasználók', 'hu', 'Belsõ felhasználók', NULL, NULL, NULL),
-(138, 'Belsõ felhasználók', 'en', 'Belsõ felhasználók', NULL, NULL, NULL),
+(129, 'Kï¿½p', 'hu', 'Kï¿½p', NULL, NULL, NULL),
+(130, 'Kï¿½p', 'en', 'Kï¿½p', NULL, NULL, NULL),
+(131, 'Beosztï¿½s', 'hu', 'Beosztï¿½s', NULL, NULL, NULL),
+(132, 'Beosztï¿½s', 'en', 'Beosztï¿½s', NULL, NULL, NULL),
+(133, 'Belï¿½pett', 'hu', 'Belï¿½pett', NULL, NULL, NULL),
+(134, 'Belï¿½pett', 'en', 'Belï¿½pett', NULL, NULL, NULL),
+(135, 'B2B felhasznï¿½lï¿½k', 'hu', 'B2B felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(136, 'B2B felhasznï¿½lï¿½k', 'en', 'B2B felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(137, 'Belsï¿½ felhasznï¿½lï¿½k', 'hu', 'Belsï¿½ felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(138, 'Belsï¿½ felhasznï¿½lï¿½k', 'en', 'Belsï¿½ felhasznï¿½lï¿½k', NULL, NULL, NULL),
 (139, 'Log adatok', 'hu', 'Log adatok', NULL, NULL, NULL),
 (140, 'Log adatok', 'en', 'Log adatok', NULL, NULL, NULL),
 (141, 'XML Import', 'hu', 'XML Import', NULL, NULL, NULL),
 (142, 'XML Import', 'en', 'XML Import', NULL, NULL, NULL),
-(143, 'rendszergazdák', 'hu', 'rendszergazdák', NULL, NULL, NULL),
-(144, 'rendszergazdák', 'en', 'rendszergazdák', NULL, NULL, NULL),
-(145, 'Felhasználói belépések', 'hu', 'Felhasználói belépések', NULL, NULL, NULL),
-(146, 'Felhasználói belépések', 'en', 'Felhasználói belépések', NULL, NULL, NULL),
-(147, 'Felhasználónként', 'hu', 'Felhasználónként', NULL, NULL, NULL),
-(148, 'Felhasználónként', 'en', 'Felhasználónként', NULL, NULL, NULL),
+(143, 'rendszergazdï¿½k', 'hu', 'rendszergazdï¿½k', NULL, NULL, NULL),
+(144, 'rendszergazdï¿½k', 'en', 'rendszergazdï¿½k', NULL, NULL, NULL),
+(145, 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', 'hu', 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', NULL, NULL, NULL),
+(146, 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', 'en', 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', NULL, NULL, NULL),
+(147, 'Felhasznï¿½lï¿½nkï¿½nt', 'hu', 'Felhasznï¿½lï¿½nkï¿½nt', NULL, NULL, NULL),
+(148, 'Felhasznï¿½lï¿½nkï¿½nt', 'en', 'Felhasznï¿½lï¿½nkï¿½nt', NULL, NULL, NULL),
 (149, 'db', 'hu', 'db', NULL, NULL, NULL),
 (150, 'db', 'en', 'db', NULL, NULL, NULL),
 (151, 'Nyitott', 'hu', 'Nyitott', NULL, NULL, NULL),
 (152, 'Nyitott', 'en', 'Nyitott', NULL, NULL, NULL),
-(153, 'Érték', 'hu', 'Érték', NULL, NULL, NULL),
-(154, 'Érték', 'en', 'Érték', NULL, NULL, NULL),
+(153, 'ï¿½rtï¿½k', 'hu', 'ï¿½rtï¿½k', NULL, NULL, NULL),
+(154, 'ï¿½rtï¿½k', 'en', 'ï¿½rtï¿½k', NULL, NULL, NULL),
 (155, 'Hitel keret', 'hu', 'Hitel keret', NULL, NULL, NULL),
 (156, 'Hitel keret', 'en', 'Hitel keret', NULL, NULL, NULL),
-(157, 'Felhasznált', 'hu', 'Felhasznált', NULL, NULL, NULL),
-(158, 'Felhasznált', 'en', 'Felhasznált', NULL, NULL, NULL),
+(157, 'Felhasznï¿½lt', 'hu', 'Felhasznï¿½lt', NULL, NULL, NULL),
+(158, 'Felhasznï¿½lt', 'en', 'Felhasznï¿½lt', NULL, NULL, NULL),
 (159, 'Szabad', 'hu', 'Szabad', NULL, NULL, NULL),
 (160, 'Szabad', 'en', 'Szabad', NULL, NULL, NULL),
-(161, 'Megrendelés értékek az elmúlt 12 hónapban', 'hu', 'Megrendelés értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(162, 'Megrendelés értékek az elmúlt 12 hónapban', 'en', 'Megrendelés értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(163, 'havi bontás', 'hu', 'havi bontás', NULL, NULL, NULL),
-(164, 'havi bontás', 'en', 'havi bontás', NULL, NULL, NULL),
+(161, 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'hu', 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(162, 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'en', 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(163, 'havi bontï¿½s', 'hu', 'havi bontï¿½s', NULL, NULL, NULL),
+(164, 'havi bontï¿½s', 'en', 'havi bontï¿½s', NULL, NULL, NULL),
 (165, 'forint', 'hu', 'forint', NULL, NULL, NULL),
 (166, 'forint', 'en', 'forint', NULL, NULL, NULL),
-(167, 'Megrendelés átlag értékek az elmúlt 12 hónapban', 'hu', 'Megrendelés átlag értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(168, 'Megrendelés átlag értékek az elmúlt 12 hónapban', 'en', 'Megrendelés átlag értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(169, 'Megrendelés darab az elmúlt 12 hónapban', 'hu', 'Megrendelés darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(170, 'Megrendelés darab az elmúlt 12 hónapban', 'en', 'Megrendelés darab az elmúlt 12 hónapban', NULL, NULL, NULL),
+(167, 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'hu', 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(168, 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'en', 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(169, 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', 'hu', 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(170, 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', 'en', 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
 (171, 'darab', 'hu', 'darab', NULL, NULL, NULL),
 (172, 'darab', 'en', 'darab', NULL, NULL, NULL),
-(173, 'Megrendelés tétel darab az elmúlt 12 hónapban', 'hu', 'Megrendelés tétel darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(174, 'Megrendelés tétel darab az elmúlt 12 hónapban', 'en', 'Megrendelés tétel darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(175, 'Keresés:', 'hu', 'Keresés:', NULL, NULL, NULL),
-(176, 'Keresés:', 'en', 'Search:', NULL, NULL, NULL),
-(177, 'Nincs rendelkezésre álló adat', 'hu', 'Nincs rendelkezésre álló adat', NULL, NULL, NULL),
-(178, 'Nincs rendelkezésre álló adat', 'en', 'Nincs rendelkezésre álló adat', NULL, NULL, NULL),
-(179, 'Találatok: _START_ - _END_ Összesen: _TOTAL_', 'hu', 'Találatok: _START_ - _END_ Összesen: _TOTAL_', NULL, NULL, NULL),
-(180, 'Találatok: _START_ - _END_ Összesen: _TOTAL_', 'en', 'Találatok: _START_ - _END_ Összesen: _TOTAL_', NULL, NULL, NULL),
-(181, 'Nulla találat', 'hu', 'Nulla találat', NULL, NULL, NULL),
-(182, 'Nulla találat', 'en', 'Nulla találat', NULL, NULL, NULL),
-(183, '(_MAX_ összes rekord közül szûrve)', 'hu', '(_MAX_ összes rekord közül szûrve)', NULL, NULL, NULL),
-(184, '(_MAX_ összes rekord közül szûrve)', 'en', '(_MAX_ összes rekord közül szûrve)', NULL, NULL, NULL),
-(185, '_MENU_ találat oldalanként', 'hu', '_MENU_ találat oldalanként', NULL, NULL, NULL),
-(186, '_MENU_ találat oldalanként', 'en', '_MENU_ találat oldalanként', NULL, NULL, NULL),
-(187, 'Betöltés...', 'hu', 'Betöltés...', NULL, NULL, NULL),
-(188, 'Betöltés...', 'en', 'Betöltés...', NULL, NULL, NULL),
-(189, 'Feldolgozás...', 'hu', 'Feldolgozás...', NULL, NULL, NULL),
-(190, 'Feldolgozás...', 'en', 'Feldolgozás...', NULL, NULL, NULL),
-(191, 'Nincs a keresésnek megfelelõ találat', 'hu', 'Nincs a keresésnek megfelelõ találat', NULL, NULL, NULL),
-(192, 'Nincs a keresésnek megfelelõ találat', 'en', 'Nincs a keresésnek megfelelõ találat', NULL, NULL, NULL),
-(193, 'Elsõ', 'hu', 'Elsõ', NULL, NULL, NULL),
-(194, 'Elsõ', 'en', 'Elsõ', NULL, NULL, NULL),
-(195, 'Elõzõ', 'hu', 'Elõzõ', NULL, NULL, NULL),
-(196, 'Elõzõ', 'en', 'Elõzõ', NULL, NULL, NULL),
-(197, 'Következõ', 'hu', 'Következõ', NULL, NULL, NULL),
-(198, 'Következõ', 'en', 'Következõ', NULL, NULL, NULL),
-(199, 'Utolsó', 'hu', 'Utolsó', NULL, NULL, NULL),
-(200, 'Utolsó', 'en', 'Utolsó', NULL, NULL, NULL),
-(201, ': aktiválja a növekvõ rendezéshez', 'hu', ': aktiválja a növekvõ rendezéshez', NULL, NULL, NULL),
-(202, ': aktiválja a növekvõ rendezéshez', 'en', ': aktiválja a növekvõ rendezéshez', NULL, NULL, NULL),
-(203, ': aktiválja a csökkenõ rendezéshez', 'hu', ': aktiválja a csökkenõ rendezéshez', NULL, NULL, NULL),
-(204, ': aktiválja a csökkenõ rendezéshez', 'en', ': aktiválja a csökkenõ rendezéshez', NULL, NULL, NULL),
-(205, '%d sor kiválasztva', 'hu', '%d sor kiválasztva', NULL, NULL, NULL),
-(206, '%d sor kiválasztva', 'en', '%d sor kiválasztva', NULL, NULL, NULL),
-(207, '1 sor kiválasztva', 'hu', '1 sor kiválasztva', NULL, NULL, NULL),
-(208, '1 sor kiválasztva', 'en', '1 sor kiválasztva', NULL, NULL, NULL),
-(209, '1 cella kiválasztva', 'hu', '1 cella kiválasztva', NULL, NULL, NULL),
-(210, '1 cella kiválasztva', 'en', '1 cella kiválasztva', NULL, NULL, NULL),
-(211, '%d cella kiválasztva', 'hu', '%d cella kiválasztva', NULL, NULL, NULL),
-(212, '%d cella kiválasztva', 'en', '%d cella kiválasztva', NULL, NULL, NULL),
-(213, '1 oszlop kiválasztva', 'hu', '1 oszlop kiválasztva', NULL, NULL, NULL),
-(214, '1 oszlop kiválasztva', 'en', '1 oszlop kiválasztva', NULL, NULL, NULL),
-(215, '%d oszlop kiválasztva', 'hu', '%d oszlop kiválasztva', NULL, NULL, NULL),
-(216, '%d oszlop kiválasztva', 'en', '%d oszlop kiválasztva', NULL, NULL, NULL),
+(173, 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', 'hu', 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(174, 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', 'en', 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(175, 'Keresï¿½s:', 'hu', 'Keresï¿½s:', NULL, NULL, NULL),
+(176, 'Keresï¿½s:', 'en', 'Search:', NULL, NULL, NULL),
+(177, 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', 'hu', 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', NULL, NULL, NULL),
+(178, 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', 'en', 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', NULL, NULL, NULL),
+(179, 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', 'hu', 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', NULL, NULL, NULL),
+(180, 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', 'en', 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', NULL, NULL, NULL),
+(181, 'Nulla talï¿½lat', 'hu', 'Nulla talï¿½lat', NULL, NULL, NULL),
+(182, 'Nulla talï¿½lat', 'en', 'Nulla talï¿½lat', NULL, NULL, NULL),
+(183, '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', 'hu', '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', NULL, NULL, NULL),
+(184, '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', 'en', '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', NULL, NULL, NULL),
+(185, '_MENU_ talï¿½lat oldalankï¿½nt', 'hu', '_MENU_ talï¿½lat oldalankï¿½nt', NULL, NULL, NULL),
+(186, '_MENU_ talï¿½lat oldalankï¿½nt', 'en', '_MENU_ talï¿½lat oldalankï¿½nt', NULL, NULL, NULL),
+(187, 'Betï¿½ltï¿½s...', 'hu', 'Betï¿½ltï¿½s...', NULL, NULL, NULL),
+(188, 'Betï¿½ltï¿½s...', 'en', 'Betï¿½ltï¿½s...', NULL, NULL, NULL),
+(189, 'Feldolgozï¿½s...', 'hu', 'Feldolgozï¿½s...', NULL, NULL, NULL),
+(190, 'Feldolgozï¿½s...', 'en', 'Feldolgozï¿½s...', NULL, NULL, NULL),
+(191, 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', 'hu', 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', NULL, NULL, NULL),
+(192, 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', 'en', 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', NULL, NULL, NULL),
+(193, 'Elsï¿½', 'hu', 'Elsï¿½', NULL, NULL, NULL),
+(194, 'Elsï¿½', 'en', 'Elsï¿½', NULL, NULL, NULL),
+(195, 'Elï¿½zï¿½', 'hu', 'Elï¿½zï¿½', NULL, NULL, NULL),
+(196, 'Elï¿½zï¿½', 'en', 'Elï¿½zï¿½', NULL, NULL, NULL),
+(197, 'Kï¿½vetkezï¿½', 'hu', 'Kï¿½vetkezï¿½', NULL, NULL, NULL),
+(198, 'Kï¿½vetkezï¿½', 'en', 'Kï¿½vetkezï¿½', NULL, NULL, NULL),
+(199, 'Utolsï¿½', 'hu', 'Utolsï¿½', NULL, NULL, NULL),
+(200, 'Utolsï¿½', 'en', 'Utolsï¿½', NULL, NULL, NULL),
+(201, ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', 'hu', ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(202, ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', 'en', ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(203, ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', 'hu', ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(204, ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', 'en', ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(205, '%d sor kivï¿½lasztva', 'hu', '%d sor kivï¿½lasztva', NULL, NULL, NULL),
+(206, '%d sor kivï¿½lasztva', 'en', '%d sor kivï¿½lasztva', NULL, NULL, NULL),
+(207, '1 sor kivï¿½lasztva', 'hu', '1 sor kivï¿½lasztva', NULL, NULL, NULL),
+(208, '1 sor kivï¿½lasztva', 'en', '1 sor kivï¿½lasztva', NULL, NULL, NULL),
+(209, '1 cella kivï¿½lasztva', 'hu', '1 cella kivï¿½lasztva', NULL, NULL, NULL),
+(210, '1 cella kivï¿½lasztva', 'en', '1 cella kivï¿½lasztva', NULL, NULL, NULL),
+(211, '%d cella kivï¿½lasztva', 'hu', '%d cella kivï¿½lasztva', NULL, NULL, NULL),
+(212, '%d cella kivï¿½lasztva', 'en', '%d cella kivï¿½lasztva', NULL, NULL, NULL),
+(213, '1 oszlop kivï¿½lasztva', 'hu', '1 oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(214, '1 oszlop kivï¿½lasztva', 'en', '1 oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(215, '%d oszlop kivï¿½lasztva', 'hu', '%d oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(216, '%d oszlop kivï¿½lasztva', 'en', '%d oszlop kivï¿½lasztva', NULL, NULL, NULL),
 (217, 'Oszlopok', 'hu', 'Oszlopok', NULL, NULL, NULL),
 (218, 'Oszlopok', 'en', 'Oszlopok', NULL, NULL, NULL),
-(219, 'Vágólapra másolás', 'hu', 'Vágólapra másolás', NULL, NULL, NULL),
-(220, 'Vágólapra másolás', 'en', 'Vágólapra másolás', NULL, NULL, NULL),
-(221, '%d sor másolva', 'hu', '%d sor másolva', NULL, NULL, NULL),
-(222, '%d sor másolva', 'en', '%d sor másolva', NULL, NULL, NULL),
-(223, '1 sor másolva', 'hu', '1 sor másolva', NULL, NULL, NULL),
-(224, '1 sor másolva', 'en', '1 sor másolva', NULL, NULL, NULL),
-(225, 'Oszlopok visszaállítása', 'hu', 'Oszlopok visszaállítása', NULL, NULL, NULL),
-(226, 'Oszlopok visszaállítása', 'en', 'Oszlopok visszaállítása', NULL, NULL, NULL),
-(227, 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', 'hu', 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', NULL, NULL, NULL),
-(228, 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', 'en', 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', NULL, NULL, NULL),
-(229, 'Összes sor megjelenítése', 'hu', 'Összes sor megjelenítése', NULL, NULL, NULL),
-(230, 'Összes sor megjelenítése', 'en', 'Összes sor megjelenítése', NULL, NULL, NULL),
-(231, '%d sor megjelenítése', 'hu', '%d sor megjelenítése', NULL, NULL, NULL),
-(232, '%d sor megjelenítése', 'en', '%d sor megjelenítése', NULL, NULL, NULL),
+(219, 'Vï¿½gï¿½lapra mï¿½solï¿½s', 'hu', 'Vï¿½gï¿½lapra mï¿½solï¿½s', NULL, NULL, NULL),
+(220, 'Vï¿½gï¿½lapra mï¿½solï¿½s', 'en', 'Vï¿½gï¿½lapra mï¿½solï¿½s', NULL, NULL, NULL),
+(221, '%d sor mï¿½solva', 'hu', '%d sor mï¿½solva', NULL, NULL, NULL),
+(222, '%d sor mï¿½solva', 'en', '%d sor mï¿½solva', NULL, NULL, NULL),
+(223, '1 sor mï¿½solva', 'hu', '1 sor mï¿½solva', NULL, NULL, NULL),
+(224, '1 sor mï¿½solva', 'en', '1 sor mï¿½solva', NULL, NULL, NULL),
+(225, 'Oszlopok visszaï¿½llï¿½tï¿½sa', 'hu', 'Oszlopok visszaï¿½llï¿½tï¿½sa', NULL, NULL, NULL),
+(226, 'Oszlopok visszaï¿½llï¿½tï¿½sa', 'en', 'Oszlopok visszaï¿½llï¿½tï¿½sa', NULL, NULL, NULL),
+(227, 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', 'hu', 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', NULL, NULL, NULL),
+(228, 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', 'en', 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', NULL, NULL, NULL),
+(229, 'ï¿½sszes sor megjelenï¿½tï¿½se', 'hu', 'ï¿½sszes sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
+(230, 'ï¿½sszes sor megjelenï¿½tï¿½se', 'en', 'ï¿½sszes sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
+(231, '%d sor megjelenï¿½tï¿½se', 'hu', '%d sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
+(232, '%d sor megjelenï¿½tï¿½se', 'en', '%d sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
 (233, 'Nyomtat', 'hu', 'Nyomtat', NULL, NULL, NULL),
 (234, 'Nyomtat', 'en', 'Nyomtat', NULL, NULL, NULL),
-(235, 'Megszakítás', 'hu', 'Megszakítás', NULL, NULL, NULL),
-(236, 'Megszakítás', 'en', 'Megszakítás', NULL, NULL, NULL),
-(237, 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', 'hu', 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', NULL, NULL, NULL),
-(238, 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', 'en', 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', NULL, NULL, NULL),
-(239, 'Cellák vízszintes kitöltése', 'hu', 'Cellák vízszintes kitöltése', NULL, NULL, NULL),
-(240, 'Cellák vízszintes kitöltése', 'en', 'Cellák vízszintes kitöltése', NULL, NULL, NULL),
-(241, 'Cellák függõleges kitöltése', 'hu', 'Cellák függõleges kitöltése', NULL, NULL, NULL),
-(242, 'Cellák függõleges kitöltése', 'en', 'Cellák függõleges kitöltése', NULL, NULL, NULL),
-(243, 'Feltétel hozzáadása', 'hu', 'Feltétel hozzáadása', NULL, NULL, NULL),
-(244, 'Feltétel hozzáadása', 'en', 'Feltétel hozzáadása', NULL, NULL, NULL),
-(245, 'Keresés konfigurátor', 'hu', 'Keresés konfigurátor', NULL, NULL, NULL),
-(246, 'Keresés konfigurátor', 'en', 'Keresés konfigurátor', NULL, NULL, NULL),
-(247, 'Keresés konfigurátor (%d)', 'hu', 'Keresés konfigurátor (%d)', NULL, NULL, NULL),
-(248, 'Keresés konfigurátor (%d)', 'en', 'Keresés konfigurátor (%d)', NULL, NULL, NULL),
-(249, 'Összes feltétel törlése', 'hu', 'Összes feltétel törlése', NULL, NULL, NULL),
-(250, 'Összes feltétel törlése', 'en', 'Összes feltétel törlése', NULL, NULL, NULL),
-(251, 'Feltétel', 'hu', 'Feltétel', NULL, NULL, NULL),
-(252, 'Feltétel', 'en', 'Feltétel', NULL, NULL, NULL),
-(253, 'Után', 'hu', 'Után', NULL, NULL, NULL),
-(254, 'Után', 'en', 'Után', NULL, NULL, NULL),
-(255, 'Elõtt', 'hu', 'Elõtt', NULL, NULL, NULL),
-(256, 'Elõtt', 'en', 'Elõtt', NULL, NULL, NULL),
-(257, 'Között', 'hu', 'Között', NULL, NULL, NULL),
-(258, 'Között', 'en', 'Között', NULL, NULL, NULL),
-(259, 'Üres', 'hu', 'Üres', NULL, NULL, NULL),
-(260, 'Üres', 'en', 'Üres', NULL, NULL, NULL),
-(261, 'Egyenlõ', 'hu', 'Egyenlõ', NULL, NULL, NULL),
-(262, 'Egyenlõ', 'en', 'Egyenlõ', NULL, NULL, NULL),
+(235, 'Megszakï¿½tï¿½s', 'hu', 'Megszakï¿½tï¿½s', NULL, NULL, NULL),
+(236, 'Megszakï¿½tï¿½s', 'en', 'Megszakï¿½tï¿½s', NULL, NULL, NULL),
+(237, 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', 'hu', 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', NULL, NULL, NULL),
+(238, 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', 'en', 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', NULL, NULL, NULL),
+(239, 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', 'hu', 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', NULL, NULL, NULL),
+(240, 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', 'en', 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', NULL, NULL, NULL),
+(241, 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', 'hu', 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', NULL, NULL, NULL),
+(242, 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', 'en', 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', NULL, NULL, NULL),
+(243, 'Feltï¿½tel hozzï¿½adï¿½sa', 'hu', 'Feltï¿½tel hozzï¿½adï¿½sa', NULL, NULL, NULL),
+(244, 'Feltï¿½tel hozzï¿½adï¿½sa', 'en', 'Feltï¿½tel hozzï¿½adï¿½sa', NULL, NULL, NULL),
+(245, 'Keresï¿½s konfigurï¿½tor', 'hu', 'Keresï¿½s konfigurï¿½tor', NULL, NULL, NULL),
+(246, 'Keresï¿½s konfigurï¿½tor', 'en', 'Keresï¿½s konfigurï¿½tor', NULL, NULL, NULL),
+(247, 'Keresï¿½s konfigurï¿½tor (%d)', 'hu', 'Keresï¿½s konfigurï¿½tor (%d)', NULL, NULL, NULL),
+(248, 'Keresï¿½s konfigurï¿½tor (%d)', 'en', 'Keresï¿½s konfigurï¿½tor (%d)', NULL, NULL, NULL),
+(249, 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', 'hu', 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(250, 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', 'en', 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(251, 'Feltï¿½tel', 'hu', 'Feltï¿½tel', NULL, NULL, NULL),
+(252, 'Feltï¿½tel', 'en', 'Feltï¿½tel', NULL, NULL, NULL),
+(253, 'Utï¿½n', 'hu', 'Utï¿½n', NULL, NULL, NULL),
+(254, 'Utï¿½n', 'en', 'Utï¿½n', NULL, NULL, NULL),
+(255, 'Elï¿½tt', 'hu', 'Elï¿½tt', NULL, NULL, NULL),
+(256, 'Elï¿½tt', 'en', 'Elï¿½tt', NULL, NULL, NULL),
+(257, 'Kï¿½zï¿½tt', 'hu', 'Kï¿½zï¿½tt', NULL, NULL, NULL),
+(258, 'Kï¿½zï¿½tt', 'en', 'Kï¿½zï¿½tt', NULL, NULL, NULL),
+(259, 'ï¿½res', 'hu', 'ï¿½res', NULL, NULL, NULL),
+(260, 'ï¿½res', 'en', 'ï¿½res', NULL, NULL, NULL),
+(261, 'Egyenlï¿½', 'hu', 'Egyenlï¿½', NULL, NULL, NULL),
+(262, 'Egyenlï¿½', 'en', 'Egyenlï¿½', NULL, NULL, NULL),
 (263, 'Nem', 'hu', 'Nem', NULL, NULL, NULL),
 (264, 'Nem', 'en', 'Nem', NULL, NULL, NULL),
-(265, 'Kívül esõ', 'hu', 'Kívül esõ', NULL, NULL, NULL),
-(266, 'Kívül esõ', 'en', 'Kívül esõ', NULL, NULL, NULL),
-(267, 'Nem üres', 'hu', 'Nem üres', NULL, NULL, NULL),
-(268, 'Nem üres', 'en', 'Nem üres', NULL, NULL, NULL),
+(265, 'Kï¿½vï¿½l esï¿½', 'hu', 'Kï¿½vï¿½l esï¿½', NULL, NULL, NULL),
+(266, 'Kï¿½vï¿½l esï¿½', 'en', 'Kï¿½vï¿½l esï¿½', NULL, NULL, NULL),
+(267, 'Nem ï¿½res', 'hu', 'Nem ï¿½res', NULL, NULL, NULL),
+(268, 'Nem ï¿½res', 'en', 'Nem ï¿½res', NULL, NULL, NULL),
 (269, 'Nagyobb mint', 'hu', 'Nagyobb mint', NULL, NULL, NULL),
 (270, 'Nagyobb mint', 'en', 'Nagyobb mint', NULL, NULL, NULL),
-(271, 'Nagyobb vagy egyenlõ mint', 'hu', 'Nagyobb vagy egyenlõ mint', NULL, NULL, NULL),
-(272, 'Nagyobb vagy egyenlõ mint', 'en', 'Nagyobb vagy egyenlõ mint', NULL, NULL, NULL),
+(271, 'Nagyobb vagy egyenlï¿½ mint', 'hu', 'Nagyobb vagy egyenlï¿½ mint', NULL, NULL, NULL),
+(272, 'Nagyobb vagy egyenlï¿½ mint', 'en', 'Nagyobb vagy egyenlï¿½ mint', NULL, NULL, NULL),
 (273, 'Kissebb mint', 'hu', 'Kissebb mint', NULL, NULL, NULL),
 (274, 'Kissebb mint', 'en', 'Kissebb mint', NULL, NULL, NULL),
-(275, 'Kissebb vagy egyenlõ mint', 'hu', 'Kissebb vagy egyenlõ mint', NULL, NULL, NULL),
-(276, 'Kissebb vagy egyenlõ mint', 'en', 'Kissebb vagy egyenlõ mint', NULL, NULL, NULL),
+(275, 'Kissebb vagy egyenlï¿½ mint', 'hu', 'Kissebb vagy egyenlï¿½ mint', NULL, NULL, NULL),
+(276, 'Kissebb vagy egyenlï¿½ mint', 'en', 'Kissebb vagy egyenlï¿½ mint', NULL, NULL, NULL),
 (277, 'Tartalmazza', 'hu', 'Tartalmazza', NULL, NULL, NULL),
 (278, 'Tartalmazza', 'en', 'Tartalmazza', NULL, NULL, NULL),
-(279, 'Végzõdik', 'hu', 'Végzõdik', NULL, NULL, NULL),
-(280, 'Végzõdik', 'en', 'Végzõdik', NULL, NULL, NULL),
-(281, 'Kezdõdik', 'hu', 'Kezdõdik', NULL, NULL, NULL),
-(282, 'Kezdõdik', 'en', 'Kezdõdik', NULL, NULL, NULL),
+(279, 'Vï¿½gzï¿½dik', 'hu', 'Vï¿½gzï¿½dik', NULL, NULL, NULL),
+(280, 'Vï¿½gzï¿½dik', 'en', 'Vï¿½gzï¿½dik', NULL, NULL, NULL),
+(281, 'Kezdï¿½dik', 'hu', 'Kezdï¿½dik', NULL, NULL, NULL),
+(282, 'Kezdï¿½dik', 'en', 'Kezdï¿½dik', NULL, NULL, NULL),
 (283, 'Adat', 'hu', 'Adat', NULL, NULL, NULL),
 (284, 'Adat', 'en', 'Adat', NULL, NULL, NULL),
-(285, 'Feltétel törlése', 'hu', 'Feltétel törlése', NULL, NULL, NULL),
-(286, 'Feltétel törlése', 'en', 'Feltétel törlése', NULL, NULL, NULL),
-(287, 'És', 'hu', 'És', NULL, NULL, NULL),
-(288, 'És', 'en', 'És', NULL, NULL, NULL),
+(285, 'Feltï¿½tel tï¿½rlï¿½se', 'hu', 'Feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(286, 'Feltï¿½tel tï¿½rlï¿½se', 'en', 'Feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(287, 'ï¿½s', 'hu', 'ï¿½s', NULL, NULL, NULL),
+(288, 'ï¿½s', 'en', 'ï¿½s', NULL, NULL, NULL),
 (289, 'Vagy', 'hu', 'Vagy', NULL, NULL, NULL),
 (290, 'Vagy', 'en', 'Vagy', NULL, NULL, NULL),
-(291, 'Szûrõk törlése', 'hu', 'Szûrõk törlése', NULL, NULL, NULL),
-(292, 'Szûrõk törlése', 'en', 'Szûrõk törlése', NULL, NULL, NULL),
-(293, 'Szûrõpanelek', 'hu', 'Szûrõpanelek', NULL, NULL, NULL),
-(294, 'Szûrõpanelek', 'en', 'Szûrõpanelek', NULL, NULL, NULL),
-(295, 'Szûrõpanelek (%d)', 'hu', 'Szûrõpanelek (%d)', NULL, NULL, NULL),
-(296, 'Szûrõpanelek (%d)', 'en', 'Szûrõpanelek (%d)', NULL, NULL, NULL),
-(297, 'Nincsenek szûrõpanelek', 'hu', 'Nincsenek szûrõpanelek', NULL, NULL, NULL),
-(298, 'Nincsenek szûrõpanelek', 'en', 'Nincsenek szûrõpanelek', NULL, NULL, NULL),
-(299, 'Szûrõpanelek betöltése', 'hu', 'Szûrõpanelek betöltése', NULL, NULL, NULL),
-(300, 'Szûrõpanelek betöltése', 'en', 'Szûrõpanelek betöltése', NULL, NULL, NULL),
-(301, 'Aktív szûrõpanelek: %d', 'hu', 'Aktív szûrõpanelek: %d', NULL, NULL, NULL),
-(302, 'Aktív szûrõpanelek: %d', 'en', 'Aktív szûrõpanelek: %d', NULL, NULL, NULL),
-(303, 'Óra', 'hu', 'Óra', NULL, NULL, NULL),
-(304, 'Óra', 'en', 'Óra', NULL, NULL, NULL),
+(291, 'Szï¿½rï¿½k tï¿½rlï¿½se', 'hu', 'Szï¿½rï¿½k tï¿½rlï¿½se', NULL, NULL, NULL),
+(292, 'Szï¿½rï¿½k tï¿½rlï¿½se', 'en', 'Szï¿½rï¿½k tï¿½rlï¿½se', NULL, NULL, NULL),
+(293, 'Szï¿½rï¿½panelek', 'hu', 'Szï¿½rï¿½panelek', NULL, NULL, NULL),
+(294, 'Szï¿½rï¿½panelek', 'en', 'Szï¿½rï¿½panelek', NULL, NULL, NULL),
+(295, 'Szï¿½rï¿½panelek (%d)', 'hu', 'Szï¿½rï¿½panelek (%d)', NULL, NULL, NULL),
+(296, 'Szï¿½rï¿½panelek (%d)', 'en', 'Szï¿½rï¿½panelek (%d)', NULL, NULL, NULL),
+(297, 'Nincsenek szï¿½rï¿½panelek', 'hu', 'Nincsenek szï¿½rï¿½panelek', NULL, NULL, NULL),
+(298, 'Nincsenek szï¿½rï¿½panelek', 'en', 'Nincsenek szï¿½rï¿½panelek', NULL, NULL, NULL),
+(299, 'Szï¿½rï¿½panelek betï¿½ltï¿½se', 'hu', 'Szï¿½rï¿½panelek betï¿½ltï¿½se', NULL, NULL, NULL),
+(300, 'Szï¿½rï¿½panelek betï¿½ltï¿½se', 'en', 'Szï¿½rï¿½panelek betï¿½ltï¿½se', NULL, NULL, NULL),
+(301, 'Aktï¿½v szï¿½rï¿½panelek: %d', 'hu', 'Aktï¿½v szï¿½rï¿½panelek: %d', NULL, NULL, NULL),
+(302, 'Aktï¿½v szï¿½rï¿½panelek: %d', 'en', 'Aktï¿½v szï¿½rï¿½panelek: %d', NULL, NULL, NULL),
+(303, 'ï¿½ra', 'hu', 'ï¿½ra', NULL, NULL, NULL),
+(304, 'ï¿½ra', 'en', 'ï¿½ra', NULL, NULL, NULL),
 (305, 'Perc', 'hu', 'Perc', NULL, NULL, NULL),
 (306, 'Perc', 'en', 'Perc', NULL, NULL, NULL),
-(307, 'Másodperc', 'hu', 'Másodperc', NULL, NULL, NULL),
-(308, 'Másodperc', 'en', 'Másodperc', NULL, NULL, NULL),
+(307, 'Mï¿½sodperc', 'hu', 'Mï¿½sodperc', NULL, NULL, NULL),
+(308, 'Mï¿½sodperc', 'en', 'Mï¿½sodperc', NULL, NULL, NULL),
 (309, 'de.', 'hu', 'de.', NULL, NULL, NULL),
 (310, 'de.', 'en', 'de.', NULL, NULL, NULL),
 (311, 'du.', 'hu', 'du.', NULL, NULL, NULL),
 (312, 'du.', 'en', 'du.', NULL, NULL, NULL),
-(313, 'Bezárás', 'hu', 'Bezárás', NULL, NULL, NULL),
-(314, 'Bezárás', 'en', 'Bezárás', NULL, NULL, NULL),
-(315, 'Új', 'hu', 'Új', NULL, NULL, NULL),
-(316, 'Új', 'en', 'Új', NULL, NULL, NULL),
-(317, 'Létrehozás', 'hu', 'Létrehozás', NULL, NULL, NULL),
-(318, 'Létrehozás', 'en', 'Létrehozás', NULL, NULL, NULL),
-(319, 'Módosítás', 'hu', 'Módosítás', NULL, NULL, NULL),
-(320, 'Módosítás', 'en', 'Módosítás', NULL, NULL, NULL),
-(321, 'Törlés', 'hu', 'Törlés', NULL, NULL, NULL),
-(322, 'Törlés', 'en', 'Törlés', NULL, NULL, NULL),
-(323, 'Teljes képernyõ', 'hu', 'Teljes képernyõ', NULL, NULL, NULL),
-(324, 'Teljes képernyõ', 'en', 'Full screen', NULL, NULL, NULL),
-(325, 'Kilépés a teljes képernyõbõl', 'hu', 'Kilépés a teljes képernyõbõl', NULL, NULL, NULL),
-(326, 'Kilépés a teljes képernyõbõl', 'en', 'Kilépés a teljes képernyõbõl', NULL, NULL, NULL),
-(327, 'január', 'hu', 'január', NULL, NULL, NULL),
-(328, 'január', 'en', 'január', NULL, NULL, NULL),
-(329, 'február', 'hu', 'február', NULL, NULL, NULL),
-(330, 'február', 'en', 'február', NULL, NULL, NULL),
-(331, 'március', 'hu', 'március', NULL, NULL, NULL),
-(332, 'március', 'en', 'március', NULL, NULL, NULL),
-(333, 'április', 'hu', 'április', NULL, NULL, NULL),
-(334, 'április', 'en', 'április', NULL, NULL, NULL),
-(335, 'május', 'hu', 'május', NULL, NULL, NULL),
-(336, 'május', 'en', 'május', NULL, NULL, NULL),
-(337, 'június', 'hu', 'június', NULL, NULL, NULL),
-(338, 'június', 'en', 'június', NULL, NULL, NULL),
-(339, 'július', 'hu', 'július', NULL, NULL, NULL),
-(340, 'július', 'en', 'július', NULL, NULL, NULL),
+(313, 'Bezï¿½rï¿½s', 'hu', 'Bezï¿½rï¿½s', NULL, NULL, NULL),
+(314, 'Bezï¿½rï¿½s', 'en', 'Bezï¿½rï¿½s', NULL, NULL, NULL),
+(315, 'ï¿½j', 'hu', 'ï¿½j', NULL, NULL, NULL),
+(316, 'ï¿½j', 'en', 'ï¿½j', NULL, NULL, NULL),
+(317, 'Lï¿½trehozï¿½s', 'hu', 'Lï¿½trehozï¿½s', NULL, NULL, NULL),
+(318, 'Lï¿½trehozï¿½s', 'en', 'Lï¿½trehozï¿½s', NULL, NULL, NULL),
+(319, 'Mï¿½dosï¿½tï¿½s', 'hu', 'Mï¿½dosï¿½tï¿½s', NULL, NULL, NULL),
+(320, 'Mï¿½dosï¿½tï¿½s', 'en', 'Mï¿½dosï¿½tï¿½s', NULL, NULL, NULL),
+(321, 'Tï¿½rlï¿½s', 'hu', 'Tï¿½rlï¿½s', NULL, NULL, NULL),
+(322, 'Tï¿½rlï¿½s', 'en', 'Tï¿½rlï¿½s', NULL, NULL, NULL),
+(323, 'Teljes kï¿½pernyï¿½', 'hu', 'Teljes kï¿½pernyï¿½', NULL, NULL, NULL),
+(324, 'Teljes kï¿½pernyï¿½', 'en', 'Full screen', NULL, NULL, NULL),
+(325, 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', 'hu', 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', NULL, NULL, NULL),
+(326, 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', 'en', 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', NULL, NULL, NULL),
+(327, 'januï¿½r', 'hu', 'januï¿½r', NULL, NULL, NULL),
+(328, 'januï¿½r', 'en', 'januï¿½r', NULL, NULL, NULL),
+(329, 'februï¿½r', 'hu', 'februï¿½r', NULL, NULL, NULL),
+(330, 'februï¿½r', 'en', 'februï¿½r', NULL, NULL, NULL),
+(331, 'mï¿½rcius', 'hu', 'mï¿½rcius', NULL, NULL, NULL),
+(332, 'mï¿½rcius', 'en', 'mï¿½rcius', NULL, NULL, NULL),
+(333, 'ï¿½prilis', 'hu', 'ï¿½prilis', NULL, NULL, NULL),
+(334, 'ï¿½prilis', 'en', 'ï¿½prilis', NULL, NULL, NULL),
+(335, 'mï¿½jus', 'hu', 'mï¿½jus', NULL, NULL, NULL),
+(336, 'mï¿½jus', 'en', 'mï¿½jus', NULL, NULL, NULL),
+(337, 'jï¿½nius', 'hu', 'jï¿½nius', NULL, NULL, NULL),
+(338, 'jï¿½nius', 'en', 'jï¿½nius', NULL, NULL, NULL),
+(339, 'jï¿½lius', 'hu', 'jï¿½lius', NULL, NULL, NULL),
+(340, 'jï¿½lius', 'en', 'jï¿½lius', NULL, NULL, NULL),
 (341, 'augusztus', 'hu', 'augusztus', NULL, NULL, NULL),
 (342, 'augusztus', 'en', 'augusztus', NULL, NULL, NULL),
 (343, 'szeptember', 'hu', 'szeptember', NULL, NULL, NULL),
 (344, 'szeptember', 'en', 'szeptember', NULL, NULL, NULL),
-(345, 'október', 'hu', 'október', NULL, NULL, NULL),
-(346, 'október', 'en', 'október', NULL, NULL, NULL),
+(345, 'oktï¿½ber', 'hu', 'oktï¿½ber', NULL, NULL, NULL),
+(346, 'oktï¿½ber', 'en', 'oktï¿½ber', NULL, NULL, NULL),
 (347, 'november', 'hu', 'november', NULL, NULL, NULL),
 (348, 'november', 'en', 'november', NULL, NULL, NULL),
 (349, 'december', 'hu', 'december', NULL, NULL, NULL),
@@ -2603,16 +2602,16 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (352, 'jan', 'en', 'jan', NULL, NULL, NULL),
 (353, 'febr', 'hu', 'febr', NULL, NULL, NULL),
 (354, 'febr', 'en', 'febr', NULL, NULL, NULL),
-(355, 'márc', 'hu', 'márc', NULL, NULL, NULL),
-(356, 'márc', 'en', 'márc', NULL, NULL, NULL),
-(357, 'ápr', 'hu', 'ápr', NULL, NULL, NULL),
-(358, 'ápr', 'en', 'ápr', NULL, NULL, NULL),
-(359, 'máj', 'hu', 'máj', NULL, NULL, NULL),
-(360, 'máj', 'en', 'máj', NULL, NULL, NULL),
-(361, 'jún', 'hu', 'jún', NULL, NULL, NULL),
-(362, 'jún', 'en', 'jún', NULL, NULL, NULL),
-(363, 'júl', 'hu', 'júl', NULL, NULL, NULL),
-(364, 'júl', 'en', 'júl', NULL, NULL, NULL),
+(355, 'mï¿½rc', 'hu', 'mï¿½rc', NULL, NULL, NULL),
+(356, 'mï¿½rc', 'en', 'mï¿½rc', NULL, NULL, NULL),
+(357, 'ï¿½pr', 'hu', 'ï¿½pr', NULL, NULL, NULL),
+(358, 'ï¿½pr', 'en', 'ï¿½pr', NULL, NULL, NULL),
+(359, 'mï¿½j', 'hu', 'mï¿½j', NULL, NULL, NULL),
+(360, 'mï¿½j', 'en', 'mï¿½j', NULL, NULL, NULL),
+(361, 'jï¿½n', 'hu', 'jï¿½n', NULL, NULL, NULL),
+(362, 'jï¿½n', 'en', 'jï¿½n', NULL, NULL, NULL),
+(363, 'jï¿½l', 'hu', 'jï¿½l', NULL, NULL, NULL),
+(364, 'jï¿½l', 'en', 'jï¿½l', NULL, NULL, NULL),
 (365, 'aug', 'hu', 'aug', NULL, NULL, NULL),
 (366, 'aug', 'en', 'aug', NULL, NULL, NULL),
 (367, 'szept', 'hu', 'szept', NULL, NULL, NULL),
@@ -2623,475 +2622,475 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (372, 'nov', 'en', 'nov', NULL, NULL, NULL),
 (373, 'dec', 'hu', 'dec', NULL, NULL, NULL),
 (374, 'dec', 'en', 'dec', NULL, NULL, NULL),
-(375, 'vasárnap', 'hu', 'vasárnap', NULL, NULL, NULL),
-(376, 'vasárnap', 'en', 'vasárnap', NULL, NULL, NULL),
-(377, 'hétfõ', 'hu', 'hétfõ', NULL, NULL, NULL),
-(378, 'hétfõ', 'en', 'hétfõ', NULL, NULL, NULL),
+(375, 'vasï¿½rnap', 'hu', 'vasï¿½rnap', NULL, NULL, NULL),
+(376, 'vasï¿½rnap', 'en', 'vasï¿½rnap', NULL, NULL, NULL),
+(377, 'hï¿½tfï¿½', 'hu', 'hï¿½tfï¿½', NULL, NULL, NULL),
+(378, 'hï¿½tfï¿½', 'en', 'hï¿½tfï¿½', NULL, NULL, NULL),
 (379, 'kedd', 'hu', 'kedd', NULL, NULL, NULL),
 (380, 'kedd', 'en', 'kedd', NULL, NULL, NULL),
 (381, 'szerda', 'hu', 'szerda', NULL, NULL, NULL),
 (382, 'szerda', 'en', 'szerda', NULL, NULL, NULL),
-(383, 'csütörtök', 'hu', 'csütörtök', NULL, NULL, NULL),
-(384, 'csütörtök', 'en', 'csütörtök', NULL, NULL, NULL),
-(385, 'péntek', 'hu', 'péntek', NULL, NULL, NULL),
-(386, 'péntek', 'en', 'péntek', NULL, NULL, NULL),
+(383, 'csï¿½tï¿½rtï¿½k', 'hu', 'csï¿½tï¿½rtï¿½k', NULL, NULL, NULL),
+(384, 'csï¿½tï¿½rtï¿½k', 'en', 'csï¿½tï¿½rtï¿½k', NULL, NULL, NULL),
+(385, 'pï¿½ntek', 'hu', 'pï¿½ntek', NULL, NULL, NULL),
+(386, 'pï¿½ntek', 'en', 'pï¿½ntek', NULL, NULL, NULL),
 (387, 'szombat', 'hu', 'szombat', NULL, NULL, NULL),
 (388, 'szombat', 'en', 'szombat', NULL, NULL, NULL),
-(389, 'Exportál', 'hu', 'Exportál', NULL, NULL, NULL),
-(390, 'Exportál', 'en', 'Exportál', NULL, NULL, NULL),
-(391, 'Importál', 'hu', 'Importál', NULL, NULL, NULL),
-(392, 'Importál', 'en', 'Importál', NULL, NULL, NULL),
-(393, 'ettõl', 'hu', 'ettõl', NULL, NULL, NULL),
-(394, 'ettõl', 'en', 'ettõl', NULL, NULL, NULL),
+(389, 'Exportï¿½l', 'hu', 'Exportï¿½l', NULL, NULL, NULL),
+(390, 'Exportï¿½l', 'en', 'Exportï¿½l', NULL, NULL, NULL),
+(391, 'Importï¿½l', 'hu', 'Importï¿½l', NULL, NULL, NULL),
+(392, 'Importï¿½l', 'en', 'Importï¿½l', NULL, NULL, NULL),
+(393, 'ettï¿½l', 'hu', 'ettï¿½l', NULL, NULL, NULL),
+(394, 'ettï¿½l', 'en', 'ettï¿½l', NULL, NULL, NULL),
 (395, 'eddig', 'hu', 'eddig', NULL, NULL, NULL),
 (396, 'eddig', 'en', 'eddig', NULL, NULL, NULL),
 (397, 'mutat:', 'hu', 'mutat:', NULL, NULL, NULL),
 (398, 'mutat:', 'en', 'mutat:', NULL, NULL, NULL),
-(399, 'Letöltés CSV fileként', 'hu', 'Letöltés CSV fileként', NULL, NULL, NULL),
-(400, 'Letöltés CSV fileként', 'en', 'Letöltés CSV fileként', NULL, NULL, NULL),
-(401, 'Letöltés XLS fileként', 'hu', 'Letöltés XLS fileként', NULL, NULL, NULL),
-(402, 'Letöltés XLS fileként', 'en', 'Letöltés XLS fileként', NULL, NULL, NULL),
-(403, 'Letöltés PNG képként', 'hu', 'Letöltés PNG képként', NULL, NULL, NULL),
-(404, 'Letöltés PNG képként', 'en', 'Letöltés PNG képként', NULL, NULL, NULL),
-(405, 'Letöltés JPEG képként', 'hu', 'Letöltés JPEG képként', NULL, NULL, NULL),
-(406, 'Letöltés JPEG képként', 'en', 'Letöltés JPEG képként', NULL, NULL, NULL),
-(407, 'Letöltés PDF dokumentumként', 'hu', 'Letöltés PDF dokumentumként', NULL, NULL, NULL),
-(408, 'Letöltés PDF dokumentumként', 'en', 'Letöltés PDF dokumentumként', NULL, NULL, NULL),
-(409, 'Letöltés SVG formátumban', 'hu', 'Letöltés SVG formátumban', NULL, NULL, NULL),
-(410, 'Letöltés SVG formátumban', 'en', 'Letöltés SVG formátumban', NULL, NULL, NULL),
-(411, 'Visszaállít', 'hu', 'Visszaállít', NULL, NULL, NULL),
-(412, 'Visszaállít', 'en', 'Visszaállít', NULL, NULL, NULL),
-(413, 'Táblázat', 'hu', 'Táblázat', NULL, NULL, NULL),
-(414, 'Táblázat', 'en', 'Táblázat', NULL, NULL, NULL),
-(415, 'Nyomtatás', 'hu', 'Nyomtatás', NULL, NULL, NULL),
-(416, 'Nyomtatás', 'en', 'Nyomtatás', NULL, NULL, NULL),
-(471, 'Bejelentkezés', 'hu', 'Bejelentkezés', NULL, NULL, NULL),
-(472, 'Bejelentkezés', 'en', 'Bejelentkezés', NULL, NULL, NULL),
-(473, 'Belép', 'hu', 'Belép', NULL, NULL, NULL),
-(474, 'Belép', 'en', 'Belép', NULL, NULL, NULL),
+(399, 'Letï¿½ltï¿½s CSV filekï¿½nt', 'hu', 'Letï¿½ltï¿½s CSV filekï¿½nt', NULL, NULL, NULL),
+(400, 'Letï¿½ltï¿½s CSV filekï¿½nt', 'en', 'Letï¿½ltï¿½s CSV filekï¿½nt', NULL, NULL, NULL),
+(401, 'Letï¿½ltï¿½s XLS filekï¿½nt', 'hu', 'Letï¿½ltï¿½s XLS filekï¿½nt', NULL, NULL, NULL),
+(402, 'Letï¿½ltï¿½s XLS filekï¿½nt', 'en', 'Letï¿½ltï¿½s XLS filekï¿½nt', NULL, NULL, NULL),
+(403, 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', 'hu', 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(404, 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', 'en', 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(405, 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', 'hu', 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(406, 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', 'en', 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(407, 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', 'hu', 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', NULL, NULL, NULL),
+(408, 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', 'en', 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', NULL, NULL, NULL),
+(409, 'Letï¿½ltï¿½s SVG formï¿½tumban', 'hu', 'Letï¿½ltï¿½s SVG formï¿½tumban', NULL, NULL, NULL),
+(410, 'Letï¿½ltï¿½s SVG formï¿½tumban', 'en', 'Letï¿½ltï¿½s SVG formï¿½tumban', NULL, NULL, NULL),
+(411, 'Visszaï¿½llï¿½t', 'hu', 'Visszaï¿½llï¿½t', NULL, NULL, NULL),
+(412, 'Visszaï¿½llï¿½t', 'en', 'Visszaï¿½llï¿½t', NULL, NULL, NULL),
+(413, 'Tï¿½blï¿½zat', 'hu', 'Tï¿½blï¿½zat', NULL, NULL, NULL),
+(414, 'Tï¿½blï¿½zat', 'en', 'Tï¿½blï¿½zat', NULL, NULL, NULL),
+(415, 'Nyomtatï¿½s', 'hu', 'Nyomtatï¿½s', NULL, NULL, NULL),
+(416, 'Nyomtatï¿½s', 'en', 'Nyomtatï¿½s', NULL, NULL, NULL),
+(471, 'Bejelentkezï¿½s', 'hu', 'Bejelentkezï¿½s', NULL, NULL, NULL),
+(472, 'Bejelentkezï¿½s', 'en', 'Bejelentkezï¿½s', NULL, NULL, NULL),
+(473, 'Belï¿½p', 'hu', 'Belï¿½p', NULL, NULL, NULL),
+(474, 'Belï¿½p', 'en', 'Belï¿½p', NULL, NULL, NULL),
 (475, 'Nyelvek', 'hu', 'Nyelvek', NULL, NULL, NULL),
 (476, 'Nyelvek', 'en', 'Nyelvek', NULL, NULL, NULL),
-(477, 'Partner cég', 'hu', 'Partner cég', NULL, NULL, NULL),
-(478, 'Partner cég', 'en', 'Partner cég', NULL, NULL, NULL),
+(477, 'Partner cï¿½g', 'hu', 'Partner cï¿½g', NULL, NULL, NULL),
+(478, 'Partner cï¿½g', 'en', 'Partner cï¿½g', NULL, NULL, NULL),
 (479, 'Telephely', 'hu', 'Telephely', NULL, NULL, NULL),
 (480, 'Telephely', 'en', 'Telephely', NULL, NULL, NULL),
-(481, 'Szállítási mód', 'hu', 'Szállítási mód', NULL, NULL, NULL),
-(482, 'Szállítási mód', 'en', 'Szállítási mód', NULL, NULL, NULL),
-(483, 'Nemzetiség', 'hu', 'Nemzetiség', NULL, NULL, NULL),
-(484, 'Nemzetiség', 'en', 'Nemzetiség', NULL, NULL, NULL),
-(485, '%d cella kiválasztva', 'ee', '%d cella kiválasztva', NULL, '2022-06-14 11:25:45', NULL),
-(486, '%d oszlop kiválasztva', 'ee', '%d oszlop kiválasztva', NULL, NULL, NULL),
-(487, '%d sor kiválasztva', 'ee', '%d sor kiválasztva', NULL, NULL, NULL),
-(488, '%d sor másolva', 'ee', '%d sor másolva', NULL, NULL, NULL),
-(489, '%d sor megjelenítése', 'ee', '%d sor megjelenítése', NULL, NULL, NULL),
-(490, '(_MAX_ összes rekord közül szûrve)', 'ee', '(_MAX_ összes rekord közül szûrve)', NULL, NULL, NULL),
-(491, '1 cella kiválasztva', 'ee', '1 cella kiválasztva', NULL, NULL, NULL),
-(492, '1 oszlop kiválasztva', 'ee', '1 oszlop kiválasztva', NULL, NULL, NULL),
-(493, '1 sor kiválasztva', 'ee', '1 sor kiválasztva', NULL, NULL, NULL),
-(494, '1 sor másolva', 'ee', '1 sor másolva', NULL, NULL, NULL),
-(495, ': aktiválja a csökkenõ rendezéshez', 'ee', ': aktiválja a csökkenõ rendezéshez', NULL, NULL, NULL),
-(496, ': aktiválja a növekvõ rendezéshez', 'ee', ': aktiválja a növekvõ rendezéshez', NULL, NULL, NULL),
+(481, 'Szï¿½llï¿½tï¿½si mï¿½d', 'hu', 'Szï¿½llï¿½tï¿½si mï¿½d', NULL, NULL, NULL),
+(482, 'Szï¿½llï¿½tï¿½si mï¿½d', 'en', 'Szï¿½llï¿½tï¿½si mï¿½d', NULL, NULL, NULL),
+(483, 'Nemzetisï¿½g', 'hu', 'Nemzetisï¿½g', NULL, NULL, NULL),
+(484, 'Nemzetisï¿½g', 'en', 'Nemzetisï¿½g', NULL, NULL, NULL),
+(485, '%d cella kivï¿½lasztva', 'ee', '%d cella kivï¿½lasztva', NULL, '2022-06-14 11:25:45', NULL),
+(486, '%d oszlop kivï¿½lasztva', 'ee', '%d oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(487, '%d sor kivï¿½lasztva', 'ee', '%d sor kivï¿½lasztva', NULL, NULL, NULL),
+(488, '%d sor mï¿½solva', 'ee', '%d sor mï¿½solva', NULL, NULL, NULL),
+(489, '%d sor megjelenï¿½tï¿½se', 'ee', '%d sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
+(490, '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', 'ee', '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', NULL, NULL, NULL),
+(491, '1 cella kivï¿½lasztva', 'ee', '1 cella kivï¿½lasztva', NULL, NULL, NULL),
+(492, '1 oszlop kivï¿½lasztva', 'ee', '1 oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(493, '1 sor kivï¿½lasztva', 'ee', '1 sor kivï¿½lasztva', NULL, NULL, NULL),
+(494, '1 sor mï¿½solva', 'ee', '1 sor mï¿½solva', NULL, NULL, NULL),
+(495, ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', 'ee', ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(496, ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', 'ee', ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', NULL, NULL, NULL),
 (497, 'Adat', 'ee', 'Adat', NULL, NULL, NULL),
-(498, 'ÁFA', 'ee', 'ÁFA', NULL, NULL, NULL),
-(499, 'Aktív szûrõpanelek: %d', 'ee', 'Aktív szûrõpanelek: %d', NULL, NULL, NULL),
-(500, 'ápr', 'ee', 'ápr', NULL, NULL, NULL),
-(501, 'április', 'ee', 'április', NULL, NULL, NULL),
+(498, 'ï¿½FA', 'ee', 'ï¿½FA', NULL, NULL, NULL),
+(499, 'Aktï¿½v szï¿½rï¿½panelek: %d', 'ee', 'Aktï¿½v szï¿½rï¿½panelek: %d', NULL, NULL, NULL),
+(500, 'ï¿½pr', 'ee', 'ï¿½pr', NULL, NULL, NULL),
+(501, 'ï¿½prilis', 'ee', 'ï¿½prilis', NULL, NULL, NULL),
 (502, 'aug', 'ee', 'aug', NULL, NULL, NULL),
 (503, 'augusztus', 'ee', 'augusztus', NULL, NULL, NULL),
-(504, 'B2B felhasználók', 'ee', 'B2B felhasználók', NULL, NULL, NULL),
+(504, 'B2B felhasznï¿½lï¿½k', 'ee', 'B2B felhasznï¿½lï¿½k', NULL, NULL, NULL),
 (505, 'B2B partnerek', 'ee', 'B2B partnerek', NULL, NULL, NULL),
-(506, 'Beállítások', 'ee', 'Beállítások', NULL, NULL, NULL),
-(507, 'Bejelentkezés', 'ee', 'Bejelentkezés', NULL, NULL, NULL),
-(508, 'Belép', 'ee', 'Belép', NULL, NULL, NULL),
-(509, 'Belépés 3 hónap', 'ee', 'Belépés 3 hónap', NULL, NULL, NULL),
-(510, 'Belépés 3 hónap<', 'ee', 'Belépés 3 hónap<', NULL, NULL, NULL),
-(511, 'Belépett', 'ee', 'Belépett', NULL, NULL, NULL),
-(512, 'Belsõ felhasználók', 'ee', 'Belsõ felhasználók', NULL, NULL, NULL),
-(513, 'Beosztás', 'ee', 'Beosztás', NULL, NULL, NULL),
-(514, 'Betöltés...', 'ee', 'Betöltés...', NULL, NULL, NULL),
-(515, 'Bezárás', 'ee', 'Bezárás', NULL, NULL, NULL),
-(516, 'Biztosan kosárba másolja a megrendelés összes tételét?', 'ee', 'Biztosan kosárba másolja a megrendelés összes tételét?', NULL, NULL, NULL),
-(517, 'Biztosan kosárba másolja a tételeket?', 'ee', 'Biztosan kosárba másolja a tételeket?', NULL, NULL, NULL),
-(518, 'Bruttó', 'ee', 'Bruttó', NULL, NULL, NULL),
-(519, 'Cellák függõleges kitöltése', 'ee', 'Cellák függõleges kitöltése', NULL, NULL, NULL),
-(520, 'Cellák vízszintes kitöltése', 'ee', 'Cellák vízszintes kitöltése', NULL, NULL, NULL),
-(521, 'csütörtök', 'ee', 'csütörtök', NULL, NULL, NULL),
+(506, 'Beï¿½llï¿½tï¿½sok', 'ee', 'Beï¿½llï¿½tï¿½sok', NULL, NULL, NULL),
+(507, 'Bejelentkezï¿½s', 'ee', 'Bejelentkezï¿½s', NULL, NULL, NULL),
+(508, 'Belï¿½p', 'ee', 'Belï¿½p', NULL, NULL, NULL),
+(509, 'Belï¿½pï¿½s 3 hï¿½nap', 'ee', 'Belï¿½pï¿½s 3 hï¿½nap', NULL, NULL, NULL),
+(510, 'Belï¿½pï¿½s 3 hï¿½nap<', 'ee', 'Belï¿½pï¿½s 3 hï¿½nap<', NULL, NULL, NULL),
+(511, 'Belï¿½pett', 'ee', 'Belï¿½pett', NULL, NULL, NULL),
+(512, 'Belsï¿½ felhasznï¿½lï¿½k', 'ee', 'Belsï¿½ felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(513, 'Beosztï¿½s', 'ee', 'Beosztï¿½s', NULL, NULL, NULL),
+(514, 'Betï¿½ltï¿½s...', 'ee', 'Betï¿½ltï¿½s...', NULL, NULL, NULL),
+(515, 'Bezï¿½rï¿½s', 'ee', 'Bezï¿½rï¿½s', NULL, NULL, NULL),
+(516, 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', 'ee', 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', NULL, NULL, NULL),
+(517, 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', 'ee', 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', NULL, NULL, NULL),
+(518, 'Bruttï¿½', 'ee', 'Bruttï¿½', NULL, NULL, NULL),
+(519, 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', 'ee', 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', NULL, NULL, NULL),
+(520, 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', 'ee', 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', NULL, NULL, NULL),
+(521, 'csï¿½tï¿½rtï¿½k', 'ee', 'csï¿½tï¿½rtï¿½k', NULL, NULL, NULL),
 (522, 'darab', 'ee', 'darab', NULL, NULL, NULL),
-(523, 'Dátum', 'ee', 'Dátum', NULL, NULL, NULL),
+(523, 'Dï¿½tum', 'ee', 'Dï¿½tum', NULL, NULL, NULL),
 (524, 'db', 'ee', 'db', NULL, NULL, NULL),
 (525, 'de.', 'ee', 'de.', NULL, NULL, NULL),
 (526, 'dec', 'ee', 'dec', NULL, NULL, NULL),
 (527, 'december', 'ee', 'december', NULL, NULL, NULL),
 (528, 'du.', 'ee', 'du.', NULL, NULL, NULL),
 (529, 'eddig', 'ee', 'eddig', NULL, NULL, NULL),
-(530, 'Egyenlõ', 'ee', 'Egyenlõ', NULL, NULL, NULL),
-(531, 'Egys.ár', 'ee', 'Egys.ár', NULL, NULL, NULL),
-(532, 'Elõtt', 'ee', 'Elõtt', NULL, NULL, NULL),
-(533, 'Elõzõ', 'ee', 'Elõzõ', NULL, NULL, NULL),
-(534, 'Elsõ', 'ee', 'Elsõ', NULL, NULL, NULL),
+(530, 'Egyenlï¿½', 'ee', 'Egyenlï¿½', NULL, NULL, NULL),
+(531, 'Egys.ï¿½r', 'ee', 'Egys.ï¿½r', NULL, NULL, NULL),
+(532, 'Elï¿½tt', 'ee', 'Elï¿½tt', NULL, NULL, NULL),
+(533, 'Elï¿½zï¿½', 'ee', 'Elï¿½zï¿½', NULL, NULL, NULL),
+(534, 'Elsï¿½', 'ee', 'Elsï¿½', NULL, NULL, NULL),
 (535, 'Email', 'ee', 'Email', NULL, NULL, NULL),
-(536, 'Érték', 'ee', 'Érték', NULL, NULL, NULL),
-(537, 'És', 'ee', 'És', NULL, NULL, NULL),
-(538, 'ettõl', 'ee', 'ettõl', NULL, NULL, NULL),
-(539, 'Exportál', 'ee', 'Exportál', NULL, NULL, NULL),
+(536, 'ï¿½rtï¿½k', 'ee', 'ï¿½rtï¿½k', NULL, NULL, NULL),
+(537, 'ï¿½s', 'ee', 'ï¿½s', NULL, NULL, NULL),
+(538, 'ettï¿½l', 'ee', 'ettï¿½l', NULL, NULL, NULL),
+(539, 'Exportï¿½l', 'ee', 'Exportï¿½l', NULL, NULL, NULL),
 (540, 'febr', 'ee', 'febr', NULL, NULL, NULL),
-(541, 'február', 'ee', 'február', NULL, NULL, NULL),
-(542, 'Feldolgozás...', 'ee', 'Feldolgozás...', NULL, NULL, NULL),
-(543, 'Felhasználói belépések', 'ee', 'Felhasználói belépések', NULL, NULL, NULL),
-(544, 'felhasználók', 'ee', 'felhasználók', NULL, NULL, NULL),
-(545, 'Felhasználók összesen', 'ee', 'Felhasználók összesen', NULL, NULL, NULL),
-(546, 'Felhasználónként', 'ee', 'Felhasználónként', NULL, NULL, NULL),
-(547, 'Felhasznált', 'ee', 'Felhasznált', NULL, NULL, NULL),
-(548, 'Feltétel', 'ee', 'Feltétel', NULL, NULL, NULL),
-(549, 'Feltétel hozzáadása', 'ee', 'Feltétel hozzáadása', NULL, NULL, NULL),
-(550, 'Feltétel törlése', 'ee', 'Feltétel törlése', NULL, NULL, NULL),
+(541, 'februï¿½r', 'ee', 'februï¿½r', NULL, NULL, NULL),
+(542, 'Feldolgozï¿½s...', 'ee', 'Feldolgozï¿½s...', NULL, NULL, NULL),
+(543, 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', 'ee', 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', NULL, NULL, NULL),
+(544, 'felhasznï¿½lï¿½k', 'ee', 'felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(545, 'Felhasznï¿½lï¿½k ï¿½sszesen', 'ee', 'Felhasznï¿½lï¿½k ï¿½sszesen', NULL, NULL, NULL),
+(546, 'Felhasznï¿½lï¿½nkï¿½nt', 'ee', 'Felhasznï¿½lï¿½nkï¿½nt', NULL, NULL, NULL),
+(547, 'Felhasznï¿½lt', 'ee', 'Felhasznï¿½lt', NULL, NULL, NULL),
+(548, 'Feltï¿½tel', 'ee', 'Feltï¿½tel', NULL, NULL, NULL),
+(549, 'Feltï¿½tel hozzï¿½adï¿½sa', 'ee', 'Feltï¿½tel hozzï¿½adï¿½sa', NULL, NULL, NULL),
+(550, 'Feltï¿½tel tï¿½rlï¿½se', 'ee', 'Feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
 (551, 'forint', 'ee', 'forint', NULL, NULL, NULL),
-(552, 'havi bontás', 'ee', 'havi bontás', NULL, NULL, NULL),
-(553, 'hétfõ', 'ee', 'hétfõ', NULL, NULL, NULL),
+(552, 'havi bontï¿½s', 'ee', 'havi bontï¿½s', NULL, NULL, NULL),
+(553, 'hï¿½tfï¿½', 'ee', 'hï¿½tfï¿½', NULL, NULL, NULL),
 (554, 'Hitel keret', 'ee', 'Hitel keret', NULL, NULL, NULL),
 (555, 'Id', 'ee', 'Id', NULL, NULL, NULL),
 (556, 'Idei', 'ee', 'Idei', NULL, NULL, NULL),
-(557, 'Idei kosár', 'ee', 'Idei kosár', NULL, NULL, NULL),
-(558, 'Idei megrendelés', 'ee', 'Idei megrendelés', NULL, NULL, NULL),
-(559, 'Idei megrendelések', 'ee', 'Idei megrendelések', NULL, NULL, NULL),
-(560, 'Idei saját megrendelés', 'ee', 'Idei saját megrendelés', NULL, NULL, NULL),
-(561, 'Idei saját megrendelések', 'ee', 'Idei saját megrendelések', NULL, NULL, NULL),
-(562, 'Importál', 'ee', 'Importál', NULL, NULL, NULL),
+(557, 'Idei kosï¿½r', 'ee', 'Idei kosï¿½r', NULL, NULL, NULL),
+(558, 'Idei megrendelï¿½s', 'ee', 'Idei megrendelï¿½s', NULL, NULL, NULL),
+(559, 'Idei megrendelï¿½sek', 'ee', 'Idei megrendelï¿½sek', NULL, NULL, NULL),
+(560, 'Idei sajï¿½t megrendelï¿½s', 'ee', 'Idei sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(561, 'Idei sajï¿½t megrendelï¿½sek', 'ee', 'Idei sajï¿½t megrendelï¿½sek', NULL, NULL, NULL),
+(562, 'Importï¿½l', 'ee', 'Importï¿½l', NULL, NULL, NULL),
 (563, 'jan', 'ee', 'jan', NULL, NULL, NULL),
-(564, 'január', 'ee', 'január', NULL, NULL, NULL),
-(565, 'júl', 'ee', 'júl', NULL, NULL, NULL),
-(566, 'július', 'ee', 'július', NULL, NULL, NULL),
-(567, 'jún', 'ee', 'jún', NULL, NULL, NULL),
-(568, 'június', 'ee', 'június', NULL, NULL, NULL),
+(564, 'januï¿½r', 'ee', 'januï¿½r', NULL, NULL, NULL),
+(565, 'jï¿½l', 'ee', 'jï¿½l', NULL, NULL, NULL),
+(566, 'jï¿½lius', 'ee', 'jï¿½lius', NULL, NULL, NULL),
+(567, 'jï¿½n', 'ee', 'jï¿½n', NULL, NULL, NULL),
+(568, 'jï¿½nius', 'ee', 'jï¿½nius', NULL, NULL, NULL),
 (569, 'kedd', 'ee', 'kedd', NULL, NULL, NULL),
 (570, 'Kedvenc', 'ee', 'Kedvenc', NULL, NULL, NULL),
-(571, 'Kedvenc termék kiválasztás', 'ee', 'Kedvenc termék kiválasztás', NULL, NULL, NULL),
-(572, 'Kedvenc termékek', 'ee', 'Kedvenc termékek', NULL, NULL, NULL),
-(573, 'Kép', 'ee', 'Kép', NULL, NULL, NULL),
-(574, 'Keresés konfigurátor', 'ee', 'Keresés konfigurátor', NULL, NULL, NULL),
-(575, 'Keresés konfigurátor (%d)', 'ee', 'Keresés konfigurátor (%d)', NULL, NULL, NULL),
-(576, 'Keresés:', 'ee', 'Keresés:', NULL, NULL, NULL),
-(577, 'Kezdõdik', 'ee', 'Kezdõdik', NULL, NULL, NULL),
-(578, 'Kilép', 'ee', 'Kilép', NULL, NULL, NULL),
-(579, 'Kilépés', 'ee', 'Kilépés', NULL, NULL, NULL),
-(580, 'Kilépés a teljes képernyõbõl', 'ee', 'Kilépés a teljes képernyõbõl', NULL, NULL, NULL),
+(571, 'Kedvenc termï¿½k kivï¿½lasztï¿½s', 'ee', 'Kedvenc termï¿½k kivï¿½lasztï¿½s', NULL, NULL, NULL),
+(572, 'Kedvenc termï¿½kek', 'ee', 'Kedvenc termï¿½kek', NULL, NULL, NULL),
+(573, 'Kï¿½p', 'ee', 'Kï¿½p', NULL, NULL, NULL),
+(574, 'Keresï¿½s konfigurï¿½tor', 'ee', 'Keresï¿½s konfigurï¿½tor', NULL, NULL, NULL),
+(575, 'Keresï¿½s konfigurï¿½tor (%d)', 'ee', 'Keresï¿½s konfigurï¿½tor (%d)', NULL, NULL, NULL),
+(576, 'Keresï¿½s:', 'ee', 'Keresï¿½s:', NULL, NULL, NULL),
+(577, 'Kezdï¿½dik', 'ee', 'Kezdï¿½dik', NULL, NULL, NULL),
+(578, 'Kilï¿½p', 'ee', 'Kilï¿½p', NULL, NULL, NULL),
+(579, 'Kilï¿½pï¿½s', 'ee', 'Kilï¿½pï¿½s', NULL, NULL, NULL),
+(580, 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', 'ee', 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', NULL, NULL, NULL),
 (581, 'Kissebb mint', 'ee', 'Kissebb mint', NULL, NULL, NULL),
-(582, 'Kissebb vagy egyenlõ mint', 'ee', 'Kissebb vagy egyenlõ mint', NULL, NULL, NULL),
-(583, 'Kívül esõ', 'ee', 'Kívül esõ', NULL, NULL, NULL),
-(584, 'Kosár', 'ee', 'Kosár', NULL, NULL, NULL),
-(585, 'Kosárba', 'ee', 'Kosárba', NULL, NULL, NULL),
-(586, 'Következõ', 'ee', 'Következõ', NULL, NULL, NULL),
-(587, 'Között', 'ee', 'Között', NULL, NULL, NULL),
-(588, 'Letöltés CSV fileként', 'ee', 'Letöltés CSV fileként', NULL, NULL, NULL),
-(589, 'Letöltés JPEG képként', 'ee', 'Letöltés JPEG képként', NULL, NULL, NULL),
-(590, 'Letöltés PDF dokumentumként', 'ee', 'Letöltés PDF dokumentumként', NULL, NULL, NULL),
-(591, 'Letöltés PNG képként', 'ee', 'Letöltés PNG képként', NULL, NULL, NULL),
-(592, 'Letöltés SVG formátumban', 'ee', 'Letöltés SVG formátumban', NULL, NULL, NULL),
-(593, 'Letöltés XLS fileként', 'ee', 'Letöltés XLS fileként', NULL, NULL, NULL),
-(594, 'Létrehozás', 'ee', 'Létrehozás', NULL, NULL, NULL),
+(582, 'Kissebb vagy egyenlï¿½ mint', 'ee', 'Kissebb vagy egyenlï¿½ mint', NULL, NULL, NULL),
+(583, 'Kï¿½vï¿½l esï¿½', 'ee', 'Kï¿½vï¿½l esï¿½', NULL, NULL, NULL),
+(584, 'Kosï¿½r', 'ee', 'Kosï¿½r', NULL, NULL, NULL),
+(585, 'Kosï¿½rba', 'ee', 'Kosï¿½rba', NULL, NULL, NULL),
+(586, 'Kï¿½vetkezï¿½', 'ee', 'Kï¿½vetkezï¿½', NULL, NULL, NULL),
+(587, 'Kï¿½zï¿½tt', 'ee', 'Kï¿½zï¿½tt', NULL, NULL, NULL),
+(588, 'Letï¿½ltï¿½s CSV filekï¿½nt', 'ee', 'Letï¿½ltï¿½s CSV filekï¿½nt', NULL, NULL, NULL),
+(589, 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', 'ee', 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(590, 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', 'ee', 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', NULL, NULL, NULL),
+(591, 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', 'ee', 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(592, 'Letï¿½ltï¿½s SVG formï¿½tumban', 'ee', 'Letï¿½ltï¿½s SVG formï¿½tumban', NULL, NULL, NULL),
+(593, 'Letï¿½ltï¿½s XLS filekï¿½nt', 'ee', 'Letï¿½ltï¿½s XLS filekï¿½nt', NULL, NULL, NULL),
+(594, 'Lï¿½trehozï¿½s', 'ee', 'Lï¿½trehozï¿½s', NULL, NULL, NULL),
 (595, 'Log adatok', 'ee', 'Log adatok', NULL, NULL, NULL),
-(596, 'máj', 'ee', 'máj', NULL, NULL, NULL),
-(597, 'május', 'ee', 'május', NULL, NULL, NULL),
-(598, 'márc', 'ee', 'márc', NULL, NULL, NULL),
-(599, 'március', 'ee', 'március', NULL, NULL, NULL),
-(600, 'Másodperc', 'ee', 'Másodperc', NULL, NULL, NULL),
-(601, 'Másolás', 'ee', 'Másolás', NULL, NULL, NULL),
+(596, 'mï¿½j', 'ee', 'mï¿½j', NULL, NULL, NULL),
+(597, 'mï¿½jus', 'ee', 'mï¿½jus', NULL, NULL, NULL),
+(598, 'mï¿½rc', 'ee', 'mï¿½rc', NULL, NULL, NULL),
+(599, 'mï¿½rcius', 'ee', 'mï¿½rcius', NULL, NULL, NULL),
+(600, 'Mï¿½sodperc', 'ee', 'Mï¿½sodperc', NULL, NULL, NULL),
+(601, 'Mï¿½solï¿½s', 'ee', 'Mï¿½solï¿½s', NULL, NULL, NULL),
 (602, 'Me.egys', 'ee', 'Me.egys', NULL, NULL, NULL),
-(603, 'Megrendelés átlag értékek az elmúlt 12 hónapban', 'ee', 'Megrendelés átlag értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(604, 'Megrendelés darab az elmúlt 12 hónapban', 'ee', 'Megrendelés darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(605, 'Megrendelés értékek az elmúlt 12 hónapban', 'ee', 'Megrendelés értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(606, 'Megrendelés kosárba másolás!', 'ee', 'Megrendelés kosárba másolás!', NULL, NULL, NULL),
-(607, 'Megrendelés szám', 'ee', 'Megrendelés szám', NULL, NULL, NULL),
-(608, 'Megrendelés tétel darab az elmúlt 12 hónapban', 'ee', 'Megrendelés tétel darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(609, 'Megrendelések', 'ee', 'Megrendelések', NULL, NULL, NULL),
-(610, 'Megszakítás', 'ee', 'Megszakítás', NULL, NULL, NULL),
-(611, 'Mennyiség', 'ee', 'Mennyiség', NULL, NULL, NULL),
-(612, 'Minden termék', 'ee', 'Minden termék', NULL, NULL, NULL),
-(613, 'Módosítás', 'ee', 'Módosítás', NULL, NULL, NULL),
+(603, 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'ee', 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(604, 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', 'ee', 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(605, 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'ee', 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(606, 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', 'ee', 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(607, 'Megrendelï¿½s szï¿½m', 'ee', 'Megrendelï¿½s szï¿½m', NULL, NULL, NULL),
+(608, 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', 'ee', 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(609, 'Megrendelï¿½sek', 'ee', 'Megrendelï¿½sek', NULL, NULL, NULL),
+(610, 'Megszakï¿½tï¿½s', 'ee', 'Megszakï¿½tï¿½s', NULL, NULL, NULL),
+(611, 'Mennyisï¿½g', 'ee', 'Mennyisï¿½g', NULL, NULL, NULL),
+(612, 'Minden termï¿½k', 'ee', 'Minden termï¿½k', NULL, NULL, NULL),
+(613, 'Mï¿½dosï¿½tï¿½s', 'ee', 'Mï¿½dosï¿½tï¿½s', NULL, NULL, NULL),
 (614, 'mutat:', 'ee', 'mutat:', NULL, NULL, NULL),
 (615, 'Nagyobb mint', 'ee', 'Nagyobb mint', NULL, NULL, NULL),
-(616, 'Nagyobb vagy egyenlõ mint', 'ee', 'Nagyobb vagy egyenlõ mint', NULL, NULL, NULL),
+(616, 'Nagyobb vagy egyenlï¿½ mint', 'ee', 'Nagyobb vagy egyenlï¿½ mint', NULL, NULL, NULL),
 (617, 'Nem', 'ee', 'Nem', NULL, NULL, NULL),
-(618, 'Nem jelölt ki sort', 'ee', 'Nem jelölt ki sort', NULL, NULL, NULL),
-(619, 'Nem üres', 'ee', 'Nem üres', NULL, NULL, NULL),
-(620, 'Nemzetiség', 'ee', 'Nemzetiség', NULL, NULL, NULL),
-(621, 'Nettó', 'ee', 'Nettó', NULL, NULL, NULL),
-(622, 'Név', 'ee', 'Név', NULL, NULL, NULL),
-(623, 'Nincs a keresésnek megfelelõ találat', 'ee', 'Nincs a keresésnek megfelelõ találat', NULL, NULL, NULL),
-(624, 'Nincs kijelölt tétel!', 'ee', 'Nincs kijelölt tétel!', NULL, NULL, NULL),
-(625, 'Nincs rendelkezésre álló adat', 'ee', 'Nincs rendelkezésre álló adat', NULL, NULL, NULL),
-(626, 'Nincsenek szûrõpanelek', 'ee', 'Nincsenek szûrõpanelek', NULL, NULL, NULL),
+(618, 'Nem jelï¿½lt ki sort', 'ee', 'Nem jelï¿½lt ki sort', NULL, NULL, NULL),
+(619, 'Nem ï¿½res', 'ee', 'Nem ï¿½res', NULL, NULL, NULL),
+(620, 'Nemzetisï¿½g', 'ee', 'Nemzetisï¿½g', NULL, NULL, NULL),
+(621, 'Nettï¿½', 'ee', 'Nettï¿½', NULL, NULL, NULL),
+(622, 'Nï¿½v', 'ee', 'Nï¿½v', NULL, NULL, NULL),
+(623, 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', 'ee', 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', NULL, NULL, NULL),
+(624, 'Nincs kijelï¿½lt tï¿½tel!', 'ee', 'Nincs kijelï¿½lt tï¿½tel!', NULL, NULL, NULL),
+(625, 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', 'ee', 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', NULL, NULL, NULL),
+(626, 'Nincsenek szï¿½rï¿½panelek', 'ee', 'Nincsenek szï¿½rï¿½panelek', NULL, NULL, NULL),
 (627, 'nov', 'ee', 'nov', NULL, NULL, NULL),
 (628, 'november', 'ee', 'november', NULL, NULL, NULL),
-(629, 'Nulla találat', 'ee', 'Nulla találat', NULL, NULL, NULL),
+(629, 'Nulla talï¿½lat', 'ee', 'Nulla talï¿½lat', NULL, NULL, NULL),
 (630, 'Nyelvek', 'ee', 'Nyelvek', NULL, NULL, NULL),
 (631, 'Nyitott', 'ee', 'Nyitott', NULL, NULL, NULL),
-(632, 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', 'ee', 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', NULL, NULL, NULL),
+(632, 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', 'ee', 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', NULL, NULL, NULL),
 (633, 'Nyomtat', 'ee', 'Nyomtat', NULL, NULL, NULL),
-(634, 'Nyomtatás', 'ee', 'Nyomtatás', NULL, NULL, NULL),
+(634, 'Nyomtatï¿½s', 'ee', 'Nyomtatï¿½s', NULL, NULL, NULL),
 (635, 'okt', 'ee', 'okt', NULL, NULL, NULL),
-(636, 'október', 'ee', 'október', NULL, NULL, NULL),
-(637, 'Óra', 'ee', 'Óra', NULL, NULL, NULL),
-(638, 'Összes', 'ee', 'Összes', NULL, NULL, NULL),
-(639, 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', 'ee', 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', NULL, NULL, NULL),
-(640, 'Összes feltétel törlése', 'ee', 'Összes feltétel törlése', NULL, NULL, NULL),
-(641, 'Összes kosár', 'ee', 'Összes kosár', NULL, NULL, NULL),
-(642, 'Összes megrendelés', 'ee', 'Összes megrendelés', NULL, NULL, NULL),
-(643, 'Összes sor megjelenítése', 'ee', 'Összes sor megjelenítése', NULL, NULL, NULL),
+(636, 'oktï¿½ber', 'ee', 'oktï¿½ber', NULL, NULL, NULL),
+(637, 'ï¿½ra', 'ee', 'ï¿½ra', NULL, NULL, NULL),
+(638, 'ï¿½sszes', 'ee', 'ï¿½sszes', NULL, NULL, NULL),
+(639, 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', 'ee', 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', NULL, NULL, NULL),
+(640, 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', 'ee', 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(641, 'ï¿½sszes kosï¿½r', 'ee', 'ï¿½sszes kosï¿½r', NULL, NULL, NULL),
+(642, 'ï¿½sszes megrendelï¿½s', 'ee', 'ï¿½sszes megrendelï¿½s', NULL, NULL, NULL),
+(643, 'ï¿½sszes sor megjelenï¿½tï¿½se', 'ee', 'ï¿½sszes sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
 (644, 'Oszlopok', 'ee', 'Oszlopok', NULL, NULL, NULL),
-(645, 'Oszlopok visszaállítása', 'ee', 'Oszlopok visszaállítása', NULL, NULL, NULL),
-(646, 'Partner cég', 'ee', 'Partner cég', NULL, NULL, NULL),
-(647, 'Partner felhasználók', 'ee', 'Partner felhasználók', NULL, NULL, NULL),
-(648, 'péntek', 'ee', 'péntek', NULL, NULL, NULL),
-(649, 'Pénznem', 'ee', 'Pénznem', NULL, NULL, NULL),
+(645, 'Oszlopok visszaï¿½llï¿½tï¿½sa', 'ee', 'Oszlopok visszaï¿½llï¿½tï¿½sa', NULL, NULL, NULL),
+(646, 'Partner cï¿½g', 'ee', 'Partner cï¿½g', NULL, NULL, NULL),
+(647, 'Partner felhasznï¿½lï¿½k', 'ee', 'Partner felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(648, 'pï¿½ntek', 'ee', 'pï¿½ntek', NULL, NULL, NULL),
+(649, 'Pï¿½nznem', 'ee', 'Pï¿½nznem', NULL, NULL, NULL),
 (650, 'Perc', 'ee', 'Perc', NULL, NULL, NULL),
 (651, 'Product', 'ee', 'Product', NULL, NULL, NULL),
 (652, 'Profil', 'ee', 'Profil', NULL, NULL, NULL),
-(653, 'rendszergazdák', 'ee', 'rendszergazdák', NULL, NULL, NULL),
-(654, 'Saját megrendelés', 'ee', 'Saját megrendelés', NULL, NULL, NULL),
+(653, 'rendszergazdï¿½k', 'ee', 'rendszergazdï¿½k', NULL, NULL, NULL),
+(654, 'Sajï¿½t megrendelï¿½s', 'ee', 'Sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
 (655, 'Szabad', 'ee', 'Szabad', NULL, NULL, NULL),
-(656, 'Szállítási mód', 'ee', 'Szállítási mód', NULL, NULL, NULL),
+(656, 'Szï¿½llï¿½tï¿½si mï¿½d', 'ee', 'Szï¿½llï¿½tï¿½si mï¿½d', NULL, NULL, NULL),
 (657, 'szept', 'ee', 'szept', NULL, NULL, NULL),
 (658, 'szeptember', 'ee', 'szeptember', NULL, NULL, NULL),
 (659, 'szerda', 'ee', 'szerda', NULL, NULL, NULL),
 (660, 'szombat', 'ee', 'szombat', NULL, NULL, NULL),
-(661, 'Szûrõk törlése', 'ee', 'Szûrõk törlése', NULL, NULL, NULL),
-(662, 'Szûrõpanelek', 'ee', 'Szûrõpanelek', NULL, NULL, NULL),
-(663, 'Szûrõpanelek (%d)', 'ee', 'Szûrõpanelek (%d)', NULL, NULL, NULL),
-(664, 'Szûrõpanelek betöltése', 'ee', 'Szûrõpanelek betöltése', NULL, NULL, NULL),
-(665, 'Táblázat', 'ee', 'Táblázat', NULL, NULL, NULL),
-(666, 'Találatok: _START_ - _END_ Összesen: _TOTAL_', 'ee', 'Találatok: _START_ - _END_ Összesen: _TOTAL_', NULL, NULL, NULL),
+(661, 'Szï¿½rï¿½k tï¿½rlï¿½se', 'ee', 'Szï¿½rï¿½k tï¿½rlï¿½se', NULL, NULL, NULL),
+(662, 'Szï¿½rï¿½panelek', 'ee', 'Szï¿½rï¿½panelek', NULL, NULL, NULL),
+(663, 'Szï¿½rï¿½panelek (%d)', 'ee', 'Szï¿½rï¿½panelek (%d)', NULL, NULL, NULL),
+(664, 'Szï¿½rï¿½panelek betï¿½ltï¿½se', 'ee', 'Szï¿½rï¿½panelek betï¿½ltï¿½se', NULL, NULL, NULL),
+(665, 'Tï¿½blï¿½zat', 'ee', 'Tï¿½blï¿½zat', NULL, NULL, NULL),
+(666, 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', 'ee', 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', NULL, NULL, NULL),
 (667, 'Tartalmazza', 'ee', 'Tartalmazza', NULL, NULL, NULL),
 (668, 'Telephely', 'ee', 'Telephely', NULL, NULL, NULL),
-(669, 'Teljes képernyõ', 'ee', 'Teljes képernyõ', NULL, NULL, NULL),
-(670, 'Termék', 'ee', 'Termék', NULL, NULL, NULL),
-(671, 'Termék kategória', 'ee', 'Termék kategória', NULL, NULL, NULL),
-(672, 'Tétel', 'ee', 'Tétel', NULL, NULL, NULL),
-(673, 'Tételek', 'ee', 'Tételek', NULL, NULL, NULL),
-(674, 'Tétetek kosárba másolás!', 'ee', 'Tétetek kosárba másolás!', NULL, NULL, NULL),
-(675, 'Törlés', 'ee', 'Törlés', NULL, NULL, NULL),
-(676, 'Tovább', 'ee', 'Tovább', NULL, NULL, NULL),
-(677, 'Új', 'ee', 'Új', NULL, NULL, NULL),
-(678, 'Új Kosár', 'ee', 'Új Kosár', NULL, NULL, NULL),
-(679, 'Üres', 'ee', 'Üres', NULL, NULL, NULL),
-(680, 'Után', 'ee', 'Után', NULL, NULL, NULL),
-(681, 'Utolsó', 'ee', 'Utolsó', NULL, NULL, NULL),
-(682, 'Vágólapra másolás', 'ee', 'Vágólapra másolás', NULL, NULL, NULL),
+(669, 'Teljes kï¿½pernyï¿½', 'ee', 'Teljes kï¿½pernyï¿½', NULL, NULL, NULL),
+(670, 'Termï¿½k', 'ee', 'Termï¿½k', NULL, NULL, NULL),
+(671, 'Termï¿½k kategï¿½ria', 'ee', 'Termï¿½k kategï¿½ria', NULL, NULL, NULL),
+(672, 'Tï¿½tel', 'ee', 'Tï¿½tel', NULL, NULL, NULL),
+(673, 'Tï¿½telek', 'ee', 'Tï¿½telek', NULL, NULL, NULL),
+(674, 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', 'ee', 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(675, 'Tï¿½rlï¿½s', 'ee', 'Tï¿½rlï¿½s', NULL, NULL, NULL),
+(676, 'Tovï¿½bb', 'ee', 'Tovï¿½bb', NULL, NULL, NULL),
+(677, 'ï¿½j', 'ee', 'ï¿½j', NULL, NULL, NULL),
+(678, 'ï¿½j Kosï¿½r', 'ee', 'ï¿½j Kosï¿½r', NULL, NULL, NULL),
+(679, 'ï¿½res', 'ee', 'ï¿½res', NULL, NULL, NULL),
+(680, 'Utï¿½n', 'ee', 'Utï¿½n', NULL, NULL, NULL),
+(681, 'Utolsï¿½', 'ee', 'Utolsï¿½', NULL, NULL, NULL),
+(682, 'Vï¿½gï¿½lapra mï¿½solï¿½s', 'ee', 'Vï¿½gï¿½lapra mï¿½solï¿½s', NULL, NULL, NULL),
 (683, 'Vagy', 'ee', 'Vagy', NULL, NULL, NULL),
-(684, 'Van már nyitott kosara!', 'ee', 'Van már nyitott kosara!', NULL, NULL, NULL),
-(685, 'vasárnap', 'ee', 'vasárnap', NULL, NULL, NULL),
-(686, 'Végzõdik', 'ee', 'Végzõdik', NULL, NULL, NULL),
-(687, 'Vezérlõ', 'ee', 'Vezérlõ', NULL, NULL, NULL),
-(688, 'Visszaállít', 'ee', 'Visszaállít', NULL, NULL, NULL),
+(684, 'Van mï¿½r nyitott kosara!', 'ee', 'Van mï¿½r nyitott kosara!', NULL, NULL, NULL),
+(685, 'vasï¿½rnap', 'ee', 'vasï¿½rnap', NULL, NULL, NULL),
+(686, 'Vï¿½gzï¿½dik', 'ee', 'Vï¿½gzï¿½dik', NULL, NULL, NULL),
+(687, 'Vezï¿½rlï¿½', 'ee', 'Vezï¿½rlï¿½', NULL, NULL, NULL),
+(688, 'Visszaï¿½llï¿½t', 'ee', 'Visszaï¿½llï¿½t', NULL, NULL, NULL),
 (689, 'XML Import', 'ee', 'XML Import', NULL, NULL, NULL),
-(690, '_MENU_ találat oldalanként', 'ee', '_MENU_ találat oldalanként', NULL, NULL, NULL),
-(691, '%d cella kiválasztva', 'cz', '%d cella kiválasztva', NULL, NULL, NULL),
-(692, '%d oszlop kiválasztva', 'cz', '%d oszlop kiválasztva', NULL, NULL, NULL),
-(693, '%d sor kiválasztva', 'cz', '%d sor kiválasztva', NULL, '2022-06-21 05:20:40', NULL),
-(694, '%d sor másolva', 'cz', '%d sor másolva', NULL, NULL, NULL),
-(695, '%d sor megjelenítése', 'cz', '%d sor megjelenítése', NULL, '2022-06-21 05:20:46', NULL),
-(696, '(_MAX_ összes rekord közül szûrve)', 'cz', '(_MAX_ összes rekord közül szûrve)', NULL, NULL, NULL),
-(697, '1 cella kiválasztva', 'cz', '1 cella kiválasztva', NULL, NULL, NULL),
-(698, '1 oszlop kiválasztva', 'cz', '1 oszlop kiválasztva', NULL, NULL, NULL),
-(699, '1 sor kiválasztva', 'cz', '1 sor kiválasztva', NULL, NULL, NULL),
-(700, '1 sor másolva', 'cz', '1 sor másolva', NULL, NULL, NULL),
-(701, ': aktiválja a csökkenõ rendezéshez', 'cz', ': aktiválja a csökkenõ rendezéshez', NULL, NULL, NULL),
-(702, ': aktiválja a növekvõ rendezéshez', 'cz', ': aktiválja a növekvõ rendezéshez', NULL, NULL, NULL),
+(690, '_MENU_ talï¿½lat oldalankï¿½nt', 'ee', '_MENU_ talï¿½lat oldalankï¿½nt', NULL, NULL, NULL),
+(691, '%d cella kivï¿½lasztva', 'cz', '%d cella kivï¿½lasztva', NULL, NULL, NULL),
+(692, '%d oszlop kivï¿½lasztva', 'cz', '%d oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(693, '%d sor kivï¿½lasztva', 'cz', '%d sor kivï¿½lasztva', NULL, '2022-06-21 05:20:40', NULL),
+(694, '%d sor mï¿½solva', 'cz', '%d sor mï¿½solva', NULL, NULL, NULL),
+(695, '%d sor megjelenï¿½tï¿½se', 'cz', '%d sor megjelenï¿½tï¿½se', NULL, '2022-06-21 05:20:46', NULL),
+(696, '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', 'cz', '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', NULL, NULL, NULL),
+(697, '1 cella kivï¿½lasztva', 'cz', '1 cella kivï¿½lasztva', NULL, NULL, NULL),
+(698, '1 oszlop kivï¿½lasztva', 'cz', '1 oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(699, '1 sor kivï¿½lasztva', 'cz', '1 sor kivï¿½lasztva', NULL, NULL, NULL),
+(700, '1 sor mï¿½solva', 'cz', '1 sor mï¿½solva', NULL, NULL, NULL),
+(701, ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', 'cz', ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(702, ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', 'cz', ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', NULL, NULL, NULL),
 (703, 'Adat', 'cz', 'Adat', NULL, NULL, NULL),
-(704, 'ÁFA', 'cz', 'ÁFA', NULL, NULL, NULL),
-(705, 'Aktív szûrõpanelek: %d', 'cz', 'Aktív szûrõpanelek: %d', NULL, NULL, NULL),
-(706, 'ápr', 'cz', 'ápr', NULL, NULL, NULL),
-(707, 'április', 'cz', 'április', NULL, NULL, NULL),
+(704, 'ï¿½FA', 'cz', 'ï¿½FA', NULL, NULL, NULL),
+(705, 'Aktï¿½v szï¿½rï¿½panelek: %d', 'cz', 'Aktï¿½v szï¿½rï¿½panelek: %d', NULL, NULL, NULL),
+(706, 'ï¿½pr', 'cz', 'ï¿½pr', NULL, NULL, NULL),
+(707, 'ï¿½prilis', 'cz', 'ï¿½prilis', NULL, NULL, NULL),
 (708, 'aug', 'cz', 'aug', NULL, NULL, NULL),
 (709, 'augusztus', 'cz', 'augusztus', NULL, NULL, NULL),
-(710, 'B2B felhasználók', 'cz', 'B2B felhasználók', NULL, NULL, NULL),
+(710, 'B2B felhasznï¿½lï¿½k', 'cz', 'B2B felhasznï¿½lï¿½k', NULL, NULL, NULL),
 (711, 'B2B partnerek', 'cz', 'B2B partnerek', NULL, NULL, NULL),
-(712, 'Beállítások', 'cz', 'Beállítások', NULL, NULL, NULL),
-(713, 'Bejelentkezés', 'cz', 'Bejelentkezés', NULL, NULL, NULL),
-(714, 'Belép', 'cz', 'Belép', NULL, NULL, NULL),
-(715, 'Belépés 3 hónap', 'cz', 'Belépés 3 hónap', NULL, NULL, NULL),
-(716, 'Belépés 3 hónap<', 'cz', 'Belépés 3 hónap<', NULL, NULL, NULL),
-(717, 'Belépett', 'cz', 'Belépett', NULL, NULL, NULL),
-(718, 'Belsõ felhasználók', 'cz', 'Belsõ felhasználók', NULL, NULL, NULL),
-(719, 'Beosztás', 'cz', 'Beosztás', NULL, NULL, NULL),
-(720, 'Betöltés...', 'cz', 'Betöltés...', NULL, NULL, NULL),
-(721, 'Bezárás', 'cz', 'Bezárás', NULL, NULL, NULL),
-(722, 'Biztosan kosárba másolja a megrendelés összes tételét?', 'cz', 'Biztosan kosárba másolja a megrendelés összes tételét?', NULL, NULL, NULL),
-(723, 'Biztosan kosárba másolja a tételeket?', 'cz', 'Biztosan kosárba másolja a tételeket?', NULL, NULL, NULL),
-(724, 'Bruttó', 'cz', 'Bruttó', NULL, NULL, NULL),
-(725, 'Cellák függõleges kitöltése', 'cz', 'Cellák függõleges kitöltése', NULL, NULL, NULL),
-(726, 'Cellák vízszintes kitöltése', 'cz', 'Cellák vízszintes kitöltése', NULL, NULL, NULL),
-(727, 'csütörtök', 'cz', 'csütörtök', NULL, NULL, NULL),
+(712, 'Beï¿½llï¿½tï¿½sok', 'cz', 'Beï¿½llï¿½tï¿½sok', NULL, NULL, NULL),
+(713, 'Bejelentkezï¿½s', 'cz', 'Bejelentkezï¿½s', NULL, NULL, NULL),
+(714, 'Belï¿½p', 'cz', 'Belï¿½p', NULL, NULL, NULL),
+(715, 'Belï¿½pï¿½s 3 hï¿½nap', 'cz', 'Belï¿½pï¿½s 3 hï¿½nap', NULL, NULL, NULL),
+(716, 'Belï¿½pï¿½s 3 hï¿½nap<', 'cz', 'Belï¿½pï¿½s 3 hï¿½nap<', NULL, NULL, NULL),
+(717, 'Belï¿½pett', 'cz', 'Belï¿½pett', NULL, NULL, NULL),
+(718, 'Belsï¿½ felhasznï¿½lï¿½k', 'cz', 'Belsï¿½ felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(719, 'Beosztï¿½s', 'cz', 'Beosztï¿½s', NULL, NULL, NULL),
+(720, 'Betï¿½ltï¿½s...', 'cz', 'Betï¿½ltï¿½s...', NULL, NULL, NULL),
+(721, 'Bezï¿½rï¿½s', 'cz', 'Bezï¿½rï¿½s', NULL, NULL, NULL),
+(722, 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', 'cz', 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', NULL, NULL, NULL),
+(723, 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', 'cz', 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', NULL, NULL, NULL),
+(724, 'Bruttï¿½', 'cz', 'Bruttï¿½', NULL, NULL, NULL),
+(725, 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', 'cz', 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', NULL, NULL, NULL),
+(726, 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', 'cz', 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', NULL, NULL, NULL),
+(727, 'csï¿½tï¿½rtï¿½k', 'cz', 'csï¿½tï¿½rtï¿½k', NULL, NULL, NULL),
 (728, 'darab', 'cz', 'darab', NULL, NULL, NULL),
-(729, 'Dátum', 'cz', 'Dátum', NULL, NULL, NULL),
+(729, 'Dï¿½tum', 'cz', 'Dï¿½tum', NULL, NULL, NULL),
 (730, 'db', 'cz', 'db', NULL, NULL, NULL),
 (731, 'de.', 'cz', 'de.', NULL, NULL, NULL),
 (732, 'dec', 'cz', 'dec', NULL, NULL, NULL),
 (733, 'december', 'cz', 'december', NULL, NULL, NULL),
 (734, 'du.', 'cz', 'du.', NULL, NULL, NULL),
 (735, 'eddig', 'cz', 'eddig', NULL, NULL, NULL),
-(736, 'Egyenlõ', 'cz', 'Egyenlõ', NULL, NULL, NULL),
-(737, 'Egys.ár', 'cz', 'Egys.ár', NULL, NULL, NULL),
-(738, 'Elõtt', 'cz', 'Elõtt', NULL, NULL, NULL),
-(739, 'Elõzõ', 'cz', 'Elõzõ', NULL, NULL, NULL),
-(740, 'Elsõ', 'cz', 'Elsõ', NULL, NULL, NULL),
+(736, 'Egyenlï¿½', 'cz', 'Egyenlï¿½', NULL, NULL, NULL),
+(737, 'Egys.ï¿½r', 'cz', 'Egys.ï¿½r', NULL, NULL, NULL),
+(738, 'Elï¿½tt', 'cz', 'Elï¿½tt', NULL, NULL, NULL),
+(739, 'Elï¿½zï¿½', 'cz', 'Elï¿½zï¿½', NULL, NULL, NULL),
+(740, 'Elsï¿½', 'cz', 'Elsï¿½', NULL, NULL, NULL),
 (741, 'Email', 'cz', 'Email', NULL, NULL, NULL),
-(742, 'Érték', 'cz', 'Érték', NULL, NULL, NULL),
-(743, 'És', 'cz', 'És', NULL, NULL, NULL),
-(744, 'ettõl', 'cz', 'ettõl', NULL, NULL, NULL),
-(745, 'Exportál', 'cz', 'Exportál', NULL, NULL, NULL),
+(742, 'ï¿½rtï¿½k', 'cz', 'ï¿½rtï¿½k', NULL, NULL, NULL),
+(743, 'ï¿½s', 'cz', 'ï¿½s', NULL, NULL, NULL),
+(744, 'ettï¿½l', 'cz', 'ettï¿½l', NULL, NULL, NULL),
+(745, 'Exportï¿½l', 'cz', 'Exportï¿½l', NULL, NULL, NULL),
 (746, 'febr', 'cz', 'febr', NULL, NULL, NULL),
-(747, 'február', 'cz', 'február', NULL, NULL, NULL),
-(748, 'Feldolgozás...', 'cz', 'Feldolgozás...', NULL, NULL, NULL),
-(749, 'Felhasználói belépések', 'cz', 'Felhasználói belépések', NULL, NULL, NULL),
-(750, 'felhasználók', 'cz', 'felhasználók', NULL, NULL, NULL),
-(751, 'Felhasználók összesen', 'cz', 'Felhasználók összesen', NULL, NULL, NULL),
-(752, 'Felhasználónként', 'cz', 'Felhasználónként', NULL, NULL, NULL),
-(753, 'Felhasznált', 'cz', 'Felhasznált', NULL, NULL, NULL),
-(754, 'Feltétel', 'cz', 'Feltétel', NULL, NULL, NULL),
-(755, 'Feltétel hozzáadása', 'cz', 'Feltétel hozzáadása', NULL, NULL, NULL),
-(756, 'Feltétel törlése', 'cz', 'Feltétel törlése', NULL, NULL, NULL),
+(747, 'februï¿½r', 'cz', 'februï¿½r', NULL, NULL, NULL),
+(748, 'Feldolgozï¿½s...', 'cz', 'Feldolgozï¿½s...', NULL, NULL, NULL),
+(749, 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', 'cz', 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', NULL, NULL, NULL),
+(750, 'felhasznï¿½lï¿½k', 'cz', 'felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(751, 'Felhasznï¿½lï¿½k ï¿½sszesen', 'cz', 'Felhasznï¿½lï¿½k ï¿½sszesen', NULL, NULL, NULL),
+(752, 'Felhasznï¿½lï¿½nkï¿½nt', 'cz', 'Felhasznï¿½lï¿½nkï¿½nt', NULL, NULL, NULL),
+(753, 'Felhasznï¿½lt', 'cz', 'Felhasznï¿½lt', NULL, NULL, NULL),
+(754, 'Feltï¿½tel', 'cz', 'Feltï¿½tel', NULL, NULL, NULL),
+(755, 'Feltï¿½tel hozzï¿½adï¿½sa', 'cz', 'Feltï¿½tel hozzï¿½adï¿½sa', NULL, NULL, NULL),
+(756, 'Feltï¿½tel tï¿½rlï¿½se', 'cz', 'Feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
 (757, 'forint', 'cz', 'forint', NULL, NULL, NULL),
-(758, 'havi bontás', 'cz', 'havi bontás', NULL, NULL, NULL),
-(759, 'hétfõ', 'cz', 'hétfõ', NULL, NULL, NULL),
+(758, 'havi bontï¿½s', 'cz', 'havi bontï¿½s', NULL, NULL, NULL),
+(759, 'hï¿½tfï¿½', 'cz', 'hï¿½tfï¿½', NULL, NULL, NULL),
 (760, 'Hitel keret', 'cz', 'Hitel keret', NULL, NULL, NULL),
 (761, 'Id', 'cz', 'Id', NULL, NULL, NULL),
 (762, 'Idei', 'cz', 'Idei', NULL, NULL, NULL),
-(763, 'Idei kosár', 'cz', 'Idei kosár', NULL, NULL, NULL),
-(764, 'Idei megrendelés', 'cz', 'Idei megrendelés', NULL, NULL, NULL),
-(765, 'Idei megrendelések', 'cz', 'Idei megrendelések', NULL, NULL, NULL),
-(766, 'Idei saját megrendelés', 'cz', 'Idei saját megrendelés', NULL, NULL, NULL),
-(767, 'Idei saját megrendelések', 'cz', 'Idei saját megrendelések', NULL, NULL, NULL),
-(768, 'Importál', 'cz', 'Importál', NULL, NULL, NULL),
+(763, 'Idei kosï¿½r', 'cz', 'Idei kosï¿½r', NULL, NULL, NULL),
+(764, 'Idei megrendelï¿½s', 'cz', 'Idei megrendelï¿½s', NULL, NULL, NULL),
+(765, 'Idei megrendelï¿½sek', 'cz', 'Idei megrendelï¿½sek', NULL, NULL, NULL),
+(766, 'Idei sajï¿½t megrendelï¿½s', 'cz', 'Idei sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(767, 'Idei sajï¿½t megrendelï¿½sek', 'cz', 'Idei sajï¿½t megrendelï¿½sek', NULL, NULL, NULL),
+(768, 'Importï¿½l', 'cz', 'Importï¿½l', NULL, NULL, NULL),
 (769, 'jan', 'cz', 'jan', NULL, NULL, NULL),
-(770, 'január', 'cz', 'január', NULL, NULL, NULL),
-(771, 'júl', 'cz', 'júl', NULL, NULL, NULL),
-(772, 'július', 'cz', 'július', NULL, NULL, NULL),
-(773, 'jún', 'cz', 'jún', NULL, NULL, NULL),
-(774, 'június', 'cz', 'június', NULL, NULL, NULL),
+(770, 'januï¿½r', 'cz', 'januï¿½r', NULL, NULL, NULL),
+(771, 'jï¿½l', 'cz', 'jï¿½l', NULL, NULL, NULL),
+(772, 'jï¿½lius', 'cz', 'jï¿½lius', NULL, NULL, NULL),
+(773, 'jï¿½n', 'cz', 'jï¿½n', NULL, NULL, NULL),
+(774, 'jï¿½nius', 'cz', 'jï¿½nius', NULL, NULL, NULL),
 (775, 'kedd', 'cz', 'kedd', NULL, NULL, NULL),
 (776, 'Kedvenc', 'cz', 'Kedvenc', NULL, NULL, NULL),
-(777, 'Kedvenc termék kiválasztás', 'cz', 'Kedvenc termék kiválasztás', NULL, NULL, NULL),
-(778, 'Kedvenc termékek', 'cz', 'Kedvenc termékek', NULL, NULL, NULL),
-(779, 'Kép', 'cz', 'Kép', NULL, NULL, NULL),
-(780, 'Keresés konfigurátor', 'cz', 'Keresés konfigurátor', NULL, NULL, NULL),
-(781, 'Keresés konfigurátor (%d)', 'cz', 'Keresés konfigurátor (%d)', NULL, NULL, NULL),
-(782, 'Keresés:', 'cz', 'Keresés:', NULL, NULL, NULL),
-(783, 'Kezdõdik', 'cz', 'Kezdõdik', NULL, NULL, NULL),
-(784, 'Kilép', 'cz', 'Kilép', NULL, NULL, NULL),
-(785, 'Kilépés', 'cz', 'Kilépés', NULL, NULL, NULL),
-(786, 'Kilépés a teljes képernyõbõl', 'cz', 'Kilépés a teljes képernyõbõl', NULL, NULL, NULL),
+(777, 'Kedvenc termï¿½k kivï¿½lasztï¿½s', 'cz', 'Kedvenc termï¿½k kivï¿½lasztï¿½s', NULL, NULL, NULL),
+(778, 'Kedvenc termï¿½kek', 'cz', 'Kedvenc termï¿½kek', NULL, NULL, NULL),
+(779, 'Kï¿½p', 'cz', 'Kï¿½p', NULL, NULL, NULL),
+(780, 'Keresï¿½s konfigurï¿½tor', 'cz', 'Keresï¿½s konfigurï¿½tor', NULL, NULL, NULL),
+(781, 'Keresï¿½s konfigurï¿½tor (%d)', 'cz', 'Keresï¿½s konfigurï¿½tor (%d)', NULL, NULL, NULL),
+(782, 'Keresï¿½s:', 'cz', 'Keresï¿½s:', NULL, NULL, NULL),
+(783, 'Kezdï¿½dik', 'cz', 'Kezdï¿½dik', NULL, NULL, NULL),
+(784, 'Kilï¿½p', 'cz', 'Kilï¿½p', NULL, NULL, NULL),
+(785, 'Kilï¿½pï¿½s', 'cz', 'Kilï¿½pï¿½s', NULL, NULL, NULL),
+(786, 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', 'cz', 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', NULL, NULL, NULL),
 (787, 'Kissebb mint', 'cz', 'Kissebb mint', NULL, NULL, NULL),
-(788, 'Kissebb vagy egyenlõ mint', 'cz', 'Kissebb vagy egyenlõ mint', NULL, NULL, NULL),
-(789, 'Kívül esõ', 'cz', 'Kívül esõ', NULL, NULL, NULL),
-(790, 'Kosár', 'cz', 'Kosár', NULL, NULL, NULL),
-(791, 'Kosárba', 'cz', 'Kosárba', NULL, NULL, NULL),
-(792, 'Következõ', 'cz', 'Következõ', NULL, NULL, NULL),
-(793, 'Között', 'cz', 'Között', NULL, NULL, NULL),
-(794, 'Letöltés CSV fileként', 'cz', 'Letöltés CSV fileként', NULL, NULL, NULL),
-(795, 'Letöltés JPEG képként', 'cz', 'Letöltés JPEG képként', NULL, NULL, NULL),
-(796, 'Letöltés PDF dokumentumként', 'cz', 'Letöltés PDF dokumentumként', NULL, NULL, NULL),
-(797, 'Letöltés PNG képként', 'cz', 'Letöltés PNG képként', NULL, NULL, NULL),
-(798, 'Letöltés SVG formátumban', 'cz', 'Letöltés SVG formátumban', NULL, NULL, NULL),
-(799, 'Letöltés XLS fileként', 'cz', 'Letöltés XLS fileként', NULL, NULL, NULL),
-(800, 'Létrehozás', 'cz', 'Létrehozás', NULL, NULL, NULL),
+(788, 'Kissebb vagy egyenlï¿½ mint', 'cz', 'Kissebb vagy egyenlï¿½ mint', NULL, NULL, NULL),
+(789, 'Kï¿½vï¿½l esï¿½', 'cz', 'Kï¿½vï¿½l esï¿½', NULL, NULL, NULL),
+(790, 'Kosï¿½r', 'cz', 'Kosï¿½r', NULL, NULL, NULL),
+(791, 'Kosï¿½rba', 'cz', 'Kosï¿½rba', NULL, NULL, NULL),
+(792, 'Kï¿½vetkezï¿½', 'cz', 'Kï¿½vetkezï¿½', NULL, NULL, NULL),
+(793, 'Kï¿½zï¿½tt', 'cz', 'Kï¿½zï¿½tt', NULL, NULL, NULL),
+(794, 'Letï¿½ltï¿½s CSV filekï¿½nt', 'cz', 'Letï¿½ltï¿½s CSV filekï¿½nt', NULL, NULL, NULL),
+(795, 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', 'cz', 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(796, 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', 'cz', 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', NULL, NULL, NULL),
+(797, 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', 'cz', 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(798, 'Letï¿½ltï¿½s SVG formï¿½tumban', 'cz', 'Letï¿½ltï¿½s SVG formï¿½tumban', NULL, NULL, NULL),
+(799, 'Letï¿½ltï¿½s XLS filekï¿½nt', 'cz', 'Letï¿½ltï¿½s XLS filekï¿½nt', NULL, NULL, NULL),
+(800, 'Lï¿½trehozï¿½s', 'cz', 'Lï¿½trehozï¿½s', NULL, NULL, NULL),
 (801, 'Log adatok', 'cz', 'Log adatok', NULL, NULL, NULL),
-(802, 'máj', 'cz', 'máj', NULL, NULL, NULL),
-(803, 'május', 'cz', 'május', NULL, NULL, NULL),
-(804, 'márc', 'cz', 'márc', NULL, NULL, NULL),
-(805, 'március', 'cz', 'március', NULL, NULL, NULL),
-(806, 'Másodperc', 'cz', 'Másodperc', NULL, NULL, NULL),
-(807, 'Másolás', 'cz', 'Másolás', NULL, NULL, NULL),
+(802, 'mï¿½j', 'cz', 'mï¿½j', NULL, NULL, NULL),
+(803, 'mï¿½jus', 'cz', 'mï¿½jus', NULL, NULL, NULL),
+(804, 'mï¿½rc', 'cz', 'mï¿½rc', NULL, NULL, NULL),
+(805, 'mï¿½rcius', 'cz', 'mï¿½rcius', NULL, NULL, NULL),
+(806, 'Mï¿½sodperc', 'cz', 'Mï¿½sodperc', NULL, NULL, NULL),
+(807, 'Mï¿½solï¿½s', 'cz', 'Mï¿½solï¿½s', NULL, NULL, NULL),
 (808, 'Me.egys', 'cz', 'Me.egys', NULL, NULL, NULL),
-(809, 'Megrendelés átlag értékek az elmúlt 12 hónapban', 'cz', 'Megrendelés átlag értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(810, 'Megrendelés darab az elmúlt 12 hónapban', 'cz', 'Megrendelés darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(811, 'Megrendelés értékek az elmúlt 12 hónapban', 'cz', 'Megrendelés értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(812, 'Megrendelés kosárba másolás!', 'cz', 'Megrendelés kosárba másolás!', NULL, NULL, NULL),
-(813, 'Megrendelés szám', 'cz', 'Megrendelés szám', NULL, NULL, NULL),
-(814, 'Megrendelés tétel darab az elmúlt 12 hónapban', 'cz', 'Megrendelés tétel darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(815, 'Megrendelések', 'cz', 'Megrendelések', NULL, NULL, NULL),
-(816, 'Megszakítás', 'cz', 'Megszakítás', NULL, NULL, NULL),
-(817, 'Mennyiség', 'cz', 'Mennyiség', NULL, NULL, NULL),
-(818, 'Minden termék', 'cz', 'Minden termék', NULL, NULL, NULL),
-(819, 'Módosítás', 'cz', 'Módosítás', NULL, NULL, NULL),
+(809, 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'cz', 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(810, 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', 'cz', 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(811, 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'cz', 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(812, 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', 'cz', 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(813, 'Megrendelï¿½s szï¿½m', 'cz', 'Megrendelï¿½s szï¿½m', NULL, NULL, NULL),
+(814, 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', 'cz', 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(815, 'Megrendelï¿½sek', 'cz', 'Megrendelï¿½sek', NULL, NULL, NULL),
+(816, 'Megszakï¿½tï¿½s', 'cz', 'Megszakï¿½tï¿½s', NULL, NULL, NULL),
+(817, 'Mennyisï¿½g', 'cz', 'Mennyisï¿½g', NULL, NULL, NULL),
+(818, 'Minden termï¿½k', 'cz', 'Minden termï¿½k', NULL, NULL, NULL),
+(819, 'Mï¿½dosï¿½tï¿½s', 'cz', 'Mï¿½dosï¿½tï¿½s', NULL, NULL, NULL),
 (820, 'mutat:', 'cz', 'mutat:', NULL, NULL, NULL),
 (821, 'Nagyobb mint', 'cz', 'Nagyobb mint', NULL, NULL, NULL),
-(822, 'Nagyobb vagy egyenlõ mint', 'cz', 'Nagyobb vagy egyenlõ mint', NULL, NULL, NULL),
+(822, 'Nagyobb vagy egyenlï¿½ mint', 'cz', 'Nagyobb vagy egyenlï¿½ mint', NULL, NULL, NULL),
 (823, 'Nem', 'cz', 'Nem', NULL, NULL, NULL),
-(824, 'Nem jelölt ki sort', 'cz', 'Nem jelölt ki sort', NULL, NULL, NULL),
-(825, 'Nem üres', 'cz', 'Nem üres', NULL, NULL, NULL),
-(826, 'Nemzetiség', 'cz', 'Nemzetiség', NULL, NULL, NULL),
-(827, 'Nettó', 'cz', 'Nettó', NULL, NULL, NULL),
-(828, 'Név', 'cz', 'Név', NULL, NULL, NULL),
-(829, 'Nincs a keresésnek megfelelõ találat', 'cz', 'Nincs a keresésnek megfelelõ találat', NULL, NULL, NULL),
-(830, 'Nincs kijelölt tétel!', 'cz', 'Nincs kijelölt tétel!', NULL, NULL, NULL),
-(831, 'Nincs rendelkezésre álló adat', 'cz', 'Nincs rendelkezésre álló adat', NULL, NULL, NULL),
-(832, 'Nincsenek szûrõpanelek', 'cz', 'Nincsenek szûrõpanelek', NULL, NULL, NULL),
+(824, 'Nem jelï¿½lt ki sort', 'cz', 'Nem jelï¿½lt ki sort', NULL, NULL, NULL),
+(825, 'Nem ï¿½res', 'cz', 'Nem ï¿½res', NULL, NULL, NULL),
+(826, 'Nemzetisï¿½g', 'cz', 'Nemzetisï¿½g', NULL, NULL, NULL),
+(827, 'Nettï¿½', 'cz', 'Nettï¿½', NULL, NULL, NULL),
+(828, 'Nï¿½v', 'cz', 'Nï¿½v', NULL, NULL, NULL),
+(829, 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', 'cz', 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', NULL, NULL, NULL),
+(830, 'Nincs kijelï¿½lt tï¿½tel!', 'cz', 'Nincs kijelï¿½lt tï¿½tel!', NULL, NULL, NULL),
+(831, 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', 'cz', 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', NULL, NULL, NULL),
+(832, 'Nincsenek szï¿½rï¿½panelek', 'cz', 'Nincsenek szï¿½rï¿½panelek', NULL, NULL, NULL),
 (833, 'nov', 'cz', 'nov', NULL, NULL, NULL),
 (834, 'november', 'cz', 'november', NULL, NULL, NULL),
-(835, 'Nulla találat', 'cz', 'Nulla találat', NULL, NULL, NULL),
+(835, 'Nulla talï¿½lat', 'cz', 'Nulla talï¿½lat', NULL, NULL, NULL),
 (836, 'Nyelvek', 'cz', 'Nyelvek', NULL, NULL, NULL),
 (837, 'Nyitott', 'cz', 'Nyitott', NULL, NULL, NULL),
-(838, 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', 'cz', 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', NULL, NULL, NULL),
+(838, 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', 'cz', 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', NULL, NULL, NULL),
 (839, 'Nyomtat', 'cz', 'Nyomtat', NULL, NULL, NULL),
-(840, 'Nyomtatás', 'cz', 'Nyomtatás', NULL, NULL, NULL),
+(840, 'Nyomtatï¿½s', 'cz', 'Nyomtatï¿½s', NULL, NULL, NULL),
 (841, 'okt', 'cz', 'okt', NULL, NULL, NULL),
-(842, 'október', 'cz', 'október', NULL, NULL, NULL),
-(843, 'Óra', 'cz', 'Óra', NULL, NULL, NULL),
-(844, 'Összes', 'cz', 'Összes', NULL, NULL, NULL),
-(845, 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', 'cz', 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', NULL, NULL, NULL);
+(842, 'oktï¿½ber', 'cz', 'oktï¿½ber', NULL, NULL, NULL),
+(843, 'ï¿½ra', 'cz', 'ï¿½ra', NULL, NULL, NULL),
+(844, 'ï¿½sszes', 'cz', 'ï¿½sszes', NULL, NULL, NULL),
+(845, 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', 'cz', 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', NULL, NULL, NULL);
 INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(846, 'Összes feltétel törlése', 'cz', 'Összes feltétel törlése', NULL, NULL, NULL),
-(847, 'Összes kosár', 'cz', 'Összes kosár', NULL, NULL, NULL),
-(848, 'Összes megrendelés', 'cz', 'Összes megrendelés', NULL, NULL, NULL),
-(849, 'Összes sor megjelenítése', 'cz', 'Összes sor megjelenítése', NULL, NULL, NULL),
+(846, 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', 'cz', 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(847, 'ï¿½sszes kosï¿½r', 'cz', 'ï¿½sszes kosï¿½r', NULL, NULL, NULL),
+(848, 'ï¿½sszes megrendelï¿½s', 'cz', 'ï¿½sszes megrendelï¿½s', NULL, NULL, NULL),
+(849, 'ï¿½sszes sor megjelenï¿½tï¿½se', 'cz', 'ï¿½sszes sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
 (850, 'Oszlopok', 'cz', 'Oszlopok', NULL, NULL, NULL),
-(851, 'Oszlopok visszaállítása', 'cz', 'Oszlopok visszaállítása', NULL, NULL, NULL),
-(852, 'Partner cég', 'cz', 'Partner cég', NULL, NULL, NULL),
-(853, 'Partner felhasználók', 'cz', 'Partner felhasználók', NULL, NULL, NULL),
-(854, 'péntek', 'cz', 'péntek', NULL, NULL, NULL),
-(855, 'Pénznem', 'cz', 'Pénznem', NULL, NULL, NULL),
+(851, 'Oszlopok visszaï¿½llï¿½tï¿½sa', 'cz', 'Oszlopok visszaï¿½llï¿½tï¿½sa', NULL, NULL, NULL),
+(852, 'Partner cï¿½g', 'cz', 'Partner cï¿½g', NULL, NULL, NULL),
+(853, 'Partner felhasznï¿½lï¿½k', 'cz', 'Partner felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(854, 'pï¿½ntek', 'cz', 'pï¿½ntek', NULL, NULL, NULL),
+(855, 'Pï¿½nznem', 'cz', 'Pï¿½nznem', NULL, NULL, NULL),
 (856, 'Perc', 'cz', 'Perc', NULL, NULL, NULL),
 (857, 'Product', 'cz', 'Product', NULL, NULL, NULL),
 (858, 'Profil', 'cz', 'Profil', NULL, NULL, NULL),
-(859, 'rendszergazdák', 'cz', 'rendszergazdák', NULL, NULL, NULL),
-(860, 'Saját megrendelés', 'cz', 'Saját megrendelés', NULL, NULL, NULL),
+(859, 'rendszergazdï¿½k', 'cz', 'rendszergazdï¿½k', NULL, NULL, NULL),
+(860, 'Sajï¿½t megrendelï¿½s', 'cz', 'Sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
 (861, 'Szabad', 'cz', 'Szabad', NULL, NULL, NULL),
-(862, 'Szállítási mód', 'cz', 'Szállítási mód', NULL, NULL, NULL),
+(862, 'Szï¿½llï¿½tï¿½si mï¿½d', 'cz', 'Szï¿½llï¿½tï¿½si mï¿½d', NULL, NULL, NULL),
 (863, 'szept', 'cz', 'szept', NULL, NULL, NULL),
 (864, 'szeptember', 'cz', 'szeptember', NULL, NULL, NULL),
 (865, 'szerda', 'cz', 'szerda', NULL, NULL, NULL),
 (866, 'szombat', 'cz', 'szombat', NULL, NULL, NULL),
-(867, 'Szûrõk törlése', 'cz', 'Szûrõk törlése', NULL, NULL, NULL),
-(868, 'Szûrõpanelek', 'cz', 'Szûrõpanelek', NULL, NULL, NULL),
-(869, 'Szûrõpanelek (%d)', 'cz', 'Szûrõpanelek (%d)', NULL, NULL, NULL),
-(870, 'Szûrõpanelek betöltése', 'cz', 'Szûrõpanelek betöltése', NULL, NULL, NULL),
-(871, 'Táblázat', 'cz', 'Táblázat', NULL, NULL, NULL),
-(872, 'Találatok: _START_ - _END_ Összesen: _TOTAL_', 'cz', 'Találatok: _START_ - _END_ Összesen: _TOTAL_', NULL, NULL, NULL),
+(867, 'Szï¿½rï¿½k tï¿½rlï¿½se', 'cz', 'Szï¿½rï¿½k tï¿½rlï¿½se', NULL, NULL, NULL),
+(868, 'Szï¿½rï¿½panelek', 'cz', 'Szï¿½rï¿½panelek', NULL, NULL, NULL),
+(869, 'Szï¿½rï¿½panelek (%d)', 'cz', 'Szï¿½rï¿½panelek (%d)', NULL, NULL, NULL),
+(870, 'Szï¿½rï¿½panelek betï¿½ltï¿½se', 'cz', 'Szï¿½rï¿½panelek betï¿½ltï¿½se', NULL, NULL, NULL),
+(871, 'Tï¿½blï¿½zat', 'cz', 'Tï¿½blï¿½zat', NULL, NULL, NULL),
+(872, 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', 'cz', 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', NULL, NULL, NULL),
 (873, 'Tartalmazza', 'cz', 'Tartalmazza', NULL, NULL, NULL),
 (874, 'Telephely', 'cz', 'Telephely', NULL, NULL, NULL),
-(875, 'Teljes képernyõ', 'cz', 'Teljes képernyõ', NULL, NULL, NULL),
-(876, 'Termék', 'cz', 'Termék', NULL, NULL, NULL),
-(877, 'Termék kategória', 'cz', 'Termék kategória', NULL, NULL, NULL),
-(878, 'Tétel', 'cz', 'Tétel', NULL, NULL, NULL),
-(879, 'Tételek', 'cz', 'Tételek', NULL, NULL, NULL),
-(880, 'Tétetek kosárba másolás!', 'cz', 'Tétetek kosárba másolás!', NULL, NULL, NULL),
-(881, 'Törlés', 'cz', 'Törlés', NULL, NULL, NULL),
-(882, 'Tovább', 'cz', 'Tovább', NULL, NULL, NULL),
-(883, 'Új', 'cz', 'Új', NULL, NULL, NULL),
-(884, 'Új Kosár', 'cz', 'Új Kosár', NULL, NULL, NULL),
-(885, 'Üres', 'cz', 'Üres', NULL, NULL, NULL),
-(886, 'Után', 'cz', 'Után', NULL, NULL, NULL),
-(887, 'Utolsó', 'cz', 'Utolsó', NULL, NULL, NULL),
-(888, 'Vágólapra másolás', 'cz', 'Vágólapra másolás', NULL, NULL, NULL),
+(875, 'Teljes kï¿½pernyï¿½', 'cz', 'Teljes kï¿½pernyï¿½', NULL, NULL, NULL),
+(876, 'Termï¿½k', 'cz', 'Termï¿½k', NULL, NULL, NULL),
+(877, 'Termï¿½k kategï¿½ria', 'cz', 'Termï¿½k kategï¿½ria', NULL, NULL, NULL),
+(878, 'Tï¿½tel', 'cz', 'Tï¿½tel', NULL, NULL, NULL),
+(879, 'Tï¿½telek', 'cz', 'Tï¿½telek', NULL, NULL, NULL),
+(880, 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', 'cz', 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(881, 'Tï¿½rlï¿½s', 'cz', 'Tï¿½rlï¿½s', NULL, NULL, NULL),
+(882, 'Tovï¿½bb', 'cz', 'Tovï¿½bb', NULL, NULL, NULL),
+(883, 'ï¿½j', 'cz', 'ï¿½j', NULL, NULL, NULL),
+(884, 'ï¿½j Kosï¿½r', 'cz', 'ï¿½j Kosï¿½r', NULL, NULL, NULL),
+(885, 'ï¿½res', 'cz', 'ï¿½res', NULL, NULL, NULL),
+(886, 'Utï¿½n', 'cz', 'Utï¿½n', NULL, NULL, NULL),
+(887, 'Utolsï¿½', 'cz', 'Utolsï¿½', NULL, NULL, NULL),
+(888, 'Vï¿½gï¿½lapra mï¿½solï¿½s', 'cz', 'Vï¿½gï¿½lapra mï¿½solï¿½s', NULL, NULL, NULL),
 (889, 'Vagy', 'cz', 'Vagy', NULL, NULL, NULL),
-(890, 'Van már nyitott kosara!', 'cz', 'Van már nyitott kosara!', NULL, NULL, NULL),
-(891, 'vasárnap', 'cz', 'vasárnap', NULL, NULL, NULL),
-(892, 'Végzõdik', 'cz', 'Végzõdik', NULL, NULL, NULL),
-(893, 'Vezérlõ', 'cz', 'Vezérlõ', NULL, NULL, NULL),
-(894, 'Visszaállít', 'cz', 'Visszaállít', NULL, NULL, NULL),
+(890, 'Van mï¿½r nyitott kosara!', 'cz', 'Van mï¿½r nyitott kosara!', NULL, NULL, NULL),
+(891, 'vasï¿½rnap', 'cz', 'vasï¿½rnap', NULL, NULL, NULL),
+(892, 'Vï¿½gzï¿½dik', 'cz', 'Vï¿½gzï¿½dik', NULL, NULL, NULL),
+(893, 'Vezï¿½rlï¿½', 'cz', 'Vezï¿½rlï¿½', NULL, NULL, NULL),
+(894, 'Visszaï¿½llï¿½t', 'cz', 'Visszaï¿½llï¿½t', NULL, NULL, NULL),
 (895, 'XML Import', 'cz', 'XML Import', NULL, NULL, NULL),
-(896, '_MENU_ találat oldalanként', 'cz', '_MENU_ találat oldalanként', NULL, NULL, NULL),
+(896, '_MENU_ talï¿½lat oldalankï¿½nt', 'cz', '_MENU_ talï¿½lat oldalankï¿½nt', NULL, NULL, NULL),
 (897, 'Ment', 'hu', 'Ment', NULL, NULL, NULL),
 (898, 'Ment', 'en', 'Ment', NULL, NULL, NULL),
 (899, 'Ment', 'cz', 'Ment', NULL, NULL, NULL),
@@ -3104,10 +3103,10 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (906, 'Magyarul', 'en', 'Magyarul', NULL, NULL, NULL),
 (907, 'Magyarul', 'cz', 'Magyarul', NULL, NULL, NULL),
 (908, 'Magyarul', 'ee', 'Magyarul', NULL, NULL, NULL),
-(909, 'Fordítás', 'hu', 'Fordítás', NULL, NULL, NULL),
-(910, 'Fordítás', 'en', 'Fordítás', NULL, NULL, NULL),
-(911, 'Fordítás', 'cz', 'Fordítás', NULL, NULL, NULL),
-(912, 'Fordítás', 'ee', 'Fordítás', NULL, NULL, NULL),
+(909, 'Fordï¿½tï¿½s', 'hu', 'Fordï¿½tï¿½s', NULL, NULL, NULL),
+(910, 'Fordï¿½tï¿½s', 'en', 'Fordï¿½tï¿½s', NULL, NULL, NULL),
+(911, 'Fordï¿½tï¿½s', 'cz', 'Fordï¿½tï¿½s', NULL, NULL, NULL),
+(912, 'Fordï¿½tï¿½s', 'ee', 'Fordï¿½tï¿½s', NULL, NULL, NULL),
 (913, 'Magyar', 'hu', 'Magyar', NULL, NULL, NULL),
 (914, 'Magyar', 'en', 'Magyar', NULL, NULL, NULL),
 (915, 'Magyar', 'cz', 'Magyar', NULL, NULL, NULL),
@@ -3116,223 +3115,223 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (918, 'B2B partner', 'en', 'B2B partner', NULL, NULL, NULL),
 (919, 'B2B partner', 'cz', 'B2B partner', NULL, NULL, NULL),
 (920, 'B2B partner', 'ee', 'B2B partner', NULL, NULL, NULL),
-(921, 'Partner felhasználó', 'hu', 'Partner felhasználó', NULL, NULL, NULL),
-(922, 'Partner felhasználó', 'en', 'Partner felhasználó', NULL, NULL, NULL),
-(923, 'Partner felhasználó', 'cz', 'Partner felhasználó', NULL, NULL, NULL),
-(924, 'Partner felhasználó', 'ee', 'Partner felhasználó', NULL, NULL, NULL),
-(925, '%d cella kiválasztva', 'bg', '%d cella kiválasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(926, '%d oszlop kiválasztva', 'bg', '%d oszlop kiválasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(927, '%d sor kiválasztva', 'bg', '%d sor kiválasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(928, '%d sor másolva', 'bg', '%d sor másolva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(929, '%d sor megjelenítése', 'bg', '%d sor megjelenítése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(930, '(_MAX_ összes rekord közül szûrve)', 'bg', '(_MAX_ összes rekord közül szûrve)', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(931, '1 cella kiválasztva', 'bg', '1 cella kiválasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(932, '1 oszlop kiválasztva', 'bg', '1 oszlop kiválasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(933, '1 sor kiválasztva', 'bg', '1 sor kiválasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(934, '1 sor másolva', 'bg', '1 sor másolva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(935, ': aktiválja a csökkenõ rendezéshez', 'bg', ': aktiválja a csökkenõ rendezéshez', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(936, ': aktiválja a növekvõ rendezéshez', 'bg', ': aktiválja a növekvõ rendezéshez', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(921, 'Partner felhasznï¿½lï¿½', 'hu', 'Partner felhasznï¿½lï¿½', NULL, NULL, NULL),
+(922, 'Partner felhasznï¿½lï¿½', 'en', 'Partner felhasznï¿½lï¿½', NULL, NULL, NULL),
+(923, 'Partner felhasznï¿½lï¿½', 'cz', 'Partner felhasznï¿½lï¿½', NULL, NULL, NULL),
+(924, 'Partner felhasznï¿½lï¿½', 'ee', 'Partner felhasznï¿½lï¿½', NULL, NULL, NULL),
+(925, '%d cella kivï¿½lasztva', 'bg', '%d cella kivï¿½lasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(926, '%d oszlop kivï¿½lasztva', 'bg', '%d oszlop kivï¿½lasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(927, '%d sor kivï¿½lasztva', 'bg', '%d sor kivï¿½lasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(928, '%d sor mï¿½solva', 'bg', '%d sor mï¿½solva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(929, '%d sor megjelenï¿½tï¿½se', 'bg', '%d sor megjelenï¿½tï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(930, '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', 'bg', '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(931, '1 cella kivï¿½lasztva', 'bg', '1 cella kivï¿½lasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(932, '1 oszlop kivï¿½lasztva', 'bg', '1 oszlop kivï¿½lasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(933, '1 sor kivï¿½lasztva', 'bg', '1 sor kivï¿½lasztva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(934, '1 sor mï¿½solva', 'bg', '1 sor mï¿½solva', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(935, ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', 'bg', ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(936, ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', 'bg', ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (937, 'Adat', 'bg', 'Adat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(938, 'ÁFA', 'bg', 'ÁFA', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(939, 'Aktív szûrõpanelek: %d', 'bg', 'Aktív szûrõpanelek: %d', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(940, 'ápr', 'bg', 'ápr', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(941, 'április', 'bg', 'április', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(938, 'ï¿½FA', 'bg', 'ï¿½FA', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(939, 'Aktï¿½v szï¿½rï¿½panelek: %d', 'bg', 'Aktï¿½v szï¿½rï¿½panelek: %d', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(940, 'ï¿½pr', 'bg', 'ï¿½pr', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(941, 'ï¿½prilis', 'bg', 'ï¿½prilis', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (942, 'aug', 'bg', 'aug', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (943, 'augusztus', 'bg', 'augusztus', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(944, 'B2B felhasználók', 'bg', 'B2B felhasználók', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(944, 'B2B felhasznï¿½lï¿½k', 'bg', 'B2B felhasznï¿½lï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (945, 'B2B partner', 'bg', 'B2B partner', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (946, 'B2B partnerek', 'bg', 'B2B partnerek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(947, 'Beállítások', 'bg', 'Beállítások', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(948, 'Bejelentkezés', 'bg', 'Bejelentkezés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(949, 'Belép', 'bg', 'Belép', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(950, 'Belépés 3 hónap', 'bg', 'Belépés 3 hónap', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(951, 'Belépés 3 hónap<', 'bg', 'Belépés 3 hónap<', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(952, 'Belépett', 'bg', 'Belépett', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(953, 'Belsõ felhasználók', 'bg', 'Belsõ felhasználók', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(954, 'Beosztás', 'bg', 'Beosztás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(955, 'Betöltés...', 'bg', 'Betöltés...', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(956, 'Bezárás', 'bg', 'Bezárás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(957, 'Biztosan kosárba másolja a megrendelés összes tételét?', 'bg', 'Biztosan kosárba másolja a megrendelés összes tételét?', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(958, 'Biztosan kosárba másolja a tételeket?', 'bg', 'Biztosan kosárba másolja a tételeket?', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(959, 'Bruttó', 'bg', 'Bruttó', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(960, 'Cellák függõleges kitöltése', 'bg', 'Cellák függõleges kitöltése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(961, 'Cellák vízszintes kitöltése', 'bg', 'Cellák vízszintes kitöltése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(962, 'csütörtök', 'bg', 'csütörtök', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(947, 'Beï¿½llï¿½tï¿½sok', 'bg', 'Beï¿½llï¿½tï¿½sok', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(948, 'Bejelentkezï¿½s', 'bg', 'Bejelentkezï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(949, 'Belï¿½p', 'bg', 'Belï¿½p', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(950, 'Belï¿½pï¿½s 3 hï¿½nap', 'bg', 'Belï¿½pï¿½s 3 hï¿½nap', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(951, 'Belï¿½pï¿½s 3 hï¿½nap<', 'bg', 'Belï¿½pï¿½s 3 hï¿½nap<', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(952, 'Belï¿½pett', 'bg', 'Belï¿½pett', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(953, 'Belsï¿½ felhasznï¿½lï¿½k', 'bg', 'Belsï¿½ felhasznï¿½lï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(954, 'Beosztï¿½s', 'bg', 'Beosztï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(955, 'Betï¿½ltï¿½s...', 'bg', 'Betï¿½ltï¿½s...', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(956, 'Bezï¿½rï¿½s', 'bg', 'Bezï¿½rï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(957, 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', 'bg', 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(958, 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', 'bg', 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(959, 'Bruttï¿½', 'bg', 'Bruttï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(960, 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', 'bg', 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(961, 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', 'bg', 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(962, 'csï¿½tï¿½rtï¿½k', 'bg', 'csï¿½tï¿½rtï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (963, 'darab', 'bg', 'darab', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(964, 'Dátum', 'bg', 'Dátum', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(964, 'Dï¿½tum', 'bg', 'Dï¿½tum', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (965, 'db', 'bg', 'db', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (966, 'de.', 'bg', 'de.', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (967, 'dec', 'bg', 'dec', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (968, 'december', 'bg', 'december', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (969, 'du.', 'bg', 'du.', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (970, 'eddig', 'bg', 'eddig', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(971, 'Egyenlõ', 'bg', 'Egyenlõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(972, 'Egys.ár', 'bg', 'Egys.ár', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(973, 'Elõtt', 'bg', 'Elõtt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(974, 'Elõzõ', 'bg', 'Elõzõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(975, 'Elsõ', 'bg', 'Elsõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(971, 'Egyenlï¿½', 'bg', 'Egyenlï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(972, 'Egys.ï¿½r', 'bg', 'Egys.ï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(973, 'Elï¿½tt', 'bg', 'Elï¿½tt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(974, 'Elï¿½zï¿½', 'bg', 'Elï¿½zï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(975, 'Elsï¿½', 'bg', 'Elsï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (976, 'Email', 'bg', 'Email', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(977, 'Érték', 'bg', 'Érték', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(978, 'És', 'bg', 'És', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(979, 'ettõl', 'bg', 'ettõl', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(980, 'Exportál', 'bg', 'Exportál', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(977, 'ï¿½rtï¿½k', 'bg', 'ï¿½rtï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(978, 'ï¿½s', 'bg', 'ï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(979, 'ettï¿½l', 'bg', 'ettï¿½l', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(980, 'Exportï¿½l', 'bg', 'Exportï¿½l', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (981, 'febr', 'bg', 'febr', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(982, 'február', 'bg', 'február', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(983, 'Feldolgozás...', 'bg', 'Feldolgozás...', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(984, 'Felhasználói belépések', 'bg', 'Felhasználói belépések', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(985, 'felhasználók', 'bg', 'felhasználók', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(986, 'Felhasználók összesen', 'bg', 'Felhasználók összesen', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(987, 'Felhasználónként', 'bg', 'Felhasználónként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(988, 'Felhasznált', 'bg', 'Felhasznált', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(989, 'Feltétel', 'bg', 'Feltétel', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(990, 'Feltétel hozzáadása', 'bg', 'Feltétel hozzáadása', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(991, 'Feltétel törlése', 'bg', 'Feltétel törlése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(992, 'Fordítás', 'bg', 'Fordítás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(982, 'februï¿½r', 'bg', 'februï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(983, 'Feldolgozï¿½s...', 'bg', 'Feldolgozï¿½s...', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(984, 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', 'bg', 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(985, 'felhasznï¿½lï¿½k', 'bg', 'felhasznï¿½lï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(986, 'Felhasznï¿½lï¿½k ï¿½sszesen', 'bg', 'Felhasznï¿½lï¿½k ï¿½sszesen', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(987, 'Felhasznï¿½lï¿½nkï¿½nt', 'bg', 'Felhasznï¿½lï¿½nkï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(988, 'Felhasznï¿½lt', 'bg', 'Felhasznï¿½lt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(989, 'Feltï¿½tel', 'bg', 'Feltï¿½tel', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(990, 'Feltï¿½tel hozzï¿½adï¿½sa', 'bg', 'Feltï¿½tel hozzï¿½adï¿½sa', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(991, 'Feltï¿½tel tï¿½rlï¿½se', 'bg', 'Feltï¿½tel tï¿½rlï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(992, 'Fordï¿½tï¿½s', 'bg', 'Fordï¿½tï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (993, 'forint', 'bg', 'forint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(994, 'havi bontás', 'bg', 'havi bontás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(995, 'hétfõ', 'bg', 'hétfõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(994, 'havi bontï¿½s', 'bg', 'havi bontï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(995, 'hï¿½tfï¿½', 'bg', 'hï¿½tfï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (996, 'Hiba', 'bg', 'Hiba', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (997, 'Hitel keret', 'bg', 'Hitel keret', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (998, 'Id', 'bg', 'Id', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (999, 'Idei', 'bg', 'Idei', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1000, 'Idei kosár', 'bg', 'Idei kosár', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1001, 'Idei megrendelés', 'bg', 'Idei megrendelés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1002, 'Idei megrendelések', 'bg', 'Idei megrendelések', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1003, 'Idei saját megrendelés', 'bg', 'Idei saját megrendelés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1004, 'Idei saját megrendelések', 'bg', 'Idei saját megrendelések', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1005, 'Importál', 'bg', 'Importál', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1000, 'Idei kosï¿½r', 'bg', 'Idei kosï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1001, 'Idei megrendelï¿½s', 'bg', 'Idei megrendelï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1002, 'Idei megrendelï¿½sek', 'bg', 'Idei megrendelï¿½sek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1003, 'Idei sajï¿½t megrendelï¿½s', 'bg', 'Idei sajï¿½t megrendelï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1004, 'Idei sajï¿½t megrendelï¿½sek', 'bg', 'Idei sajï¿½t megrendelï¿½sek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1005, 'Importï¿½l', 'bg', 'Importï¿½l', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1006, 'jan', 'bg', 'jan', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1007, 'január', 'bg', 'január', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1008, 'júl', 'bg', 'júl', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1009, 'július', 'bg', 'július', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1010, 'jún', 'bg', 'jún', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1011, 'június', 'bg', 'június', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1007, 'januï¿½r', 'bg', 'januï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1008, 'jï¿½l', 'bg', 'jï¿½l', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1009, 'jï¿½lius', 'bg', 'jï¿½lius', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1010, 'jï¿½n', 'bg', 'jï¿½n', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1011, 'jï¿½nius', 'bg', 'jï¿½nius', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1012, 'kedd', 'bg', 'kedd', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1013, 'Kedvenc', 'bg', 'Kedvenc', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1014, 'Kedvenc termék kiválasztás', 'bg', 'Kedvenc termék kiválasztás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1015, 'Kedvenc termékek', 'bg', 'Kedvenc termékek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1016, 'Kép', 'bg', 'Kép', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1017, 'Keresés konfigurátor', 'bg', 'Keresés konfigurátor', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1018, 'Keresés konfigurátor (%d)', 'bg', 'Keresés konfigurátor (%d)', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1019, 'Keresés:', 'bg', 'Keresés:', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1020, 'Kezdõdik', 'bg', 'Kezdõdik', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1021, 'Kilép', 'bg', 'Kilép', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1022, 'Kilépés', 'bg', 'Kilépés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1023, 'Kilépés a teljes képernyõbõl', 'bg', 'Kilépés a teljes képernyõbõl', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1014, 'Kedvenc termï¿½k kivï¿½lasztï¿½s', 'bg', 'Kedvenc termï¿½k kivï¿½lasztï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1015, 'Kedvenc termï¿½kek', 'bg', 'Kedvenc termï¿½kek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1016, 'Kï¿½p', 'bg', 'Kï¿½p', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1017, 'Keresï¿½s konfigurï¿½tor', 'bg', 'Keresï¿½s konfigurï¿½tor', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1018, 'Keresï¿½s konfigurï¿½tor (%d)', 'bg', 'Keresï¿½s konfigurï¿½tor (%d)', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1019, 'Keresï¿½s:', 'bg', 'Keresï¿½s:', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1020, 'Kezdï¿½dik', 'bg', 'Kezdï¿½dik', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1021, 'Kilï¿½p', 'bg', 'Kilï¿½p', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1022, 'Kilï¿½pï¿½s', 'bg', 'Kilï¿½pï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1023, 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', 'bg', 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1024, 'Kissebb mint', 'bg', 'Kissebb mint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1025, 'Kissebb vagy egyenlõ mint', 'bg', 'Kissebb vagy egyenlõ mint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1026, 'Kívül esõ', 'bg', 'Kívül esõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1027, 'Kosár', 'bg', 'Kosár', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1028, 'Kosárba', 'bg', 'Kosárba', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1029, 'Következõ', 'bg', 'Következõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1030, 'Között', 'bg', 'Között', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1031, 'Letöltés CSV fileként', 'bg', 'Letöltés CSV fileként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1032, 'Letöltés JPEG képként', 'bg', 'Letöltés JPEG képként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1033, 'Letöltés PDF dokumentumként', 'bg', 'Letöltés PDF dokumentumként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1034, 'Letöltés PNG képként', 'bg', 'Letöltés PNG képként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1035, 'Letöltés SVG formátumban', 'bg', 'Letöltés SVG formátumban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1036, 'Letöltés XLS fileként', 'bg', 'Letöltés XLS fileként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1037, 'Létrehozás', 'bg', 'Létrehozás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1025, 'Kissebb vagy egyenlï¿½ mint', 'bg', 'Kissebb vagy egyenlï¿½ mint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1026, 'Kï¿½vï¿½l esï¿½', 'bg', 'Kï¿½vï¿½l esï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1027, 'Kosï¿½r', 'bg', 'Kosï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1028, 'Kosï¿½rba', 'bg', 'Kosï¿½rba', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1029, 'Kï¿½vetkezï¿½', 'bg', 'Kï¿½vetkezï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1030, 'Kï¿½zï¿½tt', 'bg', 'Kï¿½zï¿½tt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1031, 'Letï¿½ltï¿½s CSV filekï¿½nt', 'bg', 'Letï¿½ltï¿½s CSV filekï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1032, 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', 'bg', 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1033, 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', 'bg', 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1034, 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', 'bg', 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1035, 'Letï¿½ltï¿½s SVG formï¿½tumban', 'bg', 'Letï¿½ltï¿½s SVG formï¿½tumban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1036, 'Letï¿½ltï¿½s XLS filekï¿½nt', 'bg', 'Letï¿½ltï¿½s XLS filekï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1037, 'Lï¿½trehozï¿½s', 'bg', 'Lï¿½trehozï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1038, 'Log adatok', 'bg', 'Log adatok', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1039, 'Magyar', 'bg', 'Magyar', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1040, 'Magyarul', 'bg', 'Magyarul', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1041, 'máj', 'bg', 'máj', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1042, 'május', 'bg', 'május', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1043, 'márc', 'bg', 'márc', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1044, 'március', 'bg', 'március', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1045, 'Másodperc', 'bg', 'Másodperc', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1046, 'Másolás', 'bg', 'Másolás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1041, 'mï¿½j', 'bg', 'mï¿½j', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1042, 'mï¿½jus', 'bg', 'mï¿½jus', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1043, 'mï¿½rc', 'bg', 'mï¿½rc', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1044, 'mï¿½rcius', 'bg', 'mï¿½rcius', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1045, 'Mï¿½sodperc', 'bg', 'Mï¿½sodperc', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1046, 'Mï¿½solï¿½s', 'bg', 'Mï¿½solï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1047, 'Me.egys', 'bg', 'Me.egys', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1048, 'Megrendelés átlag értékek az elmúlt 12 hónapban', 'bg', 'Megrendelés átlag értékek az elmúlt 12 hónapban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1049, 'Megrendelés darab az elmúlt 12 hónapban', 'bg', 'Megrendelés darab az elmúlt 12 hónapban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1050, 'Megrendelés értékek az elmúlt 12 hónapban', 'bg', 'Megrendelés értékek az elmúlt 12 hónapban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1051, 'Megrendelés kosárba másolás!', 'bg', 'Megrendelés kosárba másolás!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1052, 'Megrendelés szám', 'bg', 'Megrendelés szám', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1053, 'Megrendelés tétel darab az elmúlt 12 hónapban', 'bg', 'Megrendelés tétel darab az elmúlt 12 hónapban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1054, 'Megrendelések', 'bg', 'Megrendelések', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1055, 'Megszakítás', 'bg', 'Megszakítás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1056, 'Mennyiség', 'bg', 'Mennyiség', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1048, 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'bg', 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1049, 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', 'bg', 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1050, 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'bg', 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1051, 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', 'bg', 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1052, 'Megrendelï¿½s szï¿½m', 'bg', 'Megrendelï¿½s szï¿½m', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1053, 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', 'bg', 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1054, 'Megrendelï¿½sek', 'bg', 'Megrendelï¿½sek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1055, 'Megszakï¿½tï¿½s', 'bg', 'Megszakï¿½tï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1056, 'Mennyisï¿½g', 'bg', 'Mennyisï¿½g', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1057, 'Ment', 'bg', 'Ment', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1058, 'Minden termék', 'bg', 'Minden termék', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1059, 'Módosítás', 'bg', 'Módosítás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1058, 'Minden termï¿½k', 'bg', 'Minden termï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1059, 'Mï¿½dosï¿½tï¿½s', 'bg', 'Mï¿½dosï¿½tï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1060, 'mutat:', 'bg', 'mutat:', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1061, 'Nagyobb mint', 'bg', 'Nagyobb mint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1062, 'Nagyobb vagy egyenlõ mint', 'bg', 'Nagyobb vagy egyenlõ mint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1062, 'Nagyobb vagy egyenlï¿½ mint', 'bg', 'Nagyobb vagy egyenlï¿½ mint', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1063, 'Nem', 'bg', 'Nem', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1064, 'Nem jelölt ki sort', 'bg', 'Nem jelölt ki sort', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1065, 'Nem üres', 'bg', 'Nem üres', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1066, 'Nemzetiség', 'bg', 'Nemzetiség', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1067, 'Nettó', 'bg', 'Nettó', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1068, 'Név', 'bg', 'Név', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1069, 'Nincs a keresésnek megfelelõ találat', 'bg', 'Nincs a keresésnek megfelelõ találat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1070, 'Nincs kijelölt tétel!', 'bg', 'Nincs kijelölt tétel!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1071, 'Nincs rendelkezésre álló adat', 'bg', 'Nincs rendelkezésre álló adat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1072, 'Nincsenek szûrõpanelek', 'bg', 'Nincsenek szûrõpanelek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1064, 'Nem jelï¿½lt ki sort', 'bg', 'Nem jelï¿½lt ki sort', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1065, 'Nem ï¿½res', 'bg', 'Nem ï¿½res', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1066, 'Nemzetisï¿½g', 'bg', 'Nemzetisï¿½g', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1067, 'Nettï¿½', 'bg', 'Nettï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1068, 'Nï¿½v', 'bg', 'Nï¿½v', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1069, 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', 'bg', 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1070, 'Nincs kijelï¿½lt tï¿½tel!', 'bg', 'Nincs kijelï¿½lt tï¿½tel!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1071, 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', 'bg', 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1072, 'Nincsenek szï¿½rï¿½panelek', 'bg', 'Nincsenek szï¿½rï¿½panelek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1073, 'nov', 'bg', 'nov', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1074, 'november', 'bg', 'november', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1075, 'Nulla találat', 'bg', 'Nulla találat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1075, 'Nulla talï¿½lat', 'bg', 'Nulla talï¿½lat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1076, 'Nyelvek', 'bg', 'Nyelvek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1077, 'Nyitott', 'bg', 'Nyitott', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1078, 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', 'bg', 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1078, 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', 'bg', 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1079, 'Nyomtat', 'bg', 'Nyomtat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1080, 'Nyomtatás', 'bg', 'Nyomtatás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1080, 'Nyomtatï¿½s', 'bg', 'Nyomtatï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1081, 'okt', 'bg', 'okt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1082, 'október', 'bg', 'október', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1083, 'Óra', 'bg', 'Óra', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1084, 'Összes', 'bg', 'Összes', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1085, 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', 'bg', 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1086, 'Összes feltétel törlése', 'bg', 'Összes feltétel törlése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1087, 'Összes kosár', 'bg', 'Összes kosár', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1088, 'Összes megrendelés', 'bg', 'Összes megrendelés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1089, 'Összes sor megjelenítése', 'bg', 'Összes sor megjelenítése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1082, 'oktï¿½ber', 'bg', 'oktï¿½ber', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1083, 'ï¿½ra', 'bg', 'ï¿½ra', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1084, 'ï¿½sszes', 'bg', 'ï¿½sszes', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1085, 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', 'bg', 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1086, 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', 'bg', 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1087, 'ï¿½sszes kosï¿½r', 'bg', 'ï¿½sszes kosï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1088, 'ï¿½sszes megrendelï¿½s', 'bg', 'ï¿½sszes megrendelï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1089, 'ï¿½sszes sor megjelenï¿½tï¿½se', 'bg', 'ï¿½sszes sor megjelenï¿½tï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1090, 'Oszlopok', 'bg', 'Oszlopok', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1091, 'Oszlopok visszaállítása', 'bg', 'Oszlopok visszaállítása', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1092, 'Partner cég', 'bg', 'Partner cég', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1093, 'Partner felhasználó', 'bg', 'Partner felhasználó', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1094, 'Partner felhasználók', 'bg', 'Partner felhasználók', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1095, 'péntek', 'bg', 'péntek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1096, 'Pénznem', 'bg', 'Pénznem', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1091, 'Oszlopok visszaï¿½llï¿½tï¿½sa', 'bg', 'Oszlopok visszaï¿½llï¿½tï¿½sa', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1092, 'Partner cï¿½g', 'bg', 'Partner cï¿½g', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1093, 'Partner felhasznï¿½lï¿½', 'bg', 'Partner felhasznï¿½lï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1094, 'Partner felhasznï¿½lï¿½k', 'bg', 'Partner felhasznï¿½lï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1095, 'pï¿½ntek', 'bg', 'pï¿½ntek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1096, 'Pï¿½nznem', 'bg', 'Pï¿½nznem', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1097, 'Perc', 'bg', 'Perc', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1098, 'Product', 'bg', 'Product', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1099, 'Profil', 'bg', 'Profil', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1100, 'rendszergazdák', 'bg', 'rendszergazdák', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1101, 'Saját megrendelés', 'bg', 'Saját megrendelés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1100, 'rendszergazdï¿½k', 'bg', 'rendszergazdï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1101, 'Sajï¿½t megrendelï¿½s', 'bg', 'Sajï¿½t megrendelï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1102, 'Szabad', 'bg', 'Szabad', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1103, 'Szállítási mód', 'bg', 'Szállítási mód', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1103, 'Szï¿½llï¿½tï¿½si mï¿½d', 'bg', 'Szï¿½llï¿½tï¿½si mï¿½d', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1104, 'szept', 'bg', 'szept', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1105, 'szeptember', 'bg', 'szeptember', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1106, 'szerda', 'bg', 'szerda', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1107, 'szombat', 'bg', 'szombat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1108, 'Szûrõk törlése', 'bg', 'Szûrõk törlése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1109, 'Szûrõpanelek', 'bg', 'Szûrõpanelek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1110, 'Szûrõpanelek (%d)', 'bg', 'Szûrõpanelek (%d)', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1111, 'Szûrõpanelek betöltése', 'bg', 'Szûrõpanelek betöltése', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1112, 'Táblázat', 'bg', 'Táblázat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1113, 'Találatok: _START_ - _END_ Összesen: _TOTAL_', 'bg', 'Találatok: _START_ - _END_ Összesen: _TOTAL_', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1108, 'Szï¿½rï¿½k tï¿½rlï¿½se', 'bg', 'Szï¿½rï¿½k tï¿½rlï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1109, 'Szï¿½rï¿½panelek', 'bg', 'Szï¿½rï¿½panelek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1110, 'Szï¿½rï¿½panelek (%d)', 'bg', 'Szï¿½rï¿½panelek (%d)', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1111, 'Szï¿½rï¿½panelek betï¿½ltï¿½se', 'bg', 'Szï¿½rï¿½panelek betï¿½ltï¿½se', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1112, 'Tï¿½blï¿½zat', 'bg', 'Tï¿½blï¿½zat', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1113, 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', 'bg', 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1114, 'Tartalmazza', 'bg', 'Tartalmazza', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1115, 'Telephely', 'bg', 'Telephely', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1116, 'Teljes képernyõ', 'bg', 'Teljes képernyõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1117, 'Termék', 'bg', 'Termék', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1118, 'Termék kategória', 'bg', 'Termék kategória', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1119, 'Tétel', 'bg', 'Tétel', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1120, 'Tételek', 'bg', 'Tételek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1121, 'Tétetek kosárba másolás!', 'bg', 'Tétetek kosárba másolás!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1122, 'Törlés', 'bg', 'Törlés', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1123, 'Tovább', 'bg', 'Tovább', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1124, 'Új', 'bg', 'Új', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1125, 'Új Kosár', 'bg', 'Új Kosár', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1126, 'Üres', 'bg', 'Üres', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1127, 'Után', 'bg', 'Után', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1128, 'Utolsó', 'bg', 'Utolsó', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1129, 'Vágólapra másolás', 'bg', 'Vágólapra másolás', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1116, 'Teljes kï¿½pernyï¿½', 'bg', 'Teljes kï¿½pernyï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1117, 'Termï¿½k', 'bg', 'Termï¿½k', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1118, 'Termï¿½k kategï¿½ria', 'bg', 'Termï¿½k kategï¿½ria', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1119, 'Tï¿½tel', 'bg', 'Tï¿½tel', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1120, 'Tï¿½telek', 'bg', 'Tï¿½telek', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1121, 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', 'bg', 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1122, 'Tï¿½rlï¿½s', 'bg', 'Tï¿½rlï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1123, 'Tovï¿½bb', 'bg', 'Tovï¿½bb', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1124, 'ï¿½j', 'bg', 'ï¿½j', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1125, 'ï¿½j Kosï¿½r', 'bg', 'ï¿½j Kosï¿½r', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1126, 'ï¿½res', 'bg', 'ï¿½res', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1127, 'Utï¿½n', 'bg', 'Utï¿½n', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1128, 'Utolsï¿½', 'bg', 'Utolsï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1129, 'Vï¿½gï¿½lapra mï¿½solï¿½s', 'bg', 'Vï¿½gï¿½lapra mï¿½solï¿½s', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1130, 'Vagy', 'bg', 'Vagy', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1131, 'Van már nyitott kosara!', 'bg', 'Van már nyitott kosara!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1132, 'vasárnap', 'bg', 'vasárnap', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1133, 'Végzõdik', 'bg', 'Végzõdik', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1134, 'Vezérlõ', 'bg', 'Vezérlõ', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1135, 'Visszaállít', 'bg', 'Visszaállít', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1131, 'Van mï¿½r nyitott kosara!', 'bg', 'Van mï¿½r nyitott kosara!', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1132, 'vasï¿½rnap', 'bg', 'vasï¿½rnap', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1133, 'Vï¿½gzï¿½dik', 'bg', 'Vï¿½gzï¿½dik', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1134, 'Vezï¿½rlï¿½', 'bg', 'Vezï¿½rlï¿½', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1135, 'Visszaï¿½llï¿½t', 'bg', 'Visszaï¿½llï¿½t', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1136, 'XML Import', 'bg', 'XML Import', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
-(1137, '_MENU_ találat oldalanként', 'bg', '_MENU_ találat oldalanként', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
+(1137, '_MENU_ talï¿½lat oldalankï¿½nt', 'bg', '_MENU_ talï¿½lat oldalankï¿½nt', NULL, '2022-06-15 07:12:35', '2022-06-15 07:12:35'),
 (1138, 'Kikapcsol', 'hu', 'Kikapcsol', NULL, NULL, NULL),
 (1139, 'Kikapcsol', 'en', 'Kikapcsol', NULL, NULL, NULL),
 (1140, 'Kikapcsol', 'bg', 'Kikapcsol', NULL, '2022-06-16 12:17:59', '2022-06-16 12:17:59'),
@@ -3353,235 +3352,235 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (1155, 'Biztos, hogy be akarja kapcsolni a nyelvet?', 'bg', 'Biztos, hogy be akarja kapcsolni a nyelvet?', NULL, '2022-06-16 12:17:59', '2022-06-16 12:17:59'),
 (1156, 'Biztos, hogy be akarja kapcsolni a nyelvet?', 'cz', 'Biztos, hogy be akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
 (1157, 'Biztos, hogy be akarja kapcsolni a nyelvet?', 'ee', 'Biztos, hogy be akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
-(1158, '%d cella kiválasztva', 'de', '%d cella kiválasztva', NULL, NULL, NULL),
-(1159, '%d oszlop kiválasztva', 'de', '%d oszlop kiválasztva', NULL, NULL, NULL),
-(1160, '%d sor kiválasztva', 'de', '%d sor kiválasztva', NULL, NULL, NULL),
-(1161, '%d sor másolva', 'de', '%d sor másolva', NULL, NULL, NULL),
-(1162, '%d sor megjelenítése', 'de', '%d sor megjelenítése', NULL, NULL, NULL),
-(1163, '(_MAX_ összes rekord közül szûrve)', 'de', '(_MAX_ összes rekord közül szûrve)', NULL, NULL, NULL),
-(1164, '1 cella kiválasztva', 'de', '1 cella kiválasztva', NULL, NULL, NULL),
-(1165, '1 oszlop kiválasztva', 'de', '1 oszlop kiválasztva', NULL, NULL, NULL),
-(1166, '1 sor kiválasztva', 'de', '1 sor kiválasztva', NULL, NULL, NULL),
-(1167, '1 sor másolva', 'de', '1 sor másolva', NULL, NULL, NULL),
-(1168, ': aktiválja a csökkenõ rendezéshez', 'de', ': aktiválja a csökkenõ rendezéshez', NULL, NULL, NULL),
-(1169, ': aktiválja a növekvõ rendezéshez', 'de', ': aktiválja a növekvõ rendezéshez', NULL, NULL, NULL),
+(1158, '%d cella kivï¿½lasztva', 'de', '%d cella kivï¿½lasztva', NULL, NULL, NULL),
+(1159, '%d oszlop kivï¿½lasztva', 'de', '%d oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(1160, '%d sor kivï¿½lasztva', 'de', '%d sor kivï¿½lasztva', NULL, NULL, NULL),
+(1161, '%d sor mï¿½solva', 'de', '%d sor mï¿½solva', NULL, NULL, NULL),
+(1162, '%d sor megjelenï¿½tï¿½se', 'de', '%d sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
+(1163, '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', 'de', '(_MAX_ ï¿½sszes rekord kï¿½zï¿½l szï¿½rve)', NULL, NULL, NULL),
+(1164, '1 cella kivï¿½lasztva', 'de', '1 cella kivï¿½lasztva', NULL, NULL, NULL),
+(1165, '1 oszlop kivï¿½lasztva', 'de', '1 oszlop kivï¿½lasztva', NULL, NULL, NULL),
+(1166, '1 sor kivï¿½lasztva', 'de', '1 sor kivï¿½lasztva', NULL, NULL, NULL),
+(1167, '1 sor mï¿½solva', 'de', '1 sor mï¿½solva', NULL, NULL, NULL),
+(1168, ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', 'de', ': aktivï¿½lja a csï¿½kkenï¿½ rendezï¿½shez', NULL, NULL, NULL),
+(1169, ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', 'de', ': aktivï¿½lja a nï¿½vekvï¿½ rendezï¿½shez', NULL, NULL, NULL),
 (1170, 'Adat', 'de', 'Adat', NULL, NULL, NULL),
-(1171, 'ÁFA', 'de', 'ÁFA', NULL, NULL, NULL),
-(1172, 'Aktív szûrõpanelek: %d', 'de', 'Aktív szûrõpanelek: %d', NULL, NULL, NULL),
-(1173, 'ápr', 'de', 'ápr', NULL, NULL, NULL),
-(1174, 'április', 'de', 'április', NULL, NULL, NULL),
+(1171, 'ï¿½FA', 'de', 'ï¿½FA', NULL, NULL, NULL),
+(1172, 'Aktï¿½v szï¿½rï¿½panelek: %d', 'de', 'Aktï¿½v szï¿½rï¿½panelek: %d', NULL, NULL, NULL),
+(1173, 'ï¿½pr', 'de', 'ï¿½pr', NULL, NULL, NULL),
+(1174, 'ï¿½prilis', 'de', 'ï¿½prilis', NULL, NULL, NULL),
 (1175, 'aug', 'de', 'aug', NULL, NULL, NULL),
 (1176, 'augusztus', 'de', 'augusztus', NULL, NULL, NULL),
-(1177, 'B2B felhasználók', 'de', 'B2B felhasználók', NULL, NULL, NULL),
+(1177, 'B2B felhasznï¿½lï¿½k', 'de', 'B2B felhasznï¿½lï¿½k', NULL, NULL, NULL),
 (1178, 'B2B partner', 'de', 'B2B partner', NULL, NULL, NULL),
 (1179, 'B2B partnerek', 'de', 'B2B partnerek', NULL, NULL, NULL),
-(1180, 'Beállítások', 'de', 'Beállítások', NULL, NULL, NULL),
-(1181, 'Bejelentkezés', 'de', 'Bejelentkezés', NULL, NULL, NULL),
+(1180, 'Beï¿½llï¿½tï¿½sok', 'de', 'Beï¿½llï¿½tï¿½sok', NULL, NULL, NULL),
+(1181, 'Bejelentkezï¿½s', 'de', 'Bejelentkezï¿½s', NULL, NULL, NULL),
 (1182, 'Bekapcsol', 'de', 'Bekapcsol', NULL, NULL, NULL),
-(1183, 'Belép', 'de', 'Belép', NULL, NULL, NULL),
-(1184, 'Belépés 3 hónap', 'de', 'Belépés 3 hónap', NULL, NULL, NULL),
-(1185, 'Belépés 3 hónap<', 'de', 'Belépés 3 hónap<', NULL, NULL, NULL),
-(1186, 'Belépett', 'de', 'Belépett', NULL, NULL, NULL),
-(1187, 'Belsõ felhasználók', 'de', 'Belsõ felhasználók', NULL, NULL, NULL),
-(1188, 'Beosztás', 'de', 'Beosztás', NULL, NULL, NULL),
-(1189, 'Betöltés...', 'de', 'Betöltés...', NULL, NULL, NULL),
-(1190, 'Bezárás', 'de', 'Bezárás', NULL, NULL, NULL),
+(1183, 'Belï¿½p', 'de', 'Belï¿½p', NULL, NULL, NULL),
+(1184, 'Belï¿½pï¿½s 3 hï¿½nap', 'de', 'Belï¿½pï¿½s 3 hï¿½nap', NULL, NULL, NULL),
+(1185, 'Belï¿½pï¿½s 3 hï¿½nap<', 'de', 'Belï¿½pï¿½s 3 hï¿½nap<', NULL, NULL, NULL),
+(1186, 'Belï¿½pett', 'de', 'Belï¿½pett', NULL, NULL, NULL),
+(1187, 'Belsï¿½ felhasznï¿½lï¿½k', 'de', 'Belsï¿½ felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(1188, 'Beosztï¿½s', 'de', 'Beosztï¿½s', NULL, NULL, NULL),
+(1189, 'Betï¿½ltï¿½s...', 'de', 'Betï¿½ltï¿½s...', NULL, NULL, NULL),
+(1190, 'Bezï¿½rï¿½s', 'de', 'Bezï¿½rï¿½s', NULL, NULL, NULL),
 (1191, 'Biztos, hogy be akarja kapcsolni a nyelvet?', 'de', 'Biztos, hogy be akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
 (1192, 'Biztos, hogy ki akarja kapcsolni a nyelvet?', 'de', 'Biztos, hogy ki akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
-(1193, 'Biztosan kosárba másolja a megrendelés összes tételét?', 'de', 'Biztosan kosárba másolja a megrendelés összes tételét?', NULL, NULL, NULL),
-(1194, 'Biztosan kosárba másolja a tételeket?', 'de', 'Biztosan kosárba másolja a tételeket?', NULL, NULL, NULL),
-(1195, 'Bruttó', 'de', 'Bruttó', NULL, NULL, NULL),
-(1196, 'Cellák függõleges kitöltése', 'de', 'Cellák függõleges kitöltése', NULL, NULL, NULL),
-(1197, 'Cellák vízszintes kitöltése', 'de', 'Cellák vízszintes kitöltése', NULL, NULL, NULL),
-(1198, 'csütörtök', 'de', 'csütörtök', NULL, NULL, NULL),
+(1193, 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', 'de', 'Biztosan kosï¿½rba mï¿½solja a megrendelï¿½s ï¿½sszes tï¿½telï¿½t?', NULL, NULL, NULL),
+(1194, 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', 'de', 'Biztosan kosï¿½rba mï¿½solja a tï¿½teleket?', NULL, NULL, NULL),
+(1195, 'Bruttï¿½', 'de', 'Bruttï¿½', NULL, NULL, NULL),
+(1196, 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', 'de', 'Cellï¿½k fï¿½ggï¿½leges kitï¿½ltï¿½se', NULL, NULL, NULL),
+(1197, 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', 'de', 'Cellï¿½k vï¿½zszintes kitï¿½ltï¿½se', NULL, NULL, NULL),
+(1198, 'csï¿½tï¿½rtï¿½k', 'de', 'csï¿½tï¿½rtï¿½k', NULL, NULL, NULL),
 (1199, 'darab', 'de', 'darab', NULL, NULL, NULL),
-(1200, 'Dátum', 'de', 'Dátum', NULL, NULL, NULL),
+(1200, 'Dï¿½tum', 'de', 'Dï¿½tum', NULL, NULL, NULL),
 (1201, 'db', 'de', 'db', NULL, NULL, NULL),
 (1202, 'de.', 'de', 'de.', NULL, NULL, NULL),
 (1203, 'dec', 'de', 'dec', NULL, NULL, NULL),
 (1204, 'december', 'de', 'december', NULL, NULL, NULL),
 (1205, 'du.', 'de', 'du.', NULL, NULL, NULL),
 (1206, 'eddig', 'de', 'eddig', NULL, NULL, NULL),
-(1207, 'Egyenlõ', 'de', 'Egyenlõ', NULL, NULL, NULL),
-(1208, 'Egys.ár', 'de', 'Egys.ár', NULL, NULL, NULL),
-(1209, 'Elõtt', 'de', 'Elõtt', NULL, NULL, NULL),
-(1210, 'Elõzõ', 'de', 'Elõzõ', NULL, NULL, NULL),
-(1211, 'Elsõ', 'de', 'Elsõ', NULL, NULL, NULL),
+(1207, 'Egyenlï¿½', 'de', 'Egyenlï¿½', NULL, NULL, NULL),
+(1208, 'Egys.ï¿½r', 'de', 'Egys.ï¿½r', NULL, NULL, NULL),
+(1209, 'Elï¿½tt', 'de', 'Elï¿½tt', NULL, NULL, NULL),
+(1210, 'Elï¿½zï¿½', 'de', 'Elï¿½zï¿½', NULL, NULL, NULL),
+(1211, 'Elsï¿½', 'de', 'Elsï¿½', NULL, NULL, NULL),
 (1212, 'Email', 'de', 'Email', NULL, NULL, NULL),
-(1213, 'Érték', 'de', 'Érték', NULL, NULL, NULL),
-(1214, 'És', 'de', 'És', NULL, NULL, NULL),
-(1215, 'ettõl', 'de', 'ettõl', NULL, NULL, NULL),
-(1216, 'Exportál', 'de', 'Exportál', NULL, NULL, NULL),
+(1213, 'ï¿½rtï¿½k', 'de', 'ï¿½rtï¿½k', NULL, NULL, NULL),
+(1214, 'ï¿½s', 'de', 'ï¿½s', NULL, NULL, NULL),
+(1215, 'ettï¿½l', 'de', 'ettï¿½l', NULL, NULL, NULL),
+(1216, 'Exportï¿½l', 'de', 'Exportï¿½l', NULL, NULL, NULL),
 (1217, 'febr', 'de', 'febr', NULL, NULL, NULL),
-(1218, 'február', 'de', 'február', NULL, NULL, NULL),
-(1219, 'Feldolgozás...', 'de', 'Feldolgozás...', NULL, NULL, NULL),
-(1220, 'Felhasználói belépések', 'de', 'Felhasználói belépések', NULL, NULL, NULL),
-(1221, 'felhasználók', 'de', 'felhasználók', NULL, NULL, NULL),
-(1222, 'Felhasználók összesen', 'de', 'Felhasználók összesen', NULL, NULL, NULL),
-(1223, 'Felhasználónként', 'de', 'Felhasználónként', NULL, NULL, NULL),
-(1224, 'Felhasznált', 'de', 'Felhasznált', NULL, NULL, NULL),
-(1225, 'Feltétel', 'de', 'Feltétel', NULL, NULL, NULL),
-(1226, 'Feltétel hozzáadása', 'de', 'Feltétel hozzáadása', NULL, NULL, NULL),
-(1227, 'Feltétel törlése', 'de', 'Feltétel törlése', NULL, NULL, NULL),
-(1228, 'Fordítás', 'de', 'Fordítás', NULL, NULL, NULL),
+(1218, 'februï¿½r', 'de', 'februï¿½r', NULL, NULL, NULL),
+(1219, 'Feldolgozï¿½s...', 'de', 'Feldolgozï¿½s...', NULL, NULL, NULL),
+(1220, 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', 'de', 'Felhasznï¿½lï¿½i belï¿½pï¿½sek', NULL, NULL, NULL),
+(1221, 'felhasznï¿½lï¿½k', 'de', 'felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(1222, 'Felhasznï¿½lï¿½k ï¿½sszesen', 'de', 'Felhasznï¿½lï¿½k ï¿½sszesen', NULL, NULL, NULL),
+(1223, 'Felhasznï¿½lï¿½nkï¿½nt', 'de', 'Felhasznï¿½lï¿½nkï¿½nt', NULL, NULL, NULL),
+(1224, 'Felhasznï¿½lt', 'de', 'Felhasznï¿½lt', NULL, NULL, NULL),
+(1225, 'Feltï¿½tel', 'de', 'Feltï¿½tel', NULL, NULL, NULL),
+(1226, 'Feltï¿½tel hozzï¿½adï¿½sa', 'de', 'Feltï¿½tel hozzï¿½adï¿½sa', NULL, NULL, NULL),
+(1227, 'Feltï¿½tel tï¿½rlï¿½se', 'de', 'Feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(1228, 'Fordï¿½tï¿½s', 'de', 'Fordï¿½tï¿½s', NULL, NULL, NULL),
 (1229, 'forint', 'de', 'forint', NULL, NULL, NULL),
-(1230, 'havi bontás', 'de', 'havi bontás', NULL, NULL, NULL),
-(1231, 'hétfõ', 'de', 'hétfõ', NULL, NULL, NULL),
+(1230, 'havi bontï¿½s', 'de', 'havi bontï¿½s', NULL, NULL, NULL),
+(1231, 'hï¿½tfï¿½', 'de', 'hï¿½tfï¿½', NULL, NULL, NULL),
 (1232, 'Hiba', 'de', 'Hiba', NULL, NULL, NULL),
 (1233, 'Hitel keret', 'de', 'Hitel keret', NULL, NULL, NULL),
 (1234, 'Id', 'de', 'Id', NULL, NULL, NULL),
 (1235, 'Idei', 'de', 'Idei', NULL, NULL, NULL),
-(1236, 'Idei kosár', 'de', 'Idei kosár', NULL, NULL, NULL),
-(1237, 'Idei megrendelés', 'de', 'Idei megrendelés', NULL, NULL, NULL),
-(1238, 'Idei megrendelések', 'de', 'Idei megrendelések', NULL, NULL, NULL),
-(1239, 'Idei saját megrendelés', 'de', 'Idei saját megrendelés', NULL, NULL, NULL),
-(1240, 'Idei saját megrendelések', 'de', 'Idei saját megrendelések', NULL, NULL, NULL),
-(1241, 'Importál', 'de', 'Importál', NULL, NULL, NULL),
+(1236, 'Idei kosï¿½r', 'de', 'Idei kosï¿½r', NULL, NULL, NULL),
+(1237, 'Idei megrendelï¿½s', 'de', 'Idei megrendelï¿½s', NULL, NULL, NULL),
+(1238, 'Idei megrendelï¿½sek', 'de', 'Idei megrendelï¿½sek', NULL, NULL, NULL),
+(1239, 'Idei sajï¿½t megrendelï¿½s', 'de', 'Idei sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
+(1240, 'Idei sajï¿½t megrendelï¿½sek', 'de', 'Idei sajï¿½t megrendelï¿½sek', NULL, NULL, NULL),
+(1241, 'Importï¿½l', 'de', 'Importï¿½l', NULL, NULL, NULL),
 (1242, 'jan', 'de', 'jan', NULL, NULL, NULL),
-(1243, 'január', 'de', 'január', NULL, NULL, NULL),
-(1244, 'júl', 'de', 'júl', NULL, NULL, NULL),
-(1245, 'július', 'de', 'július', NULL, NULL, NULL),
-(1246, 'jún', 'de', 'jún', NULL, NULL, NULL),
-(1247, 'június', 'de', 'június', NULL, NULL, NULL),
+(1243, 'januï¿½r', 'de', 'januï¿½r', NULL, NULL, NULL),
+(1244, 'jï¿½l', 'de', 'jï¿½l', NULL, NULL, NULL),
+(1245, 'jï¿½lius', 'de', 'jï¿½lius', NULL, NULL, NULL),
+(1246, 'jï¿½n', 'de', 'jï¿½n', NULL, NULL, NULL),
+(1247, 'jï¿½nius', 'de', 'jï¿½nius', NULL, NULL, NULL),
 (1248, 'kedd', 'de', 'kedd', NULL, NULL, NULL),
 (1249, 'Kedvenc', 'de', 'Kedvenc', NULL, NULL, NULL),
-(1250, 'Kedvenc termék kiválasztás', 'de', 'Kedvenc termék kiválasztás', NULL, NULL, NULL),
-(1251, 'Kedvenc termékek', 'de', 'Kedvenc termékek', NULL, NULL, NULL),
-(1252, 'Kép', 'de', 'Kép', NULL, NULL, NULL),
-(1253, 'Keresés konfigurátor', 'de', 'Keresés konfigurátor', NULL, NULL, NULL),
-(1254, 'Keresés konfigurátor (%d)', 'de', 'Keresés konfigurátor (%d)', NULL, NULL, NULL),
-(1255, 'Keresés:', 'de', 'Keresés:', NULL, NULL, NULL),
-(1256, 'Kezdõdik', 'de', 'Kezdõdik', NULL, NULL, NULL),
+(1250, 'Kedvenc termï¿½k kivï¿½lasztï¿½s', 'de', 'Kedvenc termï¿½k kivï¿½lasztï¿½s', NULL, NULL, NULL),
+(1251, 'Kedvenc termï¿½kek', 'de', 'Kedvenc termï¿½kek', NULL, NULL, NULL),
+(1252, 'Kï¿½p', 'de', 'Kï¿½p', NULL, NULL, NULL),
+(1253, 'Keresï¿½s konfigurï¿½tor', 'de', 'Keresï¿½s konfigurï¿½tor', NULL, NULL, NULL),
+(1254, 'Keresï¿½s konfigurï¿½tor (%d)', 'de', 'Keresï¿½s konfigurï¿½tor (%d)', NULL, NULL, NULL),
+(1255, 'Keresï¿½s:', 'de', 'Keresï¿½s:', NULL, NULL, NULL),
+(1256, 'Kezdï¿½dik', 'de', 'Kezdï¿½dik', NULL, NULL, NULL),
 (1257, 'Kikapcsol', 'de', 'Kikapcsol', NULL, NULL, NULL),
-(1258, 'Kilép', 'de', 'Kilép', NULL, NULL, NULL),
-(1259, 'Kilépés', 'de', 'Kilépés', NULL, NULL, NULL),
-(1260, 'Kilépés a teljes képernyõbõl', 'de', 'Kilépés a teljes képernyõbõl', NULL, NULL, NULL),
+(1258, 'Kilï¿½p', 'de', 'Kilï¿½p', NULL, NULL, NULL),
+(1259, 'Kilï¿½pï¿½s', 'de', 'Kilï¿½pï¿½s', NULL, NULL, NULL),
+(1260, 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', 'de', 'Kilï¿½pï¿½s a teljes kï¿½pernyï¿½bï¿½l', NULL, NULL, NULL),
 (1261, 'Kissebb mint', 'de', 'Kissebb mint', NULL, NULL, NULL),
-(1262, 'Kissebb vagy egyenlõ mint', 'de', 'Kissebb vagy egyenlõ mint', NULL, NULL, NULL),
-(1263, 'Kívül esõ', 'de', 'Kívül esõ', NULL, NULL, NULL),
-(1264, 'Kosár', 'de', 'Kosár', NULL, NULL, NULL),
-(1265, 'Kosárba', 'de', 'Kosárba', NULL, NULL, NULL),
-(1266, 'Következõ', 'de', 'Következõ', NULL, NULL, NULL),
-(1267, 'Között', 'de', 'Között', NULL, NULL, NULL),
-(1268, 'Letöltés CSV fileként', 'de', 'Letöltés CSV fileként', NULL, NULL, NULL),
-(1269, 'Letöltés JPEG képként', 'de', 'Letöltés JPEG képként', NULL, NULL, NULL),
-(1270, 'Letöltés PDF dokumentumként', 'de', 'Letöltés PDF dokumentumként', NULL, NULL, NULL),
-(1271, 'Letöltés PNG képként', 'de', 'Letöltés PNG képként', NULL, NULL, NULL),
-(1272, 'Letöltés SVG formátumban', 'de', 'Letöltés SVG formátumban', NULL, NULL, NULL),
-(1273, 'Letöltés XLS fileként', 'de', 'Letöltés XLS fileként', NULL, NULL, NULL),
-(1274, 'Létrehozás', 'de', 'Létrehozás', NULL, NULL, NULL),
+(1262, 'Kissebb vagy egyenlï¿½ mint', 'de', 'Kissebb vagy egyenlï¿½ mint', NULL, NULL, NULL),
+(1263, 'Kï¿½vï¿½l esï¿½', 'de', 'Kï¿½vï¿½l esï¿½', NULL, NULL, NULL),
+(1264, 'Kosï¿½r', 'de', 'Kosï¿½r', NULL, NULL, NULL),
+(1265, 'Kosï¿½rba', 'de', 'Kosï¿½rba', NULL, NULL, NULL),
+(1266, 'Kï¿½vetkezï¿½', 'de', 'Kï¿½vetkezï¿½', NULL, NULL, NULL),
+(1267, 'Kï¿½zï¿½tt', 'de', 'Kï¿½zï¿½tt', NULL, NULL, NULL),
+(1268, 'Letï¿½ltï¿½s CSV filekï¿½nt', 'de', 'Letï¿½ltï¿½s CSV filekï¿½nt', NULL, NULL, NULL),
+(1269, 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', 'de', 'Letï¿½ltï¿½s JPEG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(1270, 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', 'de', 'Letï¿½ltï¿½s PDF dokumentumkï¿½nt', NULL, NULL, NULL),
+(1271, 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', 'de', 'Letï¿½ltï¿½s PNG kï¿½pkï¿½nt', NULL, NULL, NULL),
+(1272, 'Letï¿½ltï¿½s SVG formï¿½tumban', 'de', 'Letï¿½ltï¿½s SVG formï¿½tumban', NULL, NULL, NULL),
+(1273, 'Letï¿½ltï¿½s XLS filekï¿½nt', 'de', 'Letï¿½ltï¿½s XLS filekï¿½nt', NULL, NULL, NULL),
+(1274, 'Lï¿½trehozï¿½s', 'de', 'Lï¿½trehozï¿½s', NULL, NULL, NULL),
 (1275, 'Log adatok', 'de', 'Log adatok', NULL, NULL, NULL),
 (1276, 'Magyar', 'de', 'Magyar', NULL, NULL, NULL),
 (1277, 'Magyarul', 'de', 'Magyarul', NULL, NULL, NULL),
-(1278, 'máj', 'de', 'máj', NULL, NULL, NULL),
-(1279, 'május', 'de', 'május', NULL, NULL, NULL),
-(1280, 'márc', 'de', 'márc', NULL, NULL, NULL),
-(1281, 'március', 'de', 'március', NULL, NULL, NULL),
-(1282, 'Másodperc', 'de', 'Másodperc', NULL, NULL, NULL),
-(1283, 'Másolás', 'de', 'Másolás', NULL, NULL, NULL),
+(1278, 'mï¿½j', 'de', 'mï¿½j', NULL, NULL, NULL),
+(1279, 'mï¿½jus', 'de', 'mï¿½jus', NULL, NULL, NULL),
+(1280, 'mï¿½rc', 'de', 'mï¿½rc', NULL, NULL, NULL),
+(1281, 'mï¿½rcius', 'de', 'mï¿½rcius', NULL, NULL, NULL),
+(1282, 'Mï¿½sodperc', 'de', 'Mï¿½sodperc', NULL, NULL, NULL),
+(1283, 'Mï¿½solï¿½s', 'de', 'Mï¿½solï¿½s', NULL, NULL, NULL),
 (1284, 'Me.egys', 'de', 'Me.egys', NULL, NULL, NULL),
-(1285, 'Megrendelés átlag értékek az elmúlt 12 hónapban', 'de', 'Megrendelés átlag értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(1286, 'Megrendelés darab az elmúlt 12 hónapban', 'de', 'Megrendelés darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(1287, 'Megrendelés értékek az elmúlt 12 hónapban', 'de', 'Megrendelés értékek az elmúlt 12 hónapban', NULL, NULL, NULL),
-(1288, 'Megrendelés kosárba másolás!', 'de', 'Megrendelés kosárba másolás!', NULL, NULL, NULL),
-(1289, 'Megrendelés szám', 'de', 'Megrendelés szám', NULL, NULL, NULL),
-(1290, 'Megrendelés tétel darab az elmúlt 12 hónapban', 'de', 'Megrendelés tétel darab az elmúlt 12 hónapban', NULL, NULL, NULL),
-(1291, 'Megrendelések', 'de', 'Megrendelések', NULL, NULL, NULL),
-(1292, 'Megszakítás', 'de', 'Megszakítás', NULL, NULL, NULL),
-(1293, 'Mennyiség', 'de', 'Mennyiség', NULL, NULL, NULL),
+(1285, 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'de', 'Megrendelï¿½s ï¿½tlag ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(1286, 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', 'de', 'Megrendelï¿½s darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(1287, 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', 'de', 'Megrendelï¿½s ï¿½rtï¿½kek az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(1288, 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', 'de', 'Megrendelï¿½s kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(1289, 'Megrendelï¿½s szï¿½m', 'de', 'Megrendelï¿½s szï¿½m', NULL, NULL, NULL),
+(1290, 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', 'de', 'Megrendelï¿½s tï¿½tel darab az elmï¿½lt 12 hï¿½napban', NULL, NULL, NULL),
+(1291, 'Megrendelï¿½sek', 'de', 'Megrendelï¿½sek', NULL, NULL, NULL),
+(1292, 'Megszakï¿½tï¿½s', 'de', 'Megszakï¿½tï¿½s', NULL, NULL, NULL),
+(1293, 'Mennyisï¿½g', 'de', 'Mennyisï¿½g', NULL, NULL, NULL),
 (1294, 'Ment', 'de', 'Ment', NULL, NULL, NULL),
-(1295, 'Minden termék', 'de', 'Minden termék', NULL, NULL, NULL),
-(1296, 'Módosítás', 'de', 'Módosítás', NULL, NULL, NULL),
+(1295, 'Minden termï¿½k', 'de', 'Minden termï¿½k', NULL, NULL, NULL),
+(1296, 'Mï¿½dosï¿½tï¿½s', 'de', 'Mï¿½dosï¿½tï¿½s', NULL, NULL, NULL),
 (1297, 'mutat:', 'de', 'mutat:', NULL, NULL, NULL),
 (1298, 'Nagyobb mint', 'de', 'Nagyobb mint', NULL, NULL, NULL),
-(1299, 'Nagyobb vagy egyenlõ mint', 'de', 'Nagyobb vagy egyenlõ mint', NULL, NULL, NULL),
+(1299, 'Nagyobb vagy egyenlï¿½ mint', 'de', 'Nagyobb vagy egyenlï¿½ mint', NULL, NULL, NULL),
 (1300, 'Nem', 'de', 'Nem', NULL, NULL, NULL),
-(1301, 'Nem jelölt ki sort', 'de', 'Nem jelölt ki sort', NULL, NULL, NULL),
-(1302, 'Nem üres', 'de', 'Nem üres', NULL, NULL, NULL),
-(1303, 'Nemzetiség', 'de', 'Nemzetiség', NULL, NULL, NULL),
-(1304, 'Nettó', 'de', 'Nettó', NULL, NULL, NULL),
-(1305, 'Név', 'de', 'Név', NULL, NULL, NULL),
-(1306, 'Nincs a keresésnek megfelelõ találat', 'de', 'Nincs a keresésnek megfelelõ találat', NULL, NULL, NULL),
-(1307, 'Nincs kijelölt tétel!', 'de', 'Nincs kijelölt tétel!', NULL, NULL, NULL),
-(1308, 'Nincs rendelkezésre álló adat', 'de', 'Nincs rendelkezésre álló adat', NULL, NULL, NULL),
-(1309, 'Nincsenek szûrõpanelek', 'de', 'Nincsenek szûrõpanelek', NULL, NULL, NULL),
+(1301, 'Nem jelï¿½lt ki sort', 'de', 'Nem jelï¿½lt ki sort', NULL, NULL, NULL),
+(1302, 'Nem ï¿½res', 'de', 'Nem ï¿½res', NULL, NULL, NULL),
+(1303, 'Nemzetisï¿½g', 'de', 'Nemzetisï¿½g', NULL, NULL, NULL),
+(1304, 'Nettï¿½', 'de', 'Nettï¿½', NULL, NULL, NULL),
+(1305, 'Nï¿½v', 'de', 'Nï¿½v', NULL, NULL, NULL),
+(1306, 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', 'de', 'Nincs a keresï¿½snek megfelelï¿½ talï¿½lat', NULL, NULL, NULL),
+(1307, 'Nincs kijelï¿½lt tï¿½tel!', 'de', 'Nincs kijelï¿½lt tï¿½tel!', NULL, NULL, NULL),
+(1308, 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', 'de', 'Nincs rendelkezï¿½sre ï¿½llï¿½ adat', NULL, NULL, NULL),
+(1309, 'Nincsenek szï¿½rï¿½panelek', 'de', 'Nincsenek szï¿½rï¿½panelek', NULL, NULL, NULL),
 (1310, 'nov', 'de', 'nov', NULL, NULL, NULL),
 (1311, 'november', 'de', 'november', NULL, NULL, NULL),
-(1312, 'Nulla találat', 'de', 'Nulla találat', NULL, NULL, NULL),
+(1312, 'Nulla talï¿½lat', 'de', 'Nulla talï¿½lat', NULL, NULL, NULL),
 (1313, 'Nyelvek', 'de', 'Nyelvek', NULL, NULL, NULL),
 (1314, 'Nyitott', 'de', 'Nyitott', NULL, NULL, NULL),
-(1315, 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', 'de', 'Nyomja meg a CTRL vagy u2318 + C gombokat a táblázat adatainak a vágólapra másolásához.<br \\/><br \\/>A megszakításhoz kattintson az üzenetre vagy nyomja meg az ESC billentyût.', NULL, NULL, NULL),
+(1315, 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', 'de', 'Nyomja meg a CTRL vagy u2318 + C gombokat a tï¿½blï¿½zat adatainak a vï¿½gï¿½lapra mï¿½solï¿½sï¿½hoz.<br \\/><br \\/>A megszakï¿½tï¿½shoz kattintson az ï¿½zenetre vagy nyomja meg az ESC billentyï¿½t.', NULL, NULL, NULL),
 (1316, 'Nyomtat', 'de', 'Nyomtat', NULL, NULL, NULL),
-(1317, 'Nyomtatás', 'de', 'Nyomtatás', NULL, NULL, NULL),
+(1317, 'Nyomtatï¿½s', 'de', 'Nyomtatï¿½s', NULL, NULL, NULL),
 (1318, 'okt', 'de', 'okt', NULL, NULL, NULL),
-(1319, 'október', 'de', 'október', NULL, NULL, NULL),
-(1320, 'Óra', 'de', 'Óra', NULL, NULL, NULL),
-(1321, 'Összes', 'de', 'Összes', NULL, NULL, NULL),
-(1322, 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', 'de', 'Összes cella kitöltése a következõvel: <i>%d<\\/i>', NULL, NULL, NULL),
-(1323, 'Összes feltétel törlése', 'de', 'Összes feltétel törlése', NULL, NULL, NULL),
-(1324, 'Összes kosár', 'de', 'Összes kosár', NULL, NULL, NULL),
-(1325, 'Összes megrendelés', 'de', 'Összes megrendelés', NULL, NULL, NULL),
-(1326, 'Összes sor megjelenítése', 'de', 'Összes sor megjelenítése', NULL, NULL, NULL),
+(1319, 'oktï¿½ber', 'de', 'oktï¿½ber', NULL, NULL, NULL),
+(1320, 'ï¿½ra', 'de', 'ï¿½ra', NULL, NULL, NULL),
+(1321, 'ï¿½sszes', 'de', 'ï¿½sszes', NULL, NULL, NULL),
+(1322, 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', 'de', 'ï¿½sszes cella kitï¿½ltï¿½se a kï¿½vetkezï¿½vel: <i>%d<\\/i>', NULL, NULL, NULL),
+(1323, 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', 'de', 'ï¿½sszes feltï¿½tel tï¿½rlï¿½se', NULL, NULL, NULL),
+(1324, 'ï¿½sszes kosï¿½r', 'de', 'ï¿½sszes kosï¿½r', NULL, NULL, NULL),
+(1325, 'ï¿½sszes megrendelï¿½s', 'de', 'ï¿½sszes megrendelï¿½s', NULL, NULL, NULL),
+(1326, 'ï¿½sszes sor megjelenï¿½tï¿½se', 'de', 'ï¿½sszes sor megjelenï¿½tï¿½se', NULL, NULL, NULL),
 (1327, 'Oszlopok', 'de', 'Oszlopok', NULL, NULL, NULL),
-(1328, 'Oszlopok visszaállítása', 'de', 'Oszlopok visszaállítása', NULL, NULL, NULL),
-(1329, 'Partner cég', 'de', 'Partner cég', NULL, NULL, NULL),
-(1330, 'Partner felhasználó', 'de', 'Partner felhasználó', NULL, NULL, NULL),
-(1331, 'Partner felhasználók', 'de', 'Partner felhasználók', NULL, NULL, NULL),
-(1332, 'péntek', 'de', 'péntek', NULL, NULL, NULL),
-(1333, 'Pénznem', 'de', 'Pénznem', NULL, NULL, NULL),
+(1328, 'Oszlopok visszaï¿½llï¿½tï¿½sa', 'de', 'Oszlopok visszaï¿½llï¿½tï¿½sa', NULL, NULL, NULL),
+(1329, 'Partner cï¿½g', 'de', 'Partner cï¿½g', NULL, NULL, NULL),
+(1330, 'Partner felhasznï¿½lï¿½', 'de', 'Partner felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1331, 'Partner felhasznï¿½lï¿½k', 'de', 'Partner felhasznï¿½lï¿½k', NULL, NULL, NULL),
+(1332, 'pï¿½ntek', 'de', 'pï¿½ntek', NULL, NULL, NULL),
+(1333, 'Pï¿½nznem', 'de', 'Pï¿½nznem', NULL, NULL, NULL),
 (1334, 'Perc', 'de', 'Perc', NULL, NULL, NULL),
 (1335, 'Product', 'de', 'Product', NULL, NULL, NULL),
 (1336, 'Profil', 'de', 'Profil', NULL, NULL, NULL),
-(1337, 'rendszergazdák', 'de', 'rendszergazdák', NULL, NULL, NULL),
-(1338, 'Saját megrendelés', 'de', 'Saját megrendelés', NULL, NULL, NULL),
+(1337, 'rendszergazdï¿½k', 'de', 'rendszergazdï¿½k', NULL, NULL, NULL),
+(1338, 'Sajï¿½t megrendelï¿½s', 'de', 'Sajï¿½t megrendelï¿½s', NULL, NULL, NULL),
 (1339, 'Szabad', 'de', 'Szabad', NULL, NULL, NULL),
-(1340, 'Szállítási mód', 'de', 'Szállítási mód', NULL, NULL, NULL),
+(1340, 'Szï¿½llï¿½tï¿½si mï¿½d', 'de', 'Szï¿½llï¿½tï¿½si mï¿½d', NULL, NULL, NULL),
 (1341, 'szept', 'de', 'szept', NULL, NULL, NULL),
 (1342, 'szeptember', 'de', 'szeptember', NULL, NULL, NULL),
 (1343, 'szerda', 'de', 'szerda', NULL, NULL, NULL),
 (1344, 'szombat', 'de', 'szombat', NULL, NULL, NULL),
-(1345, 'Szûrõk törlése', 'de', 'Szûrõk törlése', NULL, NULL, NULL),
-(1346, 'Szûrõpanelek', 'de', 'Szûrõpanelek', NULL, NULL, NULL),
-(1347, 'Szûrõpanelek (%d)', 'de', 'Szûrõpanelek (%d)', NULL, NULL, NULL),
-(1348, 'Szûrõpanelek betöltése', 'de', 'Szûrõpanelek betöltése', NULL, NULL, NULL),
-(1349, 'Táblázat', 'de', 'Táblázat', NULL, NULL, NULL),
-(1350, 'Találatok: _START_ - _END_ Összesen: _TOTAL_', 'de', 'Találatok: _START_ - _END_ Összesen: _TOTAL_', NULL, NULL, NULL),
+(1345, 'Szï¿½rï¿½k tï¿½rlï¿½se', 'de', 'Szï¿½rï¿½k tï¿½rlï¿½se', NULL, NULL, NULL),
+(1346, 'Szï¿½rï¿½panelek', 'de', 'Szï¿½rï¿½panelek', NULL, NULL, NULL),
+(1347, 'Szï¿½rï¿½panelek (%d)', 'de', 'Szï¿½rï¿½panelek (%d)', NULL, NULL, NULL),
+(1348, 'Szï¿½rï¿½panelek betï¿½ltï¿½se', 'de', 'Szï¿½rï¿½panelek betï¿½ltï¿½se', NULL, NULL, NULL),
+(1349, 'Tï¿½blï¿½zat', 'de', 'Tï¿½blï¿½zat', NULL, NULL, NULL),
+(1350, 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', 'de', 'Talï¿½latok: _START_ - _END_ ï¿½sszesen: _TOTAL_', NULL, NULL, NULL),
 (1351, 'Tartalmazza', 'de', 'Tartalmazza', NULL, NULL, NULL),
 (1352, 'Telephely', 'de', 'Telephely', NULL, NULL, NULL),
-(1353, 'Teljes képernyõ', 'de', 'Teljes képernyõ', NULL, NULL, NULL),
-(1354, 'Termék', 'de', 'Termék', NULL, NULL, NULL),
-(1355, 'Termék kategória', 'de', 'Termék kategória', NULL, NULL, NULL),
-(1356, 'Tétel', 'de', 'Tétel', NULL, NULL, NULL),
-(1357, 'Tételek', 'de', 'Tételek', NULL, NULL, NULL),
-(1358, 'Tétetek kosárba másolás!', 'de', 'Tétetek kosárba másolás!', NULL, NULL, NULL),
-(1359, 'Törlés', 'de', 'Törlés', NULL, NULL, NULL),
-(1360, 'Tovább', 'de', 'Tovább', NULL, NULL, NULL),
-(1361, 'Új', 'de', 'Új', NULL, NULL, NULL),
-(1362, 'Új Kosár', 'de', 'Új Kosár', NULL, NULL, NULL),
-(1363, 'Üres', 'de', 'Üres', NULL, NULL, NULL),
-(1364, 'Után', 'de', 'Után', NULL, NULL, NULL),
-(1365, 'Utolsó', 'de', 'Utolsó', NULL, NULL, NULL),
-(1366, 'Vágólapra másolás', 'de', 'Vágólapra másolás', NULL, NULL, NULL),
+(1353, 'Teljes kï¿½pernyï¿½', 'de', 'Teljes kï¿½pernyï¿½', NULL, NULL, NULL),
+(1354, 'Termï¿½k', 'de', 'Termï¿½k', NULL, NULL, NULL),
+(1355, 'Termï¿½k kategï¿½ria', 'de', 'Termï¿½k kategï¿½ria', NULL, NULL, NULL),
+(1356, 'Tï¿½tel', 'de', 'Tï¿½tel', NULL, NULL, NULL),
+(1357, 'Tï¿½telek', 'de', 'Tï¿½telek', NULL, NULL, NULL),
+(1358, 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', 'de', 'Tï¿½tetek kosï¿½rba mï¿½solï¿½s!', NULL, NULL, NULL),
+(1359, 'Tï¿½rlï¿½s', 'de', 'Tï¿½rlï¿½s', NULL, NULL, NULL),
+(1360, 'Tovï¿½bb', 'de', 'Tovï¿½bb', NULL, NULL, NULL),
+(1361, 'ï¿½j', 'de', 'ï¿½j', NULL, NULL, NULL),
+(1362, 'ï¿½j Kosï¿½r', 'de', 'ï¿½j Kosï¿½r', NULL, NULL, NULL),
+(1363, 'ï¿½res', 'de', 'ï¿½res', NULL, NULL, NULL),
+(1364, 'Utï¿½n', 'de', 'Utï¿½n', NULL, NULL, NULL),
+(1365, 'Utolsï¿½', 'de', 'Utolsï¿½', NULL, NULL, NULL),
+(1366, 'Vï¿½gï¿½lapra mï¿½solï¿½s', 'de', 'Vï¿½gï¿½lapra mï¿½solï¿½s', NULL, NULL, NULL),
 (1367, 'Vagy', 'de', 'Vagy', NULL, NULL, NULL),
-(1368, 'Van már nyitott kosara!', 'de', 'Van már nyitott kosara!', NULL, NULL, NULL),
-(1369, 'vasárnap', 'de', 'vasárnap', NULL, NULL, NULL),
-(1370, 'Végzõdik', 'de', 'Végzõdik', NULL, NULL, NULL),
-(1371, 'Vezérlõ', 'de', 'Vezérlõ', NULL, NULL, NULL),
-(1372, 'Visszaállít', 'de', 'Visszaállít', NULL, NULL, NULL),
+(1368, 'Van mï¿½r nyitott kosara!', 'de', 'Van mï¿½r nyitott kosara!', NULL, NULL, NULL),
+(1369, 'vasï¿½rnap', 'de', 'vasï¿½rnap', NULL, NULL, NULL),
+(1370, 'Vï¿½gzï¿½dik', 'de', 'Vï¿½gzï¿½dik', NULL, NULL, NULL),
+(1371, 'Vezï¿½rlï¿½', 'de', 'Vezï¿½rlï¿½', NULL, NULL, NULL),
+(1372, 'Visszaï¿½llï¿½t', 'de', 'Visszaï¿½llï¿½t', NULL, NULL, NULL),
 (1373, 'XML Import', 'de', 'XML Import', NULL, NULL, NULL),
-(1374, '_MENU_ találat oldalanként', 'de', '_MENU_ találat oldalanként', NULL, NULL, NULL),
-(1375, 'Fordított', 'hu', 'Fordított', NULL, NULL, NULL),
-(1376, 'Fordított', 'en', 'Fordított', NULL, NULL, NULL),
-(1377, 'Fordított', 'de', 'Fordított', NULL, NULL, NULL),
-(1378, 'Fordított', 'bg', 'Fordított', NULL, '2022-06-16 12:17:59', '2022-06-16 12:17:59'),
-(1379, 'Fordított', 'cz', 'Fordított', NULL, NULL, NULL),
-(1380, 'Fordított', 'ee', 'Fordított', NULL, NULL, NULL),
-(1381, 'Fordítatlan', 'hu', 'Fordítatlan', NULL, NULL, NULL),
-(1382, 'Fordítatlan', 'en', 'Fordítatlan', NULL, NULL, NULL),
-(1383, 'Fordítatlan', 'de', 'Fordítatlan', NULL, NULL, NULL),
-(1384, 'Fordítatlan', 'bg', 'Fordítatlan', NULL, '2022-06-16 12:17:59', '2022-06-16 12:17:59'),
-(1385, 'Fordítatlan', 'cz', 'Fordítatlan', NULL, NULL, NULL),
-(1386, 'Fordítatlan', 'ee', 'Fordítatlan', NULL, NULL, NULL),
+(1374, '_MENU_ talï¿½lat oldalankï¿½nt', 'de', '_MENU_ talï¿½lat oldalankï¿½nt', NULL, NULL, NULL),
+(1375, 'Fordï¿½tott', 'hu', 'Fordï¿½tott', NULL, NULL, NULL),
+(1376, 'Fordï¿½tott', 'en', 'Fordï¿½tott', NULL, NULL, NULL),
+(1377, 'Fordï¿½tott', 'de', 'Fordï¿½tott', NULL, NULL, NULL),
+(1378, 'Fordï¿½tott', 'bg', 'Fordï¿½tott', NULL, '2022-06-16 12:17:59', '2022-06-16 12:17:59'),
+(1379, 'Fordï¿½tott', 'cz', 'Fordï¿½tott', NULL, NULL, NULL),
+(1380, 'Fordï¿½tott', 'ee', 'Fordï¿½tott', NULL, NULL, NULL),
+(1381, 'Fordï¿½tatlan', 'hu', 'Fordï¿½tatlan', NULL, NULL, NULL),
+(1382, 'Fordï¿½tatlan', 'en', 'Fordï¿½tatlan', NULL, NULL, NULL),
+(1383, 'Fordï¿½tatlan', 'de', 'Fordï¿½tatlan', NULL, NULL, NULL),
+(1384, 'Fordï¿½tatlan', 'bg', 'Fordï¿½tatlan', NULL, '2022-06-16 12:17:59', '2022-06-16 12:17:59'),
+(1385, 'Fordï¿½tatlan', 'cz', 'Fordï¿½tatlan', NULL, NULL, NULL),
+(1386, 'Fordï¿½tatlan', 'ee', 'Fordï¿½tatlan', NULL, NULL, NULL),
 (1387, 'Biztos, hogy ke akarja kapcsolni a nyelvet?', 'hu', 'Biztos, hogy ke akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
 (1388, 'Biztos, hogy ke akarja kapcsolni a nyelvet?', 'en', 'Biztos, hogy ke akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
 (1389, 'Biztos, hogy ke akarja kapcsolni a nyelvet?', 'de', 'Biztos, hogy ke akarja kapcsolni a nyelvet?', NULL, NULL, NULL),
@@ -3594,18 +3593,18 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (1396, 'Partner:', 'bg', 'Partner:', NULL, NULL, NULL),
 (1397, 'Partner:', 'cz', 'Partner:', NULL, NULL, NULL),
 (1398, 'Partner:', 'ee', 'Partner:', NULL, NULL, NULL),
-(1399, 'Felhasználó:', 'hu', 'Felhasználó:', NULL, NULL, NULL),
-(1400, 'Felhasználó:', 'en', 'Felhasználó:', NULL, NULL, NULL),
-(1401, 'Felhasználó:', 'de', 'Felhasználó:', NULL, NULL, NULL),
-(1402, 'Felhasználó:', 'bg', 'Felhasználó:', NULL, NULL, NULL),
-(1403, 'Felhasználó:', 'cz', 'Felhasználó:', NULL, NULL, NULL),
-(1404, 'Felhasználó:', 'ee', 'Felhasználó:', NULL, NULL, NULL),
-(1405, 'Idõszak tól:', 'hu', 'Idõszak tól:', NULL, NULL, NULL),
-(1406, 'Idõszak tól:', 'en', 'Idõszak tól:', NULL, NULL, NULL),
-(1407, 'Idõszak tól:', 'de', 'Idõszak tól:', NULL, NULL, NULL),
-(1408, 'Idõszak tól:', 'bg', 'Idõszak tól:', NULL, NULL, NULL),
-(1409, 'Idõszak tól:', 'cz', 'Idõszak tól:', NULL, NULL, NULL),
-(1410, 'Idõszak tól:', 'ee', 'Idõszak tól:', NULL, NULL, NULL),
+(1399, 'Felhasznï¿½lï¿½:', 'hu', 'Felhasznï¿½lï¿½:', NULL, NULL, NULL),
+(1400, 'Felhasznï¿½lï¿½:', 'en', 'Felhasznï¿½lï¿½:', NULL, NULL, NULL),
+(1401, 'Felhasznï¿½lï¿½:', 'de', 'Felhasznï¿½lï¿½:', NULL, NULL, NULL),
+(1402, 'Felhasznï¿½lï¿½:', 'bg', 'Felhasznï¿½lï¿½:', NULL, NULL, NULL),
+(1403, 'Felhasznï¿½lï¿½:', 'cz', 'Felhasznï¿½lï¿½:', NULL, NULL, NULL),
+(1404, 'Felhasznï¿½lï¿½:', 'ee', 'Felhasznï¿½lï¿½:', NULL, NULL, NULL),
+(1405, 'Idï¿½szak tï¿½l:', 'hu', 'Idï¿½szak tï¿½l:', NULL, NULL, NULL),
+(1406, 'Idï¿½szak tï¿½l:', 'en', 'Idï¿½szak tï¿½l:', NULL, NULL, NULL),
+(1407, 'Idï¿½szak tï¿½l:', 'de', 'Idï¿½szak tï¿½l:', NULL, NULL, NULL),
+(1408, 'Idï¿½szak tï¿½l:', 'bg', 'Idï¿½szak tï¿½l:', NULL, NULL, NULL),
+(1409, 'Idï¿½szak tï¿½l:', 'cz', 'Idï¿½szak tï¿½l:', NULL, NULL, NULL),
+(1410, 'Idï¿½szak tï¿½l:', 'ee', 'Idï¿½szak tï¿½l:', NULL, NULL, NULL),
 (1411, 'ig:', 'hu', 'ig:', NULL, NULL, NULL),
 (1412, 'ig:', 'en', 'ig:', NULL, NULL, NULL),
 (1413, 'ig:', 'de', 'ig:', NULL, NULL, NULL),
@@ -3618,203 +3617,203 @@ INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `u
 (1420, 'Feladat', 'bg', 'Feladat', NULL, NULL, NULL),
 (1421, 'Feladat', 'cz', 'Feladat', NULL, NULL, NULL),
 (1422, 'Feladat', 'ee', 'Feladat', NULL, NULL, NULL),
-(1423, 'Felhasználó', 'hu', 'Felhasználó', NULL, NULL, NULL),
-(1424, 'Felhasználó', 'en', 'Felhasználó', NULL, NULL, NULL),
-(1425, 'Felhasználó', 'de', 'Felhasználó', NULL, NULL, NULL),
-(1426, 'Felhasználó', 'bg', 'Felhasználó', NULL, NULL, NULL),
-(1427, 'Felhasználó', 'cz', 'Felhasználó', NULL, NULL, NULL),
-(1428, 'Felhasználó', 'ee', 'Felhasználó', NULL, NULL, NULL),
-(1429, 'Esemény', 'hu', 'Esemény', NULL, NULL, NULL),
-(1430, 'Esemény', 'en', 'Esemény', NULL, NULL, NULL),
-(1431, 'Esemény', 'de', 'Esemény', NULL, NULL, NULL),
-(1432, 'Esemény', 'bg', 'Esemény', NULL, NULL, NULL),
-(1433, 'Esemény', 'cz', 'Esemény', NULL, NULL, NULL),
-(1434, 'Esemény', 'ee', 'Esemény', NULL, NULL, NULL),
-(1435, 'Log adatok elmúlt 24 óra', 'hu', 'Log adatok elmúlt 24 óra', NULL, NULL, NULL),
-(1436, 'Log adatok elmúlt 24 óra', 'en', 'Log adatok elmúlt 24 óra', NULL, NULL, NULL),
-(1437, 'Log adatok elmúlt 24 óra', 'de', 'Log adatok elmúlt 24 óra', NULL, NULL, NULL),
-(1438, 'Log adatok elmúlt 24 óra', 'bg', 'Log adatok elmúlt 24 óra', NULL, NULL, NULL),
-(1439, 'Log adatok elmúlt 24 óra', 'cz', 'Log adatok elmúlt 24 óra', NULL, NULL, NULL),
-(1440, 'Log adatok elmúlt 24 óra', 'ee', 'Log adatok elmúlt 24 óra', NULL, NULL, NULL),
-(1441, 'Bizonylatszám:', 'hu', 'Bizonylatszám:', NULL, NULL, NULL),
-(1442, 'Bizonylatszám:', 'en', 'Bizonylatszám:', NULL, NULL, NULL),
-(1443, 'Bizonylatszám:', 'de', 'Bizonylatszám:', NULL, NULL, NULL),
-(1444, 'Bizonylatszám:', 'bg', 'Bizonylatszám:', NULL, NULL, NULL),
-(1445, 'Bizonylatszám:', 'cz', 'Bizonylatszám:', NULL, NULL, NULL),
-(1446, 'Bizonylatszám:', 'ee', 'Bizonylatszám:', NULL, NULL, NULL),
-(1447, 'Fizetési mód:', 'hu', 'Fizetési mód:', NULL, NULL, NULL),
-(1448, 'Fizetési mód:', 'en', 'Fizetési mód:', NULL, NULL, NULL),
-(1449, 'Fizetési mód:', 'de', 'Fizetési mód:', NULL, NULL, NULL),
-(1450, 'Fizetési mód:', 'bg', 'Fizetési mód:', NULL, NULL, NULL),
-(1451, 'Fizetési mód:', 'cz', 'Fizetési mód:', NULL, NULL, NULL),
-(1452, 'Fizetési mód:', 'ee', 'Fizetési mód:', NULL, NULL, NULL),
-(1453, 'Pénznem:', 'hu', 'Pénznem:', NULL, NULL, NULL),
-(1454, 'Pénznem:', 'en', 'Pénznem:', NULL, NULL, NULL),
-(1455, 'Pénznem:', 'de', 'Pénznem:', NULL, NULL, NULL),
-(1456, 'Pénznem:', 'bg', 'Pénznem:', NULL, NULL, NULL),
-(1457, 'Pénznem:', 'cz', 'Pénznem:', NULL, NULL, NULL),
-(1458, 'Pénznem:', 'ee', 'Pénznem:', NULL, NULL, NULL),
+(1423, 'Felhasznï¿½lï¿½', 'hu', 'Felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1424, 'Felhasznï¿½lï¿½', 'en', 'Felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1425, 'Felhasznï¿½lï¿½', 'de', 'Felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1426, 'Felhasznï¿½lï¿½', 'bg', 'Felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1427, 'Felhasznï¿½lï¿½', 'cz', 'Felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1428, 'Felhasznï¿½lï¿½', 'ee', 'Felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1429, 'Esemï¿½ny', 'hu', 'Esemï¿½ny', NULL, NULL, NULL),
+(1430, 'Esemï¿½ny', 'en', 'Esemï¿½ny', NULL, NULL, NULL),
+(1431, 'Esemï¿½ny', 'de', 'Esemï¿½ny', NULL, NULL, NULL),
+(1432, 'Esemï¿½ny', 'bg', 'Esemï¿½ny', NULL, NULL, NULL),
+(1433, 'Esemï¿½ny', 'cz', 'Esemï¿½ny', NULL, NULL, NULL),
+(1434, 'Esemï¿½ny', 'ee', 'Esemï¿½ny', NULL, NULL, NULL),
+(1435, 'Log adatok elmï¿½lt 24 ï¿½ra', 'hu', 'Log adatok elmï¿½lt 24 ï¿½ra', NULL, NULL, NULL),
+(1436, 'Log adatok elmï¿½lt 24 ï¿½ra', 'en', 'Log adatok elmï¿½lt 24 ï¿½ra', NULL, NULL, NULL),
+(1437, 'Log adatok elmï¿½lt 24 ï¿½ra', 'de', 'Log adatok elmï¿½lt 24 ï¿½ra', NULL, NULL, NULL),
+(1438, 'Log adatok elmï¿½lt 24 ï¿½ra', 'bg', 'Log adatok elmï¿½lt 24 ï¿½ra', NULL, NULL, NULL),
+(1439, 'Log adatok elmï¿½lt 24 ï¿½ra', 'cz', 'Log adatok elmï¿½lt 24 ï¿½ra', NULL, NULL, NULL),
+(1440, 'Log adatok elmï¿½lt 24 ï¿½ra', 'ee', 'Log adatok elmï¿½lt 24 ï¿½ra', NULL, NULL, NULL),
+(1441, 'Bizonylatszï¿½m:', 'hu', 'Bizonylatszï¿½m:', NULL, NULL, NULL),
+(1442, 'Bizonylatszï¿½m:', 'en', 'Bizonylatszï¿½m:', NULL, NULL, NULL),
+(1443, 'Bizonylatszï¿½m:', 'de', 'Bizonylatszï¿½m:', NULL, NULL, NULL),
+(1444, 'Bizonylatszï¿½m:', 'bg', 'Bizonylatszï¿½m:', NULL, NULL, NULL),
+(1445, 'Bizonylatszï¿½m:', 'cz', 'Bizonylatszï¿½m:', NULL, NULL, NULL),
+(1446, 'Bizonylatszï¿½m:', 'ee', 'Bizonylatszï¿½m:', NULL, NULL, NULL),
+(1447, 'Fizetï¿½si mï¿½d:', 'hu', 'Fizetï¿½si mï¿½d:', NULL, NULL, NULL),
+(1448, 'Fizetï¿½si mï¿½d:', 'en', 'Fizetï¿½si mï¿½d:', NULL, NULL, NULL),
+(1449, 'Fizetï¿½si mï¿½d:', 'de', 'Fizetï¿½si mï¿½d:', NULL, NULL, NULL),
+(1450, 'Fizetï¿½si mï¿½d:', 'bg', 'Fizetï¿½si mï¿½d:', NULL, NULL, NULL),
+(1451, 'Fizetï¿½si mï¿½d:', 'cz', 'Fizetï¿½si mï¿½d:', NULL, NULL, NULL),
+(1452, 'Fizetï¿½si mï¿½d:', 'ee', 'Fizetï¿½si mï¿½d:', NULL, NULL, NULL),
+(1453, 'Pï¿½nznem:', 'hu', 'Pï¿½nznem:', NULL, NULL, NULL),
+(1454, 'Pï¿½nznem:', 'en', 'Pï¿½nznem:', NULL, NULL, NULL),
+(1455, 'Pï¿½nznem:', 'de', 'Pï¿½nznem:', NULL, NULL, NULL),
+(1456, 'Pï¿½nznem:', 'bg', 'Pï¿½nznem:', NULL, NULL, NULL),
+(1457, 'Pï¿½nznem:', 'cz', 'Pï¿½nznem:', NULL, NULL, NULL),
+(1458, 'Pï¿½nznem:', 'ee', 'Pï¿½nznem:', NULL, NULL, NULL),
 (1459, 'Telephely:', 'hu', 'Telephely:', NULL, NULL, NULL),
 (1460, 'Telephely:', 'en', 'Telephely:', NULL, NULL, NULL),
 (1461, 'Telephely:', 'de', 'Telephely:', NULL, NULL, NULL),
 (1462, 'Telephely:', 'bg', 'Telephely:', NULL, NULL, NULL),
 (1463, 'Telephely:', 'cz', 'Telephely:', NULL, NULL, NULL),
 (1464, 'Telephely:', 'ee', 'Telephely:', NULL, NULL, NULL),
-(1465, 'Szállítási mód:', 'hu', 'Szállítási mód:', NULL, NULL, NULL),
-(1466, 'Szállítási mód:', 'en', 'Szállítási mód:', NULL, NULL, NULL),
-(1467, 'Szállítási mód:', 'de', 'Szállítási mód:', NULL, NULL, NULL),
-(1468, 'Szállítási mód:', 'bg', 'Szállítási mód:', NULL, NULL, NULL),
-(1469, 'Szállítási mód:', 'cz', 'Szállítási mód:', NULL, NULL, NULL),
-(1470, 'Szállítási mód:', 'ee', 'Szállítási mód:', NULL, NULL, NULL),
-(1471, 'Elõleg:', 'hu', 'Elõleg:', NULL, NULL, NULL),
-(1472, 'Elõleg:', 'en', 'Elõleg:', NULL, NULL, NULL),
-(1473, 'Elõleg:', 'de', 'Elõleg:', NULL, NULL, NULL),
-(1474, 'Elõleg:', 'bg', 'Elõleg:', NULL, NULL, NULL),
-(1475, 'Elõleg:', 'cz', 'Elõleg:', NULL, NULL, NULL),
-(1476, 'Elõleg:', 'ee', 'Elõleg:', NULL, NULL, NULL),
-(1477, 'Elõleg %:', 'hu', 'Elõleg %:', NULL, NULL, NULL),
-(1478, 'Elõleg %:', 'en', 'Elõleg %:', NULL, NULL, NULL),
-(1479, 'Elõleg %:', 'de', 'Elõleg %:', NULL, NULL, NULL),
-(1480, 'Elõleg %:', 'bg', 'Elõleg %:', NULL, NULL, NULL),
-(1481, 'Elõleg %:', 'cz', 'Elõleg %:', NULL, NULL, NULL),
-(1482, 'Elõleg %:', 'ee', 'Elõleg %:', NULL, NULL, NULL),
-(1483, 'Nettó érték:', 'hu', 'Nettó érték:', NULL, NULL, NULL),
-(1484, 'Nettó érték:', 'en', 'Nettó érték:', NULL, NULL, NULL),
-(1485, 'Nettó érték:', 'de', 'Nettó érték:', NULL, NULL, NULL),
-(1486, 'Nettó érték:', 'bg', 'Nettó érték:', NULL, NULL, NULL),
-(1487, 'Nettó érték:', 'cz', 'Nettó érték:', NULL, NULL, NULL),
-(1488, 'Nettó érték:', 'ee', 'Nettó érték:', NULL, NULL, NULL),
-(1489, 'Áfa:', 'hu', 'Áfa:', NULL, NULL, NULL),
-(1490, 'Áfa:', 'en', 'Áfa:', NULL, NULL, NULL),
-(1491, 'Áfa:', 'de', 'Áfa:', NULL, NULL, NULL),
-(1492, 'Áfa:', 'bg', 'Áfa:', NULL, NULL, NULL),
-(1493, 'Áfa:', 'cz', 'Áfa:', NULL, NULL, NULL),
-(1494, 'Áfa:', 'ee', 'Áfa:', NULL, NULL, NULL),
-(1495, 'Bruttó érték:', 'hu', 'Bruttó érték:', NULL, NULL, NULL),
-(1496, 'Bruttó érték:', 'en', 'Bruttó érték:', NULL, NULL, NULL),
-(1497, 'Bruttó érték:', 'de', 'Bruttó érték:', NULL, NULL, NULL),
-(1498, 'Bruttó érték:', 'bg', 'Bruttó érték:', NULL, NULL, NULL),
-(1499, 'Bruttó érték:', 'cz', 'Bruttó érték:', NULL, NULL, NULL),
-(1500, 'Bruttó érték:', 'ee', 'Bruttó érték:', NULL, NULL, NULL),
-(1501, 'Megjegyzés:', 'hu', 'Megjegyzés:', NULL, NULL, NULL),
-(1502, 'Megjegyzés:', 'en', 'Megjegyzés:', NULL, NULL, NULL),
-(1503, 'Megjegyzés:', 'de', 'Megjegyzés:', NULL, NULL, NULL);
+(1465, 'Szï¿½llï¿½tï¿½si mï¿½d:', 'hu', 'Szï¿½llï¿½tï¿½si mï¿½d:', NULL, NULL, NULL),
+(1466, 'Szï¿½llï¿½tï¿½si mï¿½d:', 'en', 'Szï¿½llï¿½tï¿½si mï¿½d:', NULL, NULL, NULL),
+(1467, 'Szï¿½llï¿½tï¿½si mï¿½d:', 'de', 'Szï¿½llï¿½tï¿½si mï¿½d:', NULL, NULL, NULL),
+(1468, 'Szï¿½llï¿½tï¿½si mï¿½d:', 'bg', 'Szï¿½llï¿½tï¿½si mï¿½d:', NULL, NULL, NULL),
+(1469, 'Szï¿½llï¿½tï¿½si mï¿½d:', 'cz', 'Szï¿½llï¿½tï¿½si mï¿½d:', NULL, NULL, NULL),
+(1470, 'Szï¿½llï¿½tï¿½si mï¿½d:', 'ee', 'Szï¿½llï¿½tï¿½si mï¿½d:', NULL, NULL, NULL),
+(1471, 'Elï¿½leg:', 'hu', 'Elï¿½leg:', NULL, NULL, NULL),
+(1472, 'Elï¿½leg:', 'en', 'Elï¿½leg:', NULL, NULL, NULL),
+(1473, 'Elï¿½leg:', 'de', 'Elï¿½leg:', NULL, NULL, NULL),
+(1474, 'Elï¿½leg:', 'bg', 'Elï¿½leg:', NULL, NULL, NULL),
+(1475, 'Elï¿½leg:', 'cz', 'Elï¿½leg:', NULL, NULL, NULL),
+(1476, 'Elï¿½leg:', 'ee', 'Elï¿½leg:', NULL, NULL, NULL),
+(1477, 'Elï¿½leg %:', 'hu', 'Elï¿½leg %:', NULL, NULL, NULL),
+(1478, 'Elï¿½leg %:', 'en', 'Elï¿½leg %:', NULL, NULL, NULL),
+(1479, 'Elï¿½leg %:', 'de', 'Elï¿½leg %:', NULL, NULL, NULL),
+(1480, 'Elï¿½leg %:', 'bg', 'Elï¿½leg %:', NULL, NULL, NULL),
+(1481, 'Elï¿½leg %:', 'cz', 'Elï¿½leg %:', NULL, NULL, NULL),
+(1482, 'Elï¿½leg %:', 'ee', 'Elï¿½leg %:', NULL, NULL, NULL),
+(1483, 'Nettï¿½ ï¿½rtï¿½k:', 'hu', 'Nettï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1484, 'Nettï¿½ ï¿½rtï¿½k:', 'en', 'Nettï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1485, 'Nettï¿½ ï¿½rtï¿½k:', 'de', 'Nettï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1486, 'Nettï¿½ ï¿½rtï¿½k:', 'bg', 'Nettï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1487, 'Nettï¿½ ï¿½rtï¿½k:', 'cz', 'Nettï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1488, 'Nettï¿½ ï¿½rtï¿½k:', 'ee', 'Nettï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1489, 'ï¿½fa:', 'hu', 'ï¿½fa:', NULL, NULL, NULL),
+(1490, 'ï¿½fa:', 'en', 'ï¿½fa:', NULL, NULL, NULL),
+(1491, 'ï¿½fa:', 'de', 'ï¿½fa:', NULL, NULL, NULL),
+(1492, 'ï¿½fa:', 'bg', 'ï¿½fa:', NULL, NULL, NULL),
+(1493, 'ï¿½fa:', 'cz', 'ï¿½fa:', NULL, NULL, NULL),
+(1494, 'ï¿½fa:', 'ee', 'ï¿½fa:', NULL, NULL, NULL),
+(1495, 'Bruttï¿½ ï¿½rtï¿½k:', 'hu', 'Bruttï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1496, 'Bruttï¿½ ï¿½rtï¿½k:', 'en', 'Bruttï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1497, 'Bruttï¿½ ï¿½rtï¿½k:', 'de', 'Bruttï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1498, 'Bruttï¿½ ï¿½rtï¿½k:', 'bg', 'Bruttï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1499, 'Bruttï¿½ ï¿½rtï¿½k:', 'cz', 'Bruttï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1500, 'Bruttï¿½ ï¿½rtï¿½k:', 'ee', 'Bruttï¿½ ï¿½rtï¿½k:', NULL, NULL, NULL),
+(1501, 'Megjegyzï¿½s:', 'hu', 'Megjegyzï¿½s:', NULL, NULL, NULL),
+(1502, 'Megjegyzï¿½s:', 'en', 'Megjegyzï¿½s:', NULL, NULL, NULL),
+(1503, 'Megjegyzï¿½s:', 'de', 'Megjegyzï¿½s:', NULL, NULL, NULL);
 INSERT INTO `translations` (`id`, `huname`, `language`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1504, 'Megjegyzés:', 'bg', 'Megjegyzés:', NULL, NULL, NULL),
-(1505, 'Megjegyzés:', 'cz', 'Megjegyzés:', NULL, NULL, NULL),
-(1506, 'Megjegyzés:', 'ee', 'Megjegyzés:', NULL, NULL, NULL),
-(1507, 'B2B felhasználó', 'hu', 'B2B felhasználó', NULL, NULL, NULL),
-(1508, 'B2B felhasználó', 'en', 'B2B felhasználó', NULL, NULL, NULL),
-(1509, 'B2B felhasználó', 'de', 'B2B felhasználó', NULL, NULL, NULL),
-(1510, 'B2B felhasználó', 'bg', 'B2B felhasználó', NULL, NULL, NULL),
-(1511, 'B2B felhasználó', 'cz', 'B2B felhasználó', NULL, NULL, NULL),
-(1512, 'B2B felhasználó', 'ee', 'B2B felhasználó', NULL, NULL, NULL),
-(1513, 'Partner cég:', 'hu', 'Partner cég:', NULL, NULL, NULL),
-(1514, 'Partner cég:', 'en', 'Partner cég:', NULL, NULL, NULL),
-(1515, 'Partner cég:', 'de', 'Partner cég:', NULL, NULL, NULL),
-(1516, 'Partner cég:', 'bg', 'Partner cég:', NULL, NULL, NULL),
-(1517, 'Partner cég:', 'cz', 'Partner cég:', NULL, NULL, NULL),
-(1518, 'Partner cég:', 'ee', 'Partner cég:', NULL, NULL, NULL),
-(1519, 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', 'hu', 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', NULL, NULL, NULL),
-(1520, 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', 'en', 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', NULL, NULL, NULL),
-(1521, 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', 'de', 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', NULL, NULL, NULL),
-(1522, 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', 'bg', 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', NULL, NULL, NULL),
-(1523, 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', 'cz', 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', NULL, NULL, NULL),
-(1524, 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', 'ee', 'Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!', NULL, NULL, NULL),
-(1525, 'Hibás név vagy jelszó!', 'hu', 'Hibás név vagy jelszó!', NULL, NULL, NULL),
-(1526, 'Hibás név vagy jelszó!', 'en', 'Hibás név vagy jelszó!', NULL, NULL, NULL),
-(1527, 'Hibás név vagy jelszó!', 'de', 'Hibás név vagy jelszó!', NULL, NULL, NULL),
-(1528, 'Hibás név vagy jelszó!', 'bg', 'Hibás név vagy jelszó!', NULL, NULL, NULL),
-(1529, 'Hibás név vagy jelszó!', 'cz', 'Hibás név vagy jelszó!', NULL, NULL, NULL),
-(1530, 'Hibás név vagy jelszó!', 'ee', 'Hibás név vagy jelszó!', NULL, NULL, NULL),
-(1531, 'Bizonylatszám', 'hu', 'Bizonylatszám', NULL, NULL, NULL),
-(1532, 'Bizonylatszám', 'en', 'Bizonylatszám', NULL, NULL, NULL),
-(1533, 'Bizonylatszám', 'de', 'Bizonylatszám', NULL, NULL, NULL),
-(1534, 'Bizonylatszám', 'bg', 'Bizonylatszám', NULL, NULL, NULL),
-(1535, 'Bizonylatszám', 'cz', 'Bizonylatszám', NULL, NULL, NULL),
-(1536, 'Bizonylatszám', 'ee', 'Bizonylatszám', NULL, NULL, NULL),
+(1504, 'Megjegyzï¿½s:', 'bg', 'Megjegyzï¿½s:', NULL, NULL, NULL),
+(1505, 'Megjegyzï¿½s:', 'cz', 'Megjegyzï¿½s:', NULL, NULL, NULL),
+(1506, 'Megjegyzï¿½s:', 'ee', 'Megjegyzï¿½s:', NULL, NULL, NULL),
+(1507, 'B2B felhasznï¿½lï¿½', 'hu', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1508, 'B2B felhasznï¿½lï¿½', 'en', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1509, 'B2B felhasznï¿½lï¿½', 'de', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1510, 'B2B felhasznï¿½lï¿½', 'bg', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1511, 'B2B felhasznï¿½lï¿½', 'cz', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1512, 'B2B felhasznï¿½lï¿½', 'ee', 'B2B felhasznï¿½lï¿½', NULL, NULL, NULL),
+(1513, 'Partner cï¿½g:', 'hu', 'Partner cï¿½g:', NULL, NULL, NULL),
+(1514, 'Partner cï¿½g:', 'en', 'Partner cï¿½g:', NULL, NULL, NULL),
+(1515, 'Partner cï¿½g:', 'de', 'Partner cï¿½g:', NULL, NULL, NULL),
+(1516, 'Partner cï¿½g:', 'bg', 'Partner cï¿½g:', NULL, NULL, NULL),
+(1517, 'Partner cï¿½g:', 'cz', 'Partner cï¿½g:', NULL, NULL, NULL),
+(1518, 'Partner cï¿½g:', 'ee', 'Partner cï¿½g:', NULL, NULL, NULL),
+(1519, 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', 'hu', 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', NULL, NULL, NULL),
+(1520, 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', 'en', 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', NULL, NULL, NULL),
+(1521, 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', 'de', 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', NULL, NULL, NULL),
+(1522, 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', 'bg', 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', NULL, NULL, NULL),
+(1523, 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', 'cz', 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', NULL, NULL, NULL),
+(1524, 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', 'ee', 'Kï¿½rem a Symbol ï¿½gyviteli rendszerben rendeljen a felhasznï¿½lï¿½hoz email cï¿½met!', NULL, NULL, NULL),
+(1525, 'Hibï¿½s nï¿½v vagy jelszï¿½!', 'hu', 'Hibï¿½s nï¿½v vagy jelszï¿½!', NULL, NULL, NULL),
+(1526, 'Hibï¿½s nï¿½v vagy jelszï¿½!', 'en', 'Hibï¿½s nï¿½v vagy jelszï¿½!', NULL, NULL, NULL),
+(1527, 'Hibï¿½s nï¿½v vagy jelszï¿½!', 'de', 'Hibï¿½s nï¿½v vagy jelszï¿½!', NULL, NULL, NULL),
+(1528, 'Hibï¿½s nï¿½v vagy jelszï¿½!', 'bg', 'Hibï¿½s nï¿½v vagy jelszï¿½!', NULL, NULL, NULL),
+(1529, 'Hibï¿½s nï¿½v vagy jelszï¿½!', 'cz', 'Hibï¿½s nï¿½v vagy jelszï¿½!', NULL, NULL, NULL),
+(1530, 'Hibï¿½s nï¿½v vagy jelszï¿½!', 'ee', 'Hibï¿½s nï¿½v vagy jelszï¿½!', NULL, NULL, NULL),
+(1531, 'Bizonylatszï¿½m', 'hu', 'Bizonylatszï¿½m', NULL, NULL, NULL),
+(1532, 'Bizonylatszï¿½m', 'en', 'Bizonylatszï¿½m', NULL, NULL, NULL),
+(1533, 'Bizonylatszï¿½m', 'de', 'Bizonylatszï¿½m', NULL, NULL, NULL),
+(1534, 'Bizonylatszï¿½m', 'bg', 'Bizonylatszï¿½m', NULL, NULL, NULL),
+(1535, 'Bizonylatszï¿½m', 'cz', 'Bizonylatszï¿½m', NULL, NULL, NULL),
+(1536, 'Bizonylatszï¿½m', 'ee', 'Bizonylatszï¿½m', NULL, NULL, NULL),
 (1537, 'Kelt', 'hu', 'Kelt', NULL, NULL, NULL),
 (1538, 'Kelt', 'en', 'Kelt', NULL, NULL, NULL),
 (1539, 'Kelt', 'de', 'Kelt', NULL, NULL, NULL),
 (1540, 'Kelt', 'bg', 'Kelt', NULL, NULL, NULL),
 (1541, 'Kelt', 'cz', 'Kelt', NULL, NULL, NULL),
 (1542, 'Kelt', 'ee', 'Kelt', NULL, NULL, NULL),
-(1543, 'Száll.hat.', 'hu', 'Száll.hat.', NULL, NULL, NULL),
-(1544, 'Száll.hat.', 'en', 'Száll.hat.', NULL, NULL, NULL),
-(1545, 'Száll.hat.', 'de', 'Száll.hat.', NULL, NULL, NULL),
-(1546, 'Száll.hat.', 'bg', 'Száll.hat.', NULL, NULL, NULL),
-(1547, 'Száll.hat.', 'cz', 'Száll.hat.', NULL, NULL, NULL),
-(1548, 'Száll.hat.', 'ee', 'Száll.hat.', NULL, NULL, NULL),
-(1549, 'Fizetési mód', 'hu', 'Fizetési mód', NULL, NULL, NULL),
-(1550, 'Fizetési mód', 'en', 'Fizetési mód', NULL, NULL, NULL),
-(1551, 'Fizetési mód', 'de', 'Fizetési mód', NULL, NULL, NULL),
-(1552, 'Fizetési mód', 'bg', 'Fizetési mód', NULL, NULL, NULL),
-(1553, 'Fizetési mód', 'cz', 'Fizetési mód', NULL, NULL, NULL),
-(1554, 'Fizetési mód', 'ee', 'Fizetési mód', NULL, NULL, NULL),
-(1555, 'Rendelésszám', 'hu', 'Rendelésszám', NULL, NULL, NULL),
-(1556, 'Rendelésszám', 'en', 'Rendelésszám', NULL, NULL, NULL),
-(1557, 'Rendelésszám', 'de', 'Rendelésszám', NULL, NULL, NULL),
-(1558, 'Rendelésszám', 'bg', 'Rendelésszám', NULL, NULL, NULL),
-(1559, 'Rendelésszám', 'cz', 'Rendelésszám', NULL, NULL, NULL),
-(1560, 'Rendelésszám', 'ee', 'Rendelésszám', NULL, NULL, NULL),
-(1561, 'Akciós', 'hu', 'Akciós', NULL, NULL, NULL),
-(1562, 'Akciós', 'en', 'Akciós', NULL, NULL, NULL),
-(1563, 'Akciós', 'de', 'Akciós', NULL, NULL, NULL),
-(1564, 'Akciós', 'bg', 'Akciós', NULL, NULL, NULL),
-(1565, 'Akciós', 'cz', 'Akciós', NULL, NULL, NULL),
-(1566, 'Akciós', 'ee', 'Akciós', NULL, NULL, NULL),
-(1567, 'Szerzõdéses', 'hu', 'Szerzõdéses', NULL, NULL, NULL),
-(1568, 'Szerzõdéses', 'en', 'Szerzõdéses', NULL, NULL, NULL),
-(1569, 'Szerzõdéses', 'de', 'Szerzõdéses', NULL, NULL, NULL),
-(1570, 'Szerzõdéses', 'bg', 'Szerzõdéses', NULL, NULL, NULL),
-(1571, 'Szerzõdéses', 'cz', 'Szerzõdéses', NULL, NULL, NULL),
-(1572, 'Szerzõdéses', 'ee', 'Szerzõdéses', NULL, NULL, NULL),
+(1543, 'Szï¿½ll.hat.', 'hu', 'Szï¿½ll.hat.', NULL, NULL, NULL),
+(1544, 'Szï¿½ll.hat.', 'en', 'Szï¿½ll.hat.', NULL, NULL, NULL),
+(1545, 'Szï¿½ll.hat.', 'de', 'Szï¿½ll.hat.', NULL, NULL, NULL),
+(1546, 'Szï¿½ll.hat.', 'bg', 'Szï¿½ll.hat.', NULL, NULL, NULL),
+(1547, 'Szï¿½ll.hat.', 'cz', 'Szï¿½ll.hat.', NULL, NULL, NULL),
+(1548, 'Szï¿½ll.hat.', 'ee', 'Szï¿½ll.hat.', NULL, NULL, NULL),
+(1549, 'Fizetï¿½si mï¿½d', 'hu', 'Fizetï¿½si mï¿½d', NULL, NULL, NULL),
+(1550, 'Fizetï¿½si mï¿½d', 'en', 'Fizetï¿½si mï¿½d', NULL, NULL, NULL),
+(1551, 'Fizetï¿½si mï¿½d', 'de', 'Fizetï¿½si mï¿½d', NULL, NULL, NULL),
+(1552, 'Fizetï¿½si mï¿½d', 'bg', 'Fizetï¿½si mï¿½d', NULL, NULL, NULL),
+(1553, 'Fizetï¿½si mï¿½d', 'cz', 'Fizetï¿½si mï¿½d', NULL, NULL, NULL),
+(1554, 'Fizetï¿½si mï¿½d', 'ee', 'Fizetï¿½si mï¿½d', NULL, NULL, NULL),
+(1555, 'Rendelï¿½sszï¿½m', 'hu', 'Rendelï¿½sszï¿½m', NULL, NULL, NULL),
+(1556, 'Rendelï¿½sszï¿½m', 'en', 'Rendelï¿½sszï¿½m', NULL, NULL, NULL),
+(1557, 'Rendelï¿½sszï¿½m', 'de', 'Rendelï¿½sszï¿½m', NULL, NULL, NULL),
+(1558, 'Rendelï¿½sszï¿½m', 'bg', 'Rendelï¿½sszï¿½m', NULL, NULL, NULL),
+(1559, 'Rendelï¿½sszï¿½m', 'cz', 'Rendelï¿½sszï¿½m', NULL, NULL, NULL),
+(1560, 'Rendelï¿½sszï¿½m', 'ee', 'Rendelï¿½sszï¿½m', NULL, NULL, NULL),
+(1561, 'Akciï¿½s', 'hu', 'Akciï¿½s', NULL, NULL, NULL),
+(1562, 'Akciï¿½s', 'en', 'Akciï¿½s', NULL, NULL, NULL),
+(1563, 'Akciï¿½s', 'de', 'Akciï¿½s', NULL, NULL, NULL),
+(1564, 'Akciï¿½s', 'bg', 'Akciï¿½s', NULL, NULL, NULL),
+(1565, 'Akciï¿½s', 'cz', 'Akciï¿½s', NULL, NULL, NULL),
+(1566, 'Akciï¿½s', 'ee', 'Akciï¿½s', NULL, NULL, NULL),
+(1567, 'Szerzï¿½dï¿½ses', 'hu', 'Szerzï¿½dï¿½ses', NULL, NULL, NULL),
+(1568, 'Szerzï¿½dï¿½ses', 'en', 'Szerzï¿½dï¿½ses', NULL, NULL, NULL),
+(1569, 'Szerzï¿½dï¿½ses', 'de', 'Szerzï¿½dï¿½ses', NULL, NULL, NULL),
+(1570, 'Szerzï¿½dï¿½ses', 'bg', 'Szerzï¿½dï¿½ses', NULL, NULL, NULL),
+(1571, 'Szerzï¿½dï¿½ses', 'cz', 'Szerzï¿½dï¿½ses', NULL, NULL, NULL),
+(1572, 'Szerzï¿½dï¿½ses', 'ee', 'Szerzï¿½dï¿½ses', NULL, NULL, NULL),
 (1573, 'Kedvencek', 'hu', 'Kedvencek', NULL, NULL, NULL),
 (1574, 'Kedvencek', 'en', 'Kedvencek', NULL, NULL, NULL),
 (1575, 'Kedvencek', 'de', 'Kedvencek', NULL, NULL, NULL),
 (1576, 'Kedvencek', 'bg', 'Kedvencek', NULL, NULL, NULL),
 (1577, 'Kedvencek', 'cz', 'Kedvencek', NULL, NULL, NULL),
 (1578, 'Kedvencek', 'ee', 'Kedvencek', NULL, NULL, NULL),
-(1579, 'Minden tétel', 'hu', 'Minden tétel', NULL, NULL, NULL),
-(1580, 'Minden tétel', 'en', 'Minden tétel', NULL, NULL, NULL),
-(1581, 'Minden tétel', 'de', 'Minden tétel', NULL, NULL, NULL),
-(1582, 'Minden tétel', 'bg', 'Minden tétel', NULL, NULL, NULL),
-(1583, 'Minden tétel', 'cz', 'Minden tétel', NULL, NULL, NULL),
-(1584, 'Minden tétel', 'ee', 'Minden tétel', NULL, NULL, NULL),
-(1585, 'Kód', 'hu', 'Kód', NULL, NULL, NULL),
-(1586, 'Kód', 'en', 'Kód', NULL, NULL, NULL),
-(1587, 'Kód', 'de', 'Kód', NULL, NULL, NULL),
-(1588, 'Kód', 'bg', 'Kód', NULL, NULL, NULL),
-(1589, 'Kód', 'cz', 'Kód', NULL, NULL, NULL),
-(1590, 'Kód', 'ee', 'Kód', NULL, NULL, NULL),
-(1591, 'Termék csoport', 'hu', 'Termék csoport', NULL, NULL, NULL),
-(1592, 'Termék csoport', 'en', 'Termék csoport', NULL, NULL, NULL),
-(1593, 'Termék csoport', 'de', 'Termék csoport', NULL, NULL, NULL),
-(1594, 'Termék csoport', 'bg', 'Termék csoport', NULL, NULL, NULL),
-(1595, 'Termék csoport', 'cz', 'Termék csoport', NULL, NULL, NULL),
-(1596, 'Termék csoport', 'ee', 'Termék csoport', NULL, NULL, NULL),
-(1597, 'Vonalkód', 'hu', 'Vonalkód', NULL, NULL, NULL),
-(1598, 'Vonalkód', 'en', 'Vonalkód', NULL, NULL, NULL),
-(1599, 'Vonalkód', 'de', 'Vonalkód', NULL, NULL, NULL),
-(1600, 'Vonalkód', 'bg', 'Vonalkód', NULL, NULL, NULL),
-(1601, 'Vonalkód', 'cz', 'Vonalkód', NULL, NULL, NULL),
-(1602, 'Vonalkód', 'ee', 'Vonalkód', NULL, NULL, NULL),
-(1603, 'Szerzõdéses termékek', 'hu', 'Szerzõdéses termékek', NULL, NULL, NULL),
-(1604, 'Szerzõdéses termékek', 'en', 'Szerzõdéses termékek', NULL, NULL, NULL),
-(1605, 'Szerzõdéses termékek', 'de', 'Szerzõdéses termékek', NULL, NULL, NULL),
-(1606, 'Szerzõdéses termékek', 'bg', 'Szerzõdéses termékek', NULL, NULL, NULL),
-(1607, 'Szerzõdéses termékek', 'cz', 'Szerzõdéses termékek', NULL, NULL, NULL),
-(1608, 'Szerzõdéses termékek', 'ee', 'Szerzõdéses termékek', NULL, NULL, NULL),
-(1609, 'Akciós termékek', 'hu', 'Akciós termékek', NULL, NULL, NULL),
-(1610, 'Akciós termékek', 'en', 'Akciós termékek', NULL, NULL, NULL),
-(1611, 'Akciós termékek', 'de', 'Akciós termékek', NULL, NULL, NULL),
-(1612, 'Akciós termékek', 'bg', 'Akciós termékek', NULL, NULL, NULL),
-(1613, 'Akciós termékek', 'cz', 'Akciós termékek', NULL, NULL, NULL),
-(1614, 'Akciós termékek', 'ee', 'Akciós termékek', NULL, NULL, NULL),
-(1615, 'Ebben a kosárban már van ilyen termék!', 'hu', 'Ebben a kosárban már van ilyen termék!', NULL, NULL, NULL),
-(1616, 'Ebben a kosárban már van ilyen termék!', 'en', 'Ebben a kosárban már van ilyen termék!', NULL, NULL, NULL),
-(1617, 'Ebben a kosárban már van ilyen termék!', 'de', 'Ebben a kosárban már van ilyen termék!', NULL, NULL, NULL),
-(1618, 'Ebben a kosárban már van ilyen termék!', 'bg', 'Ebben a kosárban már van ilyen termék!', NULL, NULL, NULL),
-(1619, 'Ebben a kosárban már van ilyen termék!', 'cz', 'Ebben a kosárban már van ilyen termék!', NULL, NULL, NULL),
-(1620, 'Ebben a kosárban már van ilyen termék!', 'ee', 'Ebben a kosárban már van ilyen termék!', NULL, NULL, NULL),
-(1621, 'Biztosan hozzáadja ezt a mennyiséget?', 'hu', 'Biztosan hozzáadja ezt a mennyiséget?', NULL, NULL, NULL),
+(1579, 'Minden tï¿½tel', 'hu', 'Minden tï¿½tel', NULL, NULL, NULL),
+(1580, 'Minden tï¿½tel', 'en', 'Minden tï¿½tel', NULL, NULL, NULL),
+(1581, 'Minden tï¿½tel', 'de', 'Minden tï¿½tel', NULL, NULL, NULL),
+(1582, 'Minden tï¿½tel', 'bg', 'Minden tï¿½tel', NULL, NULL, NULL),
+(1583, 'Minden tï¿½tel', 'cz', 'Minden tï¿½tel', NULL, NULL, NULL),
+(1584, 'Minden tï¿½tel', 'ee', 'Minden tï¿½tel', NULL, NULL, NULL),
+(1585, 'Kï¿½d', 'hu', 'Kï¿½d', NULL, NULL, NULL),
+(1586, 'Kï¿½d', 'en', 'Kï¿½d', NULL, NULL, NULL),
+(1587, 'Kï¿½d', 'de', 'Kï¿½d', NULL, NULL, NULL),
+(1588, 'Kï¿½d', 'bg', 'Kï¿½d', NULL, NULL, NULL),
+(1589, 'Kï¿½d', 'cz', 'Kï¿½d', NULL, NULL, NULL),
+(1590, 'Kï¿½d', 'ee', 'Kï¿½d', NULL, NULL, NULL),
+(1591, 'Termï¿½k csoport', 'hu', 'Termï¿½k csoport', NULL, NULL, NULL),
+(1592, 'Termï¿½k csoport', 'en', 'Termï¿½k csoport', NULL, NULL, NULL),
+(1593, 'Termï¿½k csoport', 'de', 'Termï¿½k csoport', NULL, NULL, NULL),
+(1594, 'Termï¿½k csoport', 'bg', 'Termï¿½k csoport', NULL, NULL, NULL),
+(1595, 'Termï¿½k csoport', 'cz', 'Termï¿½k csoport', NULL, NULL, NULL),
+(1596, 'Termï¿½k csoport', 'ee', 'Termï¿½k csoport', NULL, NULL, NULL),
+(1597, 'Vonalkï¿½d', 'hu', 'Vonalkï¿½d', NULL, NULL, NULL),
+(1598, 'Vonalkï¿½d', 'en', 'Vonalkï¿½d', NULL, NULL, NULL),
+(1599, 'Vonalkï¿½d', 'de', 'Vonalkï¿½d', NULL, NULL, NULL),
+(1600, 'Vonalkï¿½d', 'bg', 'Vonalkï¿½d', NULL, NULL, NULL),
+(1601, 'Vonalkï¿½d', 'cz', 'Vonalkï¿½d', NULL, NULL, NULL),
+(1602, 'Vonalkï¿½d', 'ee', 'Vonalkï¿½d', NULL, NULL, NULL),
+(1603, 'Szerzï¿½dï¿½ses termï¿½kek', 'hu', 'Szerzï¿½dï¿½ses termï¿½kek', NULL, NULL, NULL),
+(1604, 'Szerzï¿½dï¿½ses termï¿½kek', 'en', 'Szerzï¿½dï¿½ses termï¿½kek', NULL, NULL, NULL),
+(1605, 'Szerzï¿½dï¿½ses termï¿½kek', 'de', 'Szerzï¿½dï¿½ses termï¿½kek', NULL, NULL, NULL),
+(1606, 'Szerzï¿½dï¿½ses termï¿½kek', 'bg', 'Szerzï¿½dï¿½ses termï¿½kek', NULL, NULL, NULL),
+(1607, 'Szerzï¿½dï¿½ses termï¿½kek', 'cz', 'Szerzï¿½dï¿½ses termï¿½kek', NULL, NULL, NULL),
+(1608, 'Szerzï¿½dï¿½ses termï¿½kek', 'ee', 'Szerzï¿½dï¿½ses termï¿½kek', NULL, NULL, NULL),
+(1609, 'Akciï¿½s termï¿½kek', 'hu', 'Akciï¿½s termï¿½kek', NULL, NULL, NULL),
+(1610, 'Akciï¿½s termï¿½kek', 'en', 'Akciï¿½s termï¿½kek', NULL, NULL, NULL),
+(1611, 'Akciï¿½s termï¿½kek', 'de', 'Akciï¿½s termï¿½kek', NULL, NULL, NULL),
+(1612, 'Akciï¿½s termï¿½kek', 'bg', 'Akciï¿½s termï¿½kek', NULL, NULL, NULL),
+(1613, 'Akciï¿½s termï¿½kek', 'cz', 'Akciï¿½s termï¿½kek', NULL, NULL, NULL),
+(1614, 'Akciï¿½s termï¿½kek', 'ee', 'Akciï¿½s termï¿½kek', NULL, NULL, NULL),
+(1615, 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', 'hu', 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', NULL, NULL, NULL),
+(1616, 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', 'en', 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', NULL, NULL, NULL),
+(1617, 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', 'de', 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', NULL, NULL, NULL),
+(1618, 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', 'bg', 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', NULL, NULL, NULL),
+(1619, 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', 'cz', 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', NULL, NULL, NULL),
+(1620, 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', 'ee', 'Ebben a kosï¿½rban mï¿½r van ilyen termï¿½k!', NULL, NULL, NULL),
+(1621, 'Biztosan hozzï¿½adja ezt a mennyisï¿½get?', 'hu', 'Biztosan hozzï¿½adja ezt a mennyisï¿½get?', NULL, NULL, NULL),
