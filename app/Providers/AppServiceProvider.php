@@ -45,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         ShoppingCart::observe(ShoppingCartObserver::class);
         ShoppingCartDetail::observe(ShoppingCartDetailObserver::class);
 
+        /* hogy lehessen forcing https */
         if ($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
