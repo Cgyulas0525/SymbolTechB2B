@@ -26,11 +26,11 @@ DELIMITER $$
 -- Függvények
 --
 DROP FUNCTION IF EXISTS `discountPercentage`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `discountPercentage` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS INT DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `discountPercentage` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS INT DETERMINISTIC BEGIN
 	DECLARE mPercent INT;
 	DECLARE mLastPrice decimal(18,4);
 	DECLARE mProductPrice decimal(18,4);
-    
+
     /* Az utolsó végfelhasználói ár */
     SET mLastPrice = getLastProductPrice($customer, $product, $quantityUnit, $currency);
     /* A kedvezményes ár */
@@ -48,11 +48,11 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `discountPercentage` (`$customer` INT
 END$$
 
 DROP FUNCTION IF EXISTS `getContractPrice`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `getContractPrice` (`$customer` INT, `$product` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `getContractPrice` (`$customer` INT, `$product` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
 	DECLARE mPrice DECIMAL(18,4);
 
     SELECT t2.Price INTO mPrice
-      FROM CustomerContract as t1, CustomerContractDetail as t2 
+      FROM CustomerContract as t1, CustomerContractDetail as t2
 	 WHERE t2.CustomerContract = t1.Id AND
            t2.ValidFrom <= now() and
            ( t2.ValidTo >= now() OR t2.ValidTo IS NULL) AND
@@ -60,8 +60,8 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getContractPrice` (`$customer` INT, 
            t2.Product = $product AND
            t2.QuantityUnit = $quantityUnit AND
            t2.Currency = $currency;
-           
-	IF mPrice IS NOT NULL THEN		
+
+	IF mPrice IS NOT NULL THEN
 		RETURN mPrice;
 	ELSE
 		RETURN 0;
@@ -69,18 +69,18 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getContractPrice` (`$customer` INT, 
 END$$
 
 DROP FUNCTION IF EXISTS `getLastProductPrice`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `getLastProductPrice` (`$customer` INT, `$product` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `getLastProductPrice` (`$customer` INT, `$product` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
 	DECLARE mPrice DECIMAL(18,4);
-    
-    SELECT Price INTO mPrice FROM ProductPrice 
+
+    SELECT Price INTO mPrice FROM ProductPrice
      WHERE Product = $product AND
-		   PriceCategory = (SELECT PriceCategory FROM Customer WHERE Id = $customer LIMIT 1) AND	
+		   PriceCategory = (SELECT PriceCategory FROM Customer WHERE Id = $customer LIMIT 1) AND
            Currency = $currency AND
            QuantityUnit = $quantityUnit AND
            ValidFrom <= now()
 	ORDER BY ValidFrom DESC
-    LIMIT 1;   
-    
+    LIMIT 1;
+
     IF mPrice IS NOT NULL THEN
 		RETURN mPrice;
 	ELSE
@@ -89,26 +89,26 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getLastProductPrice` (`$customer` IN
 END$$
 
 DROP FUNCTION IF EXISTS `getLastProductPriceId`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `getLastProductPriceId` (`$Product` INT, `$QuantityUnit` INT, `$PriceCategory` INT, `$Currency` INT) RETURNS INT DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `getLastProductPriceId` (`$Product` INT, `$QuantityUnit` INT, `$PriceCategory` INT, `$Currency` INT) RETURNS INT DETERMINISTIC BEGIN
 	DECLARE mId INT;
-    
-    SELECT MAX(t5.Id) INTO mId FROM ProductPrice AS t5 
-	 WHERE t5.QuantityUnit = $QuantityUnit 
-	   AND t5.PriceCategory = $PriceCategory 
-	   AND t5.Currency = $Currency 
+
+    SELECT MAX(t5.Id) INTO mId FROM ProductPrice AS t5
+	 WHERE t5.QuantityUnit = $QuantityUnit
+	   AND t5.PriceCategory = $PriceCategory
+	   AND t5.Currency = $Currency
 	   AND t5.Product = $Product
 	GROUP BY t5.Product, t5.QuantityUnit, t5.Currency, t5.PriceCategory;
-    
+
 	RETURN mId;
 END$$
 
 DROP FUNCTION IF EXISTS `getOfferPrice`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `getOfferPrice` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `getOfferPrice` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
 	declare mPrice decimal(18,4);
-    
+
     SELECT t1.SalesPrice INTO mPrice FROM CustomerOfferDetail as t1, CustomerOffer as t2, CustomerOfferCustomer as t3
      WHERE t2.Id = t1.CustomerOffer AND
-		   t3.CustomerOffer = t2.Id AND	
+		   t3.CustomerOffer = t2.Id AND
            t1.Product = $product AND
            t2.ValidFrom <= now() AND
            t2.ValidTo >= now() AND
@@ -120,7 +120,7 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getOfferPrice` (`$customer` INT, `$p
            ((t1.QuantityMinimum <= 1) OR t1.QuantityMinimum IS NULL)
 	ORDER BY t1.QuantityMinimum DESC, t1.QuantityMaximum DESC
     LIMIT 1;
-    
+
     IF mPrice IS NOT NULL THEN
 		RETURN mPrice;
     ELSE
@@ -129,9 +129,9 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getOfferPrice` (`$customer` INT, `$p
 END$$
 
 DROP FUNCTION IF EXISTS `getProductCustomerCode`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `getProductCustomerCode` (`$customer` INT, `$product` INT) RETURNS VARCHAR(40) CHARSET utf32 DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `getProductCustomerCode` (`$customer` INT, `$product` INT) RETURNS VARCHAR(40) CHARSET utf32 DETERMINISTIC BEGIN
 	DECLARE mCode VARCHAR(40);
-    
+
     SELECT Code INTO mCode FROM productcustomercode WHERE Product = $product AND Customer = $customer;
     IF mCode IS NULL THEN
 		SET mCode = "";
@@ -140,18 +140,18 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getProductCustomerCode` (`$customer`
 END$$
 
 DROP FUNCTION IF EXISTS `getProductPrice`$$
-CREATE DEFINER=`root`@`localhost` FUNCTION `getProductPrice` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
+CREATE DEFINER=`b2b`@`localhost` FUNCTION `getProductPrice` (`$customer` INT, `$product` INT, `$quantity` INT, `$quantityUnit` INT, `$currency` INT) RETURNS DECIMAL(18,4) DETERMINISTIC BEGIN
 	DECLARE mPrice decimal(18,4);
 	DECLARE mOfferPrice decimal(18,4);
 	DECLARE mLastPrice decimal(18,4);
 	DECLARE mContractPrice decimal(18,4);
-    
+
     /* Az utolsó végfelhasználói ár */
     SET mLastPrice = getLastProductPrice($customer, $product, $quantityUnit, $currency);
     IF mLastPrice > 0 THEN
 		SET mPrice = mLastPrice;
     END IF;
-    
+
     /* Az akciós ár */
     SET mOfferPrice = getOfferPrice($customer, $product, $quantity, $quantityUnit, $currency);
     IF mOfferPrice != 0 THEN
@@ -159,7 +159,7 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `getProductPrice` (`$customer` INT, `
 			SET mPrice = mOfferPrice;
         END IF;
     END IF;
-    
+
     /* A szerződéses ár */
     SET mContractPrice = getContractPrice($customer, $product, $quantityUnit, $currency);
     IF mContractPrice != 0 THEN
