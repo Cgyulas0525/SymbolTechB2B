@@ -45,5 +45,9 @@ class AppServiceProvider extends ServiceProvider
         ShoppingCart::observe(ShoppingCartObserver::class);
         ShoppingCartDetail::observe(ShoppingCartDetailObserver::class);
 
+        if ($this->app->environment('production')) {
+            \URL::forceScheme('https');
+        }
+
     }
 }
