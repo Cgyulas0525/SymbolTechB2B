@@ -1,9 +1,12 @@
-B2B telepítés és kezdeti adatfeltöltés.
+B2B telepï¿½tï¿½s ï¿½s kezdeti adatfeltï¿½ltï¿½s.
 
 git pull
-mysql üres adatbázis import ( ebben néhány táblában van csak érték és a USERS táblában van 2 rekord, egy administrator/administrator, és egy cseszneki Gyula)
+mysql ï¿½res adatbï¿½zis import ( ebben nï¿½hï¿½ny tï¿½blï¿½ban van csak ï¿½rtï¿½k ï¿½s a USERS tï¿½blï¿½ban van 2 rekord, egy administrator/administrator, ï¿½s egy cseszneki Gyula)
+
+mysql -u username -p database_name < file.sql
+--
 composer update
-programba az administrator/administrator felhaszálóval kell belépni, elsõ lépés a Symbol Ügyvitel alábbi tábláinak struktúrájáról kellene egy XSD file, hogy az esetleges változásokat át lehessen vezetni.
+programba az administrator/administrator felhaszï¿½lï¿½val kell belï¿½pni, elsï¿½ lï¿½pï¿½s a Symbol ï¿½gyvitel alï¿½bbi tï¿½blï¿½inak struktï¿½rï¿½jï¿½rï¿½l kellene egy XSD file, hogy az esetleges vï¿½ltozï¿½sokat ï¿½t lehessen vezetni.
 
 "Currency",
 "CurrencyRate",
@@ -44,8 +47,8 @@ programba az administrator/administrator felhaszálóval kell belépni, elsõ lépés 
 "WarehouseBalance",
 "WarehouseDailyBalance"
 
-ezeknek a tábláknak az adattartalmát ki kell exportálni a SÜ-bõl és beimportálni a B2B rendszerbe.
+ezeknek a tï¿½blï¿½knak az adattartalmï¿½t ki kell exportï¿½lni a Sï¿½-bï¿½l ï¿½s beimportï¿½lni a B2B rendszerbe.
 
-majd kilépni és újra belépni mint administrator/administrator és a belsõ felhasználó felviteli ablakon felvenni az elsõ felhasználót, ideiglenes jelszóval, amit elküd a rendszer a felhasználónak email-ba
-az elsõ belépésekor tudja változtatni a jelszavát.
+majd kilï¿½pni ï¿½s ï¿½jra belï¿½pni mint administrator/administrator ï¿½s a belsï¿½ felhasznï¿½lï¿½ felviteli ablakon felvenni az elsï¿½ felhasznï¿½lï¿½t, ideiglenes jelszï¿½val, amit elkï¿½d a rendszer a felhasznï¿½lï¿½nak email-ba
+az elsï¿½ belï¿½pï¿½sekor tudja vï¿½ltoztatni a jelszavï¿½t.
 

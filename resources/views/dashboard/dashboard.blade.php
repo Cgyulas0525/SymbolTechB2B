@@ -67,11 +67,13 @@
                         </tr>
                         <tr>
                             <td>{{ \App\Classes\langClass::trans('Felhasznált') }}</td>
-                            <td class="text-right">{{ number_format(App\Models\Customer::where('Deleted', 0)->get()->count() * 15, 0, ',', '.')}}</td>
+{{--                            <td class="text-right">{{ number_format(App\Models\Customer::where('Deleted', 0)->get()->count() * 15, 0, ',', '.')}}</td>--}}
+                            <td class="text-right">0</td>
                         </tr>
                         <tr>
                             <td>{{ \App\Classes\langClass::trans('Szabad') }}</td>
-                            <td class="text-right">{{ number_format(App\Models\Customer::where('Deleted', 0)->get()->count() * 148321, 0, ',', '.')}}</td>
+{{--                            <td class="text-right">{{ number_format(App\Models\Customer::where('Deleted', 0)->get()->count() * 148321, 0, ',', '.')}}</td>--}}
+                            <td class="text-right">0</td>
                         </tr>
                         </tbody>
                     </table>
