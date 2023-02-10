@@ -1,11 +1,10 @@
 <?php
 
 require dirname(__DIR__,1) . "/apis/inc/bootstrap.php";
-$file = PATH_INC . "/utility.php";
-require PATH_INC . "/utility.php";
 require PATH_INC . "/ModelChange.php";
 require PATH_FILES . "/GetXsd.php";
 require PATH_INC. "/curlPost.php";
+require PATH_MODEL . "/mySQLDatabase.php";
 
 $utility = new Utility();
 $xsd = new XSD();

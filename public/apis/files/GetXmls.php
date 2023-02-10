@@ -1,6 +1,5 @@
 <?php
 require PATH_MODEL . "/mySQLDatabase.php";
-require PATH_INC . "/utility.php";
 require PATH_INC . "/ModelChange.php";
 require PATH_INC . "/witchStrpos.php";
 require PATH_INC . "/MakeDateFormat.php";
@@ -71,6 +70,9 @@ class XML {
                                 $smtpValue = $i == count($keys) - 1 ? $smtpValue . $values[$i] . ")" : $smtpValue . $values[$i] . ", ";
                                 break;
                             case "string" :
+                                if (!is_string($values[$i])) {
+                                    $values[$i] = '';
+                                }
                                 $value[$i] = strpos($values[$i], "'") != false ? str_replace("'", " ", $values[$i]) : $values[$i];
                                 $smtpValue = $i == count($keys) - 1 ? $smtpValue . "'" . $values[$i] . "')" : $smtpValue . "'" . $values[$i] . "', ";
                                 break;
@@ -82,7 +84,7 @@ class XML {
                                 $smtpValue = $i == count($keys) - 1 ? $smtpValue . $values[$i] . ")" : $smtpValue . $values[$i] . ", ";
                                 break;
                             default :
-                                echo "????? \n";
+                                echo $string . "\n";
                         }
                         break;
                     }
@@ -175,58 +177,60 @@ class XML {
                     }
 
                     $modelArray = $this->modelChange->modelRead($model);
-                    $castsArray = $this->modelChange->modelExchange($modelArray);
-                    $this->castsKeys = array_keys($castsArray);
-                    $this->castsValues = array_values($castsArray);
+                    if (!is_null($modelArray)) {
+                        $castsArray = $this->modelChange->modelExchange($modelArray);
+                        $this->castsKeys = array_keys($castsArray);
+                        $this->castsValues = array_values($castsArray);
 
-                    $count = $model == 'Leed' ? count($phpDataArray['Lead']) : count($phpDataArray[$model]);
+                        $count = $model == 'Leed' ? count($phpDataArray['Lead']) : count($phpDataArray[$model]);
 
-                    // insert apimodel
-                    $this->apimodel->api_id = $this->api->id;
-                    $this->apimodel->model = $model;
-                    $this->apimodel->recordnumber = $count;
-                    $this->apimodel->insertednumber = 0;
-                    $this->apimodel->updatednumber = 0;
-                    $this->apimodel->errornumber = 0;
+                        // insert apimodel
+                        $this->apimodel->api_id = $this->api->id;
+                        $this->apimodel->model = $model;
+                        $this->apimodel->recordnumber = $count;
+                        $this->apimodel->insertednumber = 0;
+                        $this->apimodel->updatednumber = 0;
+                        $this->apimodel->errornumber = 0;
 
-                    $this->apimodel->insert();
+                        $this->apimodel->insert();
 
-                    $this->apimodel->id = $this->apimodel->selectId();
+                        $this->apimodel->id = $this->apimodel->selectId();
 
-                    if ($count > 0) {
-                        foreach ($phpDataArray[$model == 'Leed' ? 'Lead' : $model] as $index => $data) {
-                            if (!is_array($data)) {
-                                $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                            } else {
-                                $keys = array_keys($data);
-                                $values = array_values($data);
-                            }
-                            $sql = "SELECT Count(*) as db FROM " . $model . " WHERE Id = '" . $values[array_search('Id', $keys)] . "'";
-                            $smtp = $this->pdo->executeStatement($sql);
-                            if ($smtp) {
-                                $record = $smtp->fetchAll();
-                                if (count($record) > 0) {
-                                    foreach ($record as $row) {
-                                        if ( intval($row['db']) === 1 ) {
-                                            $smtp = $this->makeUpdate($model, $keys, $values, $values[array_search('Id', $keys)]);
-                                        } else {
-                                            $smtp = $this->makeInsert($model, $keys, $values);
+                        if ($count > 0) {
+                            foreach ($phpDataArray[$model == 'Leed' ? 'Lead' : $model] as $index => $data) {
+                                if (!is_array($data)) {
+                                    $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                    $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                } else {
+                                    $keys = array_keys($data);
+                                    $values = array_values($data);
+                                }
+                                $sql = "SELECT Count(*) as db FROM " . $model . " WHERE Id = '" . $values[array_search('Id', $keys)] . "'";
+                                $smtp = $this->pdo->executeStatement($sql);
+                                if ($smtp) {
+                                    $record = $smtp->fetchAll();
+                                    if (count($record) > 0) {
+                                        foreach ($record as $row) {
+                                            if (intval($row['db']) === 1) {
+                                                $smtp = $this->makeUpdate($model, $keys, $values, $values[array_search('Id', $keys)]);
+                                            } else {
+                                                $smtp = $this->makeInsert($model, $keys, $values);
+                                            }
                                         }
                                     }
+                                } else {
+                                    return $sql . ' hibával tért vissza!';
                                 }
-                            } else {
-                                return $sql . ' hibával tért vissza!';
-                            }
-                            $return = $this->pdo->executeStatementReturnFail($smtp);
-                            if ( gettype($return) != "object") {
-                                if (strpos($return, "Failed" ) > 0) {
-                                    $this->apimodelerrorInsert($smtp, $return);
-                                    $this->apimodel->errornumber++;
+                                $return = $this->pdo->executeStatementReturnFail($smtp);
+                                if (gettype($return) != "object") {
+                                    if (strpos($return, "Failed") > 0) {
+                                        $this->apimodelerrorInsert($smtp, $return);
+                                        $this->apimodel->errornumber++;
+                                    }
                                 }
                             }
+                            $this->apimodel->updateErrornumber();
                         }
-                        $this->apimodel->updateErrornumber();
                     }
                 }
             }

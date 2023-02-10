@@ -428,7 +428,9 @@ class Product extends Model
         'MemoExG',
         'MemoExH',
         'MemoExI',
-        'MemoExJ'
+        'MemoExJ',
+        'MinSellPrice',
+        'MinSellBelowPrice'
     ];
 
     /**
@@ -557,7 +559,7 @@ class Product extends Model
         'IsPallet' => 'integer',
         'IsFragile' => 'integer',
         'PictureDateTime' => 'datetime',
-        'MinSellQuantity' => '',
+        'MinSellQuantity' => 'decimal:4',
         'StrExE' => 'string',
         'StrExF' => 'string',
         'StrExG' => 'string',
@@ -592,7 +594,9 @@ class Product extends Model
         'MemoExG' => 'string',
         'MemoExH' => 'string',
         'MemoExI' => 'string',
-        'MemoExJ' => 'string'
+        'MemoExJ' => 'string',
+        'MinSellPrice' => 'decimal:4',
+        'MinSellBelowPrice' => 'decimal:4'
     ];
 
     /**

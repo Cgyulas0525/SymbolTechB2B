@@ -330,7 +330,8 @@ class CustomerOrder extends Model
         'MemoExG',
         'MemoExH',
         'MemoExI',
-        'MemoExJ'
+        'MemoExJ',
+        'PickerEmployee'
     ];
 
     /**
@@ -461,7 +462,8 @@ class CustomerOrder extends Model
         'MemoExG' => 'string',
         'MemoExH' => 'string',
         'MemoExI' => 'string',
-        'MemoExJ' => 'string'
+        'MemoExJ' => 'string',
+        'PickerEmployee' => 'integer'
     ];
 
     /**

@@ -61,7 +61,10 @@ class TransportMode extends Model
         'Deleted',
         'RowCreate',
         'RowModify',
-        'Code'
+        'Code',
+        'Personal',
+        'OwnDelivery',
+        'ParcelCompany'
     ];
 
     /**
@@ -77,7 +80,10 @@ class TransportMode extends Model
         'Deleted' => 'integer',
         'RowCreate' => 'datetime',
         'RowModify' => 'datetime',
-        'Code' => 'string'
+        'Code' => 'string',
+        'Personal' => 'integer',
+        'OwnDelivery' => 'integer',
+        'ParcelCompany' => 'integer'
     ];
 
     /**

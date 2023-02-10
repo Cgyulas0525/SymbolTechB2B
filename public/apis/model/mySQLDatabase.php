@@ -153,6 +153,21 @@ class mySQLDatabase {
         }
     }
 
+    /*
+     * show tables from database
+     *
+     * @return record
+     */
+    public function tablesName() {
+        $sql = "SHOW TABLES";
+        $smtp = $this->executeStatement($sql);
+        if ($smtp) {
+            return $smtp->fetchAll();
+        } else {
+            return "Error: not found tables!";
+        }
+    }
+
 }
 
 

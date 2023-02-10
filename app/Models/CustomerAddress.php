@@ -150,7 +150,8 @@ class CustomerAddress extends Model
         'GLN',
         'IsPerson',
         'ParcelInfo',
-        'EUMembership'
+        'EUMembership',
+        'CompanyType'
     ];
 
     /**
@@ -197,7 +198,8 @@ class CustomerAddress extends Model
         'GLN' => 'string',
         'IsPerson' => 'integer',
         'ParcelInfo' => 'integer',
-        'EUMembership' => ''
+        'EUMembership' => '',
+        'CompanyType' => ''
     ];
 
     /**

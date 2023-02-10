@@ -410,7 +410,8 @@ class Customer extends Model
         'MemoExG',
         'MemoExH',
         'MemoExI',
-        'MemoExJ'
+        'MemoExJ',
+        'CompanyType'
     ];
 
     /**
@@ -568,7 +569,8 @@ class Customer extends Model
         'MemoExG' => 'string',
         'MemoExH' => 'string',
         'MemoExI' => 'string',
-        'MemoExJ' => 'string'
+        'MemoExJ' => 'string',
+        'CompanyType' => 'integer'
     ];
 
     /**

@@ -298,7 +298,11 @@ class CustomerOrderDetail extends Model
         'MemoExG',
         'MemoExH',
         'MemoExI',
-        'MemoExJ'
+        'MemoExJ',
+        'RowPosition',
+        'OriginalVoucher',
+        'PickingNumber',
+        'ParcelIdentifier'
     ];
 
     /**
@@ -417,7 +421,11 @@ class CustomerOrderDetail extends Model
         'MemoExG' => 'string',
         'MemoExH' => 'string',
         'MemoExI' => 'string',
-        'MemoExJ' => 'string'
+        'MemoExJ' => 'string',
+        'RowPosition' => '',
+        'OriginalVoucher' => 'integer',
+        'PickingNumber' => 'string',
+        'ParcelIdentifier' => 'string'
     ];
 
     /**

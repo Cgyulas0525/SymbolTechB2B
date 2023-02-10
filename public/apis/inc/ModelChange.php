@@ -1,7 +1,5 @@
 <?php
 
-//require __DIR__ . "../../model/mySQLDatabase.php";
-
 class ModelChange {
 
     public $fillableStart = NULL;
@@ -183,19 +181,19 @@ class ModelChange {
      * Field type identification
      */
     public function fieldType($field) {
-        if ( strpos($field, 'BLOB') != false || $field == 'BLOB') {
+        if ( strpos($field, 'BLOB') !== false || $field == 'BLOB') {
             return "string";
         }
-        if ( strpos($field, 'CHAR') != false || $field == 'CHAR') {
+        if ( strpos($field, 'CHAR') !== false || $field == 'CHAR') {
             return "string";
         }
-        if ( strpos($field, 'TIMESTAMP') != false || $field == 'TIMESTAMP') {
+        if ( strpos($field, 'TIMESTAMP') !== false || $field == 'TIMESTAMP') {
             return "datetime";
         }
-        if ( strpos($field, 'NUMERIC') != false || $field == 'NUMERIC') {
+        if ( strpos($field, 'NUMERIC') !== false || $field == 'NUMERIC') {
             return "decimal";
         }
-        if ( strpos($field, 'INT') != false || $field == 'INT') {
+        if ( strpos($field, 'INT') !== false || $field == 'INT') {
             return "integer";
         }
     }
@@ -231,6 +229,7 @@ class ModelChange {
             foreach ($values as $value) {
                 if ( $value == $fieldArrayValues[0] ) {
                     $changing = false;
+                    break;
                 }
             }
         }
