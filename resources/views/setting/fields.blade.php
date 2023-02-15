@@ -167,6 +167,7 @@
                 environmentVariable('MAIL_PASSWORD');
                 environmentVariable('MAIL_ENCRYPTION');
                 environmentVariable('MAIL_FROM_ADDRESS');
+                changeEnvironmentVariable('MAIL_SET', 1);
             });
         });
 

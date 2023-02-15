@@ -92,7 +92,7 @@ class ShoppingCartDetailController extends AppBaseController
 
             if ($request->ajax()) {
 
-//                $vmi = DB::raw('MAX(t2.ValidFrom) as rc, getLastProductPrice('.  myUser::user()->customerId .', t1.Id, -1, -1) as lastPrice,
+//                $vmi.js = DB::raw('MAX(t2.ValidFrom) as rc, getLastProductPrice('.  myUser::user()->customerId .', t1.Id, -1, -1) as lastPrice,
 //                                     getProductPrice('. myUser::user()->customerId .', t1.Id, 1, -1, -1) as productPrice,
 //                                     discountPercentage('. myUser::user()->customerId .', t1.Id, 1, -1, -1) as discountPercent' );
 

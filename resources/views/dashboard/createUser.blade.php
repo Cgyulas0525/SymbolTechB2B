@@ -35,28 +35,41 @@
         @include('adminlte-templates::common.errors')
 
         <div class="card">
-
             @if (App\Models\Employee::count() > 0)
-                {!! Form::open(['route' => 'users.store']) !!}
-
-                <div class="card-body">
-
-                    <div class="row">
-                        @include('users.fields')
+                @if (env('MAIL_SET') == 0)
+                    <div class="card-body">
+                        <div class="row">
+                            @include('setting.fields')
+                        </div>
                     </div>
 
-                </div>
-            @endif
+                    <div class="card-footer">
+                        {!! Form::submit(\App\Classes\langClass::trans('Ment'), ['class' => 'btn btn-primary', 'id' => 'saveBtn']) !!}
+                        <a href="{{ route('myLogin') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                    </div>
 
-            <div class="card-footer">
-                @if (App\Models\Employee::count() > 0)
-                    {!! Form::submit(\App\Classes\langClass::trans('Ment'), ['class' => 'btn btn-primary', 'id' => 'saveBtn']) !!}
+                    {!! Form::close() !!}
+                @else
+                    {!! Form::open(['route' => 'users.store']) !!}
+
+                    <div class="card-body">
+
+                        <div class="row">
+                            @include('users.fields')
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+                        @if (App\Models\Employee::count() > 0)
+                            {!! Form::submit(\App\Classes\langClass::trans('Ment'), ['class' => 'btn btn-primary', 'id' => 'saveBtn']) !!}
+                        @endif
+                        <a href="{{ route('myLogin') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                    </div>
+
+                    {!! Form::close() !!}
                 @endif
-                <a href="{{ route('myLogin') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
-            </div>
-
-            {!! Form::close() !!}
-
+            @endif
         </div>
     </div>
 @endsection

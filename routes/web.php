@@ -42,6 +42,7 @@ Route::get('/home', [
 ])->name('home');
 
 Route::post('login', [MyloginController::class, 'login'])->name('myLogin');
+
 Route::get('settingIndex', [SettingController::class, 'index'])->name('settingIndex');
 Route::get('communicationIndex', [SettingController::class, 'communicationIndex'])->name('communicationIndex');
 
