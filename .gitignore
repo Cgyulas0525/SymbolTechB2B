@@ -3,10 +3,6 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# Laravel 4 specific
-
-app/storage/
-
 # Laravel 5 & Lumen specific
 public/storage
 public/hot
@@ -20,6 +16,7 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+_ide_helper.php
 
 /plugins/
 /vendor/
@@ -31,3 +28,4 @@ Homestead.json
 /docker.dev/
 /dist/
 /temp/
+/.idea/
