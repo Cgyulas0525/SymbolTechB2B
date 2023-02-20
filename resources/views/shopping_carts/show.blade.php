@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{ \App\Classes\langClass::trans('Kosár törlés') }}</h1>
+                    <h1>{{ langClass::trans('Kosár törlés') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <a class="btn btn-primary float-right"
                        href="{{ route('shoppingCarts.index') }}">
-                        {{ \App\Classes\langClass::trans('Vissza') }}
+                        {{ langClass::trans('Vissza') }}
                     </a>
                 </div>
             </div>
@@ -29,9 +29,9 @@
             <div class="card-footer">
                 <a class="btn btn-primary"
                    href="{{ route('shoppingCarts.index') }}">
-                    {{ \App\Classes\langClass::trans('Vissza') }}
+                    {{ langClass::trans('Vissza') }}
                 </a>
-                {!! Form::submit(\App\Classes\langClass::trans('Töröl'), ['class' => 'btn btn-danger', 'id' => 'saveBtn']) !!}
+                {!! Form::submit(langClass::trans('Töröl'), ['class' => 'btn btn-danger', 'id' => 'saveBtn']) !!}
             </div>
 
         </div>

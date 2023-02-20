@@ -13,13 +13,18 @@ use logClass;
 use utilityClass;
 use App\Models\Users;
 
-
 class MyloginController extends Controller
 {
     public static function login(Request $request)
     {
 
         $name = $request->name;
+        if ($name === "administrator") {
+            if ((env('INSTALL_STATUS') == 2) && (env('MAIL_SET') == 1)) {
+                return redirect(route('myLogin'));
+            }
+        }
+
         $password = $request->password;
 
         if (empty($name)) {
@@ -28,13 +33,13 @@ class MyloginController extends Controller
         }
 
         if (empty($password)) {
-            Flash::error(langClass::trans('A jelszó kötelező!'))->important();
             return back();
         }
 
         $user = Users::where('name', $name)
             ->where('password', md5($password))
             ->first();
+
 
         if (empty($user)) {
             Flash::error(langClass::trans('Hibás név vagy jelszó!'))->important();

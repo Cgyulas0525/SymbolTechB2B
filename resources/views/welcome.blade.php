@@ -38,19 +38,19 @@
 <body class="hold-transition login-page" style="background-color: white;">
 <div class="row">
     <div class="box box-primary" >
-        <div class="box-body" style="height: 100vh;">
-            <div class="col-lg-6 col-md-6 col-xs-12 welcomecenter" >
-                <br/><br/>
+        <div class="box-body vmi">
+            <div class="col-lg-6 col-md-6 col-xs-12" >
+                <p></p>
             </div>
             <div class="col-lg-6 col-md-6 col-xs-12 ">
                 <div class="login-box">
                     <div class="login-logo">
-                        <a href="{{ url('/home') }}"><img src={{ URL('/public/img/B2B.png') }} style="width: 240px;" alt="B2B"></a>
+                        <a href="{{ url('/home') }}"><img src={{ URL('/img/B2B.png') }} style="width: 240px;" alt="B2B"></a>
                     </div>
 
                     <!-- /.login-logo -->
                     <div class="login-box-body">
-                        <p class="login-box-msg">{{ \App\Classes\langClass::trans('Bejelentkezés') }}</p>
+                        <p class="login-box-msg">{{ langClass::trans('Bejelentkezés') }}</p>
 
                         <form method="post" action="{{ route('myLogin') }}">
                             {!! csrf_field() !!}
@@ -81,12 +81,12 @@
                                 </div>
                                 <!-- /.col -->
                                 <div class="col-xs-4">
-                                    <button type="submit" class="btn btn-primary btn-block btn-flat">{{ \App\Classes\langClass::trans('Belép') }}</button>
+                                    <button type="submit" class="btn btn-primary btn-block btn-flat">{{ langClass::trans('Belép') }}</button>
                                 </div>
                                 <!-- /.col -->
                             </div>
                         </form>
-<!--
+                    <!--
                         <a href="{{ url('/password/reset') }}">Elfelejtette jelszavát?</a><br>
                         <a href="{{ url('/register') }}" class="text-center">Regisztráció</a>
 -->

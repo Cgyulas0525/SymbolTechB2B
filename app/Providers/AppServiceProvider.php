@@ -10,6 +10,9 @@ use App\Observers\ShoppingCartObserver;
 use App\Models\ShoppingCartDetail;
 use App\Observers\ShoppingCartDetailObserver;
 
+use Illuminate\Foundation\AliasLoader;
+use App\Classes\langClass;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->booting(function() {
+            $loader = AliasLoader::getInstance();
+            $loader->alias('langClass', langClass::class);
+        });
     }
 
     /**

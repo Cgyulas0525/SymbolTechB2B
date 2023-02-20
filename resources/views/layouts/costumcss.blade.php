@@ -1,5 +1,13 @@
 <style>
 
+    .vmi {
+        display: block;
+        width:100%;
+        height:100vh;
+        background-image: url('http://localhost/Laravel/SymbolB2B/public/img/B2B_3.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
     tr.odd td:first-child,
     tr.even td:first-child {
         padding-left: 4em;
@@ -153,7 +161,8 @@
 
     .welcomecenter {
         display: flex;
-        background: url('public/img/B2B_3.jpg') center center;
+        /*background: url('public/img/B2B_3.jpg') center center;*/
+        background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
         justify-content: center;

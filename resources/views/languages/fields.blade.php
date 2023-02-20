@@ -38,7 +38,7 @@
                 order: [[0, 'asc']],
                 ajax: "{{ route('indexLanguage', $languages->shortname ) }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Magyar') . "'"; ?>, data: 'huname', name: 'huname', width:'30%'},
+                    {title: <?php echo "'" . langClass::trans('Magyar') . "'"; ?>, data: 'huname', name: 'huname', width:'30%'},
                     {title: <?php echo "'" . $languages->name . "'"; ?>, data: 'name', name: 'name', id: 'name'},
                 ],
                 columnDefs: [

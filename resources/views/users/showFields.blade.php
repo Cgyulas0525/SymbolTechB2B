@@ -6,7 +6,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-3">
-                {!! Form::label('employee_id', \App\Classes\langClass::trans('Felhasználó:')) !!}
+                {!! Form::label('employee_id', langClass::trans('Felhasználó:')) !!}
             </div>
             <div class="mylabel col-sm-9">
                {!! Form::hidden('id', $users->id,['class'=>'form-control', 'required' => 'true', 'id' => 'id', 'readonly' => 'true' ]) !!}
@@ -31,7 +31,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-2">
-                {!! Form::label('rendszergazda', \App\Classes\langClass::trans('Státusz:')) !!}
+                {!! Form::label('rendszergazda', langClass::trans('Státusz:')) !!}
             </div>
             <div class="mylabel col-sm-10">
                 {!! Form::text('rgnev', $users->rgnev,['class'=>'form-control', 'required' => 'true', 'id' => 'rendszergazda', 'readonly' => 'true']) !!}
@@ -44,7 +44,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-1">
-                {!! Form::label('megjegyzes', \App\Classes\langClass::trans('Megjegyzés:')) !!}
+                {!! Form::label('megjegyzes', langClass::trans('Megjegyzés:')) !!}
             </div>
             <div class="mylabel col-sm-11">
                 {!! Form::textarea('megjegyzes', $users->megjegyzes, ['class' => 'form-control', 'rows' => 4, 'id' => 'megjegyzes', 'readonly' => 'true']) !!}
@@ -65,8 +65,8 @@
 
                 const url = $(this).attr('href');
                 swal.fire({
-                    title: <?php echo "'" . App\Classes\langClass::trans("Biztos törli a tételt?") . "'"; ?>,
-                    text: <?php echo "'" . App\Classes\langClass::trans("Ez a bejegyzés véglegesen törlődik!") . "'"; ?>,
+                    title: <?php echo "'" . langClass::trans("Biztos törli a tételt?") . "'"; ?>,
+                    text: <?php echo "'" . langClass::trans("Ez a bejegyzés véglegesen törlődik!") . "'"; ?>,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",

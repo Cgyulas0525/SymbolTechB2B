@@ -12,7 +12,7 @@
                     <section class="content-header">
                         <div class="row">
                             <div class="col-sm-2">
-                                <h4><a id="fejszoveg"> {{ \App\Classes\langClass::trans('Minden termék') }}</a></h4>
+                                <h4><a id="fejszoveg"> {{ langClass::trans('Minden termék') }}</a></h4>
                             </div>
                             @include('tools.pageLength')
 
@@ -20,7 +20,7 @@
                                 <div class="form-group col-sm-12">
                                     <div class="row">
                                         <div class="mylabel col-sm-3">
-                                            {!! Form::label('ProductCategory', \App\Classes\langClass::trans('Termékcsoport:')) !!}
+                                            {!! Form::label('ProductCategory', langClass::trans('Termékcsoport:')) !!}
                                         </div>
                                         <div class="mylabel col-sm-9">
                                             {!! Form::select('ProductCategory', ddwClass::productProductCategoryDDW(), null,['class'=>'select2 form-control', 'required' => 'true', 'id' => 'ProductCategory']) !!}
@@ -101,15 +101,15 @@
                 dom: 'Bfrtip',
                 ajax: "{{ route('productIndex', ['PruductCategory' => -99999] ) }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kód') . "'"; ?>, data: 'Code', name: 'Code'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Mennyiség') . "'"; ?>, data: 'Quantity', width: '150px', name: 'Quantity', id: 'Quntity'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Termék csoport') . "'"; ?>, data: 'ProductCategoryName', width: '150px', name: 'ProductCategoryName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Lista ár') . "'"; ?>, data: 'lastPrice', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'lastPrice'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kedv.%') . "'"; ?>, data: 'discountPercent', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'discountPercent'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kedv.ár') . "'"; ?>, data: 'productPrice', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'productPrice'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Me.egys') . "'"; ?>, data: 'QuantityUnitName', name: 'QuantityUnitName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Vonalkód') . "'"; ?>, data: 'Barcode', name: 'Barcode'},
+                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
+                    {title: <?php echo "'" . langClass::trans('Kód') . "'"; ?>, data: 'Code', name: 'Code'},
+                    {title: <?php echo "'" . langClass::trans('Mennyiség') . "'"; ?>, data: 'Quantity', width: '150px', name: 'Quantity', id: 'Quntity'},
+                    {title: <?php echo "'" . langClass::trans('Termék csoport') . "'"; ?>, data: 'ProductCategoryName', width: '150px', name: 'ProductCategoryName'},
+                    {title: <?php echo "'" . langClass::trans('Lista ár') . "'"; ?>, data: 'lastPrice', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'lastPrice'},
+                    {title: <?php echo "'" . langClass::trans('Kedv.%') . "'"; ?>, data: 'discountPercent', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'discountPercent'},
+                    {title: <?php echo "'" . langClass::trans('Kedv.ár') . "'"; ?>, data: 'productPrice', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'productPrice'},
+                    {title: <?php echo "'" . langClass::trans('Me.egys') . "'"; ?>, data: 'QuantityUnitName', name: 'QuantityUnitName'},
+                    {title: <?php echo "'" . langClass::trans('Vonalkód') . "'"; ?>, data: 'Barcode', name: 'Barcode'},
                     // {title: '', data: "Id",
                     //     "render": function ( data, type, row, meta ) {
                     //         return '<button value="'+ data +'" onclick="favoriteProduct('+meta["row"]+', this.value)"><i class="fas fa-heart"></i></button>'
@@ -147,19 +147,19 @@
         };
 
         $('.szerzodes').click(function () {
-            myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Szerződéses termékek') . "'"; ?>, '{{ route('customerContractProductIndex') }}');
+            myUrlChange(<?php echo "'" . langClass::trans('Szerződéses termékek') . "'"; ?>, '{{ route('customerContractProductIndex') }}');
         });
 
         $('.akcio').click(function () {
-            myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Akciós termékek') . "'"; ?>, '{{ route('customerOfferProductIndex') }}');
+            myUrlChange(<?php echo "'" . langClass::trans('Akciós termékek') . "'"; ?>, '{{ route('customerOfferProductIndex') }}');
         });
 
         $('.kedvenc').click(function () {
-            myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Kedvenc termékek') . "'"; ?>, '{{ route('favoriteProductIndex') }}');
+            myUrlChange(<?php echo "'" . langClass::trans('Kedvenc termékek') . "'"; ?>, '{{ route('favoriteProductIndex') }}');
         });
 
         $('.mind').click(function () {
-            myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Minden termék ') . "'"; ?>, '{{ route('productIndex') }}');
+            myUrlChange(<?php echo "'" . langClass::trans('Minden termék ') . "'"; ?>, '{{ route('productIndex') }}');
         });
 
         myPageLength('#sorszam');
@@ -167,8 +167,8 @@
         function modifyDetail(d, value) {
             const url = $(this).attr('href');
             swal.fire({
-                title: <?php echo "'" . App\Classes\langClass::trans("Ebben a kosárban már van ilyen termék!") . "'"; ?>,
-                text: <?php echo "'" . App\Classes\langClass::trans("Biztosan hozzáadja ezt a mennyiséget?") . "'"; ?>,
+                title: <?php echo "'" . langClass::trans("Ebben a kosárban már van ilyen termék!") . "'"; ?>,
+                text: <?php echo "'" . langClass::trans("Biztosan hozzáadja ezt a mennyiséget?") . "'"; ?>,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
@@ -244,17 +244,17 @@
         $('#ProductCategory').change(function () {
             let productCategory = $('#ProductCategory').val();
             switch($('#fejszoveg').text()) {
-                case <?php echo "'" . App\Classes\langClass::trans('Szerződéses termékek') . "'"; ?>:
-                    myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Szerződéses termékek') . "'"; ?>, '{{ route('customerContractProductIndex') }}');
+                case <?php echo "'" . langClass::trans('Szerződéses termékek') . "'"; ?>:
+                    myUrlChange(<?php echo "'" . langClass::trans('Szerződéses termékek') . "'"; ?>, '{{ route('customerContractProductIndex') }}');
                     break;
-                case <?php echo "'" . App\Classes\langClass::trans('Kedvenc termékek') . "'"; ?>:
-                    myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Kedvenc termékek') . "'"; ?>, '{{ route('favoriteProductIndex') }}');
+                case <?php echo "'" . langClass::trans('Kedvenc termékek') . "'"; ?>:
+                    myUrlChange(<?php echo "'" . langClass::trans('Kedvenc termékek') . "'"; ?>, '{{ route('favoriteProductIndex') }}');
                     break;
-                case <?php echo "'" . App\Classes\langClass::trans('Akciós termékek') . "'"; ?>:
-                    myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Akciós termékek') . "'"; ?>, '{{ route('customerOfferProductIndex') }}');
+                case <?php echo "'" . langClass::trans('Akciós termékek') . "'"; ?>:
+                    myUrlChange(<?php echo "'" . langClass::trans('Akciós termékek') . "'"; ?>, '{{ route('customerOfferProductIndex') }}');
                     break
                 default:
-                    myUrlChange(<?php echo "'" . App\Classes\langClass::trans('Minden termék') . "'"; ?>, '{{ route('productIndex') }}');
+                    myUrlChange(<?php echo "'" . langClass::trans('Minden termék') . "'"; ?>, '{{ route('productIndex') }}');
             }
         })
 

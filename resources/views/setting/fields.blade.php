@@ -6,7 +6,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-3">
-                {!! Form::label('APP_CUSTOMER', \App\Classes\langClass::trans('Cég név:')) !!}
+                {!! Form::label('APP_CUSTOMER', langClass::trans('Cég név:')) !!}
             </div>
             <div class="mylabel col-sm-9">
                 {!! Form::text('APP_CUSTOMER', env('APP_CUSTOMER'),['class'=>'form-control', 'required' => 'true', 'id' => 'APP_CUSTOMER']) !!}
@@ -167,7 +167,10 @@
                 environmentVariable('MAIL_PASSWORD');
                 environmentVariable('MAIL_ENCRYPTION');
                 environmentVariable('MAIL_FROM_ADDRESS');
-                changeEnvironmentVariable('MAIL_SET', 1);
+                if ({{ env('MAIL_SET') }} == 0) {
+                    changeEnvironmentVariable('MAIL_SET', 1);
+                    window.location.href = "{{ url('/login') }}";
+                };
             });
         });
 

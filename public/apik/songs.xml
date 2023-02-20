@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customerorders>
+    <customerorder>
+        <date>2022-03-09 13:19:49</date>
+        <expirationdays></expirationdays>
+        <Id>4</Id>
+    </customerorder>
+    <customerorder>
+        <date>2022-04-05 11:58:30</date>
+        <expirationdays></expirationdays>
+        <Id>9</Id>
+    </customerorder>
+</customerorders>

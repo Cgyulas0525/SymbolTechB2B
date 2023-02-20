@@ -26,7 +26,7 @@
             <div class="text-center"></div>
 
             <div class="card-footer">
-                <a href="{{ route('logItems.index') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                <a href="{{ route('logItems.index') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
             </div>
 
             {!! Form::close() !!}
@@ -55,9 +55,9 @@
                 paging: false,
                 ajax: "{{ route('logItemTableDetailIndex', $logItemTable->id) }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Mező') . "'"; ?>, data: 'changedfield', name: 'changedfield'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Régi') . "'"; ?>, data: 'oldValue', sClass: "text-center", width: '150px', name: 'oldValue', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Új') . "'"; ?>, data: 'newValue', sClass: "text-center", width: '150px', name: 'newValue', orderable: false, searchable: false},
+                    {title: <?php echo "'" . langClass::trans('Mező') . "'"; ?>, data: 'changedfield', name: 'changedfield'},
+                    {title: <?php echo "'" . langClass::trans('Régi') . "'"; ?>, data: 'oldValue', sClass: "text-center", width: '150px', name: 'oldValue', orderable: false, searchable: false},
+                    {title: <?php echo "'" . langClass::trans('Új') . "'"; ?>, data: 'newValue', sClass: "text-center", width: '150px', name: 'newValue', orderable: false, searchable: false},
                 ],
                 buttons: [],
             });

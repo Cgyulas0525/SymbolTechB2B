@@ -13,18 +13,18 @@
   align-items: center; margin-top: 5em;">
         <div class="login-box"  >
             <div class="login-logo">
-                <a href="{{ url('/home') }}"><img src={{ URL('/public/img/B2B.png') }} style="width: 240px;" alt="B2B"></a>
+                <a href="{{ url('/home') }}"><img src={{ URL('/img/B2B.png') }} style="width: 240px;" alt="B2B"></a>
             </div>
 
             <!-- /.login-logo -->
             <div class="login-box-body">
-                <p class="login-box-msg" style="font-size: 1.5em">Jelszó csere</p>
+                <p class="login-box-msg" style="font-size: 1.5em">{{ langClass::trans('Jelszó csere') }}</p>
 
                 <form method="post" action="{{ route('myLogin') }}">
                     {!! csrf_field() !!}
 
                     <div class="form-group has-feedback{{ $errors->has('password') ? ' has-error' : '' }}">
-                        <input type="password" class="form-control" placeholder="Jelszó" name="password" id="password">
+                        <input type="password" class="form-control" placeholder={{ langClass::trans('Jelszó') }} name="password" id="password">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                         @if ($errors->has('password'))
                             <span class="help-block">
@@ -33,7 +33,7 @@
                         @endif
                     </div>
                     <div class="form-group has-feedback{{ $errors->has('password2') ? ' has-error' : '' }}">
-                        <input type="password" class="form-control" placeholder="Jelszó újra" name="password2" id="password2">
+                        <input type="password" class="form-control" placeholder={{ langClass::trans('Jelszó újra') }} újra" name="password2" id="password2">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                         @if ($errors->has('password2'))
                             <span class="help-block">
@@ -48,7 +48,7 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-xs-4">
-                            <button type="submit" class="btn btn-primary btn-block btn-flat" id="changeBtn">Jelszó csere</button>
+                            <button type="submit" class="btn btn-primary btn-block btn-flat" id="changeBtn">{{ langClass::trans('Jelszó csere') }}</button>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -79,25 +79,25 @@
                 let password = $('#password').val();
                 let password2 = $('#password2').val();
                 if ( password == '' ) {
-                    swMove(<?php echo "'" . App\Classes\langClass::trans("Üresen hagyta a jelszó mezőt!") . "'"; ?>);
+                    swMove(<?php echo "'" . langClass::trans("Üresen hagyta a jelszó mezőt!") . "'"; ?>);
                     e.preventDefault();
                     $('#password').focus();
                     return false;
                 } else {
                     if ( password.length < 8) {
-                        swMove(<?php echo "'" . App\Classes\langClass::trans("Jelszónak minimum 8 karakter hosszúnak kell lennie!") . "'"; ?>);
+                        swMove(<?php echo "'" . langClass::trans("Jelszónak minimum 8 karakter hosszúnak kell lennie!") . "'"; ?>);
                         e.preventDefault();
                         $('#password').focus();
                         return false;
                     } else {
                         if ( password2 == '' ) {
-                            swMove(<?php echo "'" . App\Classes\langClass::trans("Üresen hagyta a jelszó újra mezőt!") . "'"; ?>);
+                            swMove(<?php echo "'" . langClass::trans("Üresen hagyta a jelszó újra mezőt!") . "'"; ?>);
                             e.preventDefault();
                             $('#password2').focus();
                             return false;
                         } else {
                             if ( password != password2 ) {
-                                swMove(<?php echo "'" . App\Classes\langClass::trans("Nem egyezik a két jelszó!") . "'"; ?>);
+                                swMove(<?php echo "'" . langClass::trans("Nem egyezik a két jelszó!") . "'"; ?>);
                                 e.preventDefault();
                                 $('#password').val(null);
                                 $('#password2').val(null);

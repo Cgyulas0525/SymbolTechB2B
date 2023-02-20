@@ -13,7 +13,7 @@
             <div class="box-body">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <section class="content-header">
-                        <h4>{{ \App\Classes\langClass::trans('Nyelvek') }}</h4>
+                        <h4>{{ langClass::trans('Nyelvek') }}</h4>
                     </section>
                     @include('flash::message')
                     <div class="clearfix"></div>
@@ -50,11 +50,11 @@
                 ajax: "{{ route('languages.index') }}",
                 columns: [
                     {title: '', data: 'action', sClass: "text-center", width: '200px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'lname', name: 'lname'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Nemzetiség') . "'"; ?>, data: 'nemz', name: 'nemz'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Tétel') . "'"; ?>, data: 'DetailNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'DetailNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Fordított') . "'"; ?>, data: 'TranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'TranslatedNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Fordítatlan') . "'"; ?>, data: 'UnTranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'UnTranslatedNumber'},
+                    {title: <?php echo "'" . langClass::trans('Név') . "'"; ?>, data: 'lname', name: 'lname'},
+                    {title: <?php echo "'" . langClass::trans('Nemzetiség') . "'"; ?>, data: 'nemz', name: 'nemz'},
+                    {title: <?php echo "'" . langClass::trans('Tétel') . "'"; ?>, data: 'DetailNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'DetailNumber'},
+                    {title: <?php echo "'" . langClass::trans('Fordított') . "'"; ?>, data: 'TranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'TranslatedNumber'},
+                    {title: <?php echo "'" . langClass::trans('Fordítatlan') . "'"; ?>, data: 'UnTranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'UnTranslatedNumber'},
                 ]
             });
 

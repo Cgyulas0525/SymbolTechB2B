@@ -5,7 +5,7 @@
 
 <div class="col-lg-12 col-md-12 col-xs-12 topmarginMinusz1em">
     <section class="content-header">
-        <h4>{{ \App\Classes\langClass::trans('Tételek') }} </h4>
+        <h4>{{ langClass::trans('Tételek') }} </h4>
     </section>
     @include('flash::message')
     <div class="clearfix"></div>
@@ -55,15 +55,15 @@
                         targets:   0
                     },
 
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Mennyiség') . "'"; ?>, data: 'Quantity', width: '150px', name: 'Quantity', id: 'Quntity'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Me.egys') . "'"; ?>, data: 'QuantityUnitName', name: 'QuantityUnitName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Egys.ár') . "'"; ?>, data: 'UnitPrice', name: 'UnitPrice', id: 'UnitPrice'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Netto') . "'"; ?>, data: 'NetValue', name: 'NetValue', id: 'NetValueD'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', name: 'VatValue', id: 'VatValueD'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', name: 'GrossValue', id: 'GrossValueD'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Pénznem') . "'"; ?>, data: 'CurrencyName', name: 'CurrencyName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Státusz') . "'"; ?>, data: 'StatusName', name: 'StatusName'},
+                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
+                    {title: <?php echo "'" . langClass::trans('Mennyiség') . "'"; ?>, data: 'Quantity', width: '150px', name: 'Quantity', id: 'Quntity'},
+                    {title: <?php echo "'" . langClass::trans('Me.egys') . "'"; ?>, data: 'QuantityUnitName', name: 'QuantityUnitName'},
+                    {title: <?php echo "'" . langClass::trans('Egys.ár') . "'"; ?>, data: 'UnitPrice', name: 'UnitPrice', id: 'UnitPrice'},
+                    {title: <?php echo "'" . langClass::trans('Netto') . "'"; ?>, data: 'NetValue', name: 'NetValue', id: 'NetValueD'},
+                    {title: <?php echo "'" . langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', name: 'VatValue', id: 'VatValueD'},
+                    {title: <?php echo "'" . langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', name: 'GrossValue', id: 'GrossValueD'},
+                    {title: <?php echo "'" . langClass::trans('Pénznem') . "'"; ?>, data: 'CurrencyName', name: 'CurrencyName'},
+                    {title: <?php echo "'" . langClass::trans('Státusz') . "'"; ?>, data: 'StatusName', name: 'StatusName'},
                     {title: 'Id', data: 'Id', name: 'Id', id: 'Id'},
                     {title: 'Product', data: 'Product', name: 'Product', id: 'Product'},
                     {title: 'VatRate', data: 'VatRate', name: 'VatRate', id: 'VatRate'},
@@ -93,13 +93,13 @@
         $('#saveBtn').click(function (e) {
             if ( table.rows( { selected: true } ).count() > 0) {
                 swal.fire({
-                    title: <?php echo "'" . App\Classes\langClass::trans("Tétetek kosárba másolás!") . "'"; ?>,
-                    text: <?php echo "'" . App\Classes\langClass::trans("Biztosan kosárba másolja a tételeket?") . "'"; ?>,
+                    title: <?php echo "'" . langClass::trans("Tétetek kosárba másolás!") . "'"; ?>,
+                    text: <?php echo "'" . langClass::trans("Biztosan kosárba másolja a tételeket?") . "'"; ?>,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
-                    confirmButtonText: <?php echo "'" . App\Classes\langClass::trans("Kosárba") . "'"; ?>,
-                    cancelButtonText: <?php echo "'" . App\Classes\langClass::trans("Kilép") . "'"; ?>
+                    confirmButtonText: <?php echo "'" . langClass::trans("Kosárba") . "'"; ?>,
+                    cancelButtonText: <?php echo "'" . langClass::trans("Kilép") . "'"; ?>
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var rows = table.rows({ selected: true } ).data();
@@ -120,7 +120,7 @@
                     }
                 });
             } else {
-                swMove(<?php echo "'" . App\Classes\langClass::trans("Nincs kijelölt tétel!") . "'"; ?>);
+                swMove(<?php echo "'" . langClass::trans("Nincs kijelölt tétel!") . "'"; ?>);
                 e.preventDefault();
             };
         });

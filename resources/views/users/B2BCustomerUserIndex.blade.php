@@ -13,7 +13,7 @@
             <div class="box-body">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <section class="content-header">
-                        <h4>{{ \App\Classes\langClass::trans('B2B Felhasználók') }}</h4>
+                        <h4>{{ langClass::trans('B2B Felhasználók') }}</h4>
                     </section>
                     @include('flash::message')
                     <div class="clearfix"></div>
@@ -52,11 +52,11 @@
                 columns: [
                     {title: '<a class="btn btn-primary" title="Felvitel" href="{!! route('B2BCustomerUserCreate') !!}"><i class="fa fa-plus-square"></i></a>',
                         data: 'action', sClass: "text-center", width: '150px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Partner cég') . "'"; ?>, data: 'customerName', name: 'customerName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'name', name: 'name'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Email') . "'"; ?>, data: 'email', name: 'email'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Telephely') . "'"; ?>, data: 'CustomerAddressName', name: 'CustomerAddressName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
+                    {title: <?php echo "'" . langClass::trans('Partner cég') . "'"; ?>, data: 'customerName', name: 'customerName'},
+                    {title: <?php echo "'" . langClass::trans('Név') . "'"; ?>, data: 'name', name: 'name'},
+                    {title: <?php echo "'" . langClass::trans('Email') . "'"; ?>, data: 'email', name: 'email'},
+                    {title: <?php echo "'" . langClass::trans('Telephely') . "'"; ?>, data: 'CustomerAddressName', name: 'CustomerAddressName'},
+                    {title: <?php echo "'" . langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
                 ]
             });
 

@@ -20,7 +20,7 @@
                         </br>
                         <h3 class=card-title" >{{ $coffer->Name }}</h3>
                         <h3 class="card-title">{{ date('Y.m.d', strtotime($coffer->ValidFrom)) }} - {{ date('Y.m.d', strtotime($coffer->ValidTo)) }}</h3>
-                        <h3 class="card-title">{{ \App\Classes\langClass::trans('Termék') }}: {{ number_format(App\Classes\customerOfferClass::customerOfferProductsCount($coffer->Id), 0, ',', '.') }} {{ \App\Classes\langClass::trans('db') }}</h3>
+                        <h3 class="card-title">{{ langClass::trans('Termék') }}: {{ number_format(App\Classes\customerOfferClass::customerOfferProductsCount($coffer->Id), 0, ',', '.') }} {{ langClass::trans('db') }}</h3>
                     </div>
                     <a href="{{ route('oneOffer', $coffer->Id )}}" data-scroll class="btn btn-primary btn-danger topmarginMinusz1em">Bővebben <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
@@ -32,46 +32,46 @@
             <!-- small box -->
             <div class="small-box bg-default">
                <div class="inner">
-                   <h3 class="card-title">{{ \App\Classes\langClass::trans('Megrendelések') }}</h3>
+                   <h3 class="card-title">{{ langClass::trans('Megrendelések') }}</h3>
                    <table class="table table-bordered">
                        <tbody>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('Nyitott') }}</td>
+                           <td>{{ langClass::trans('Nyitott') }}</td>
                            <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesek(myUser::user()->customerId), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('Tétel') }}</td>
+                           <td>{{ langClass::trans('Tétel') }}</td>
                            <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesTetelSzam(myUser::user()->customerId), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('Érték') }}</td>
+                           <td>{{ langClass::trans('Érték') }}</td>
                            <td class="text-right">{{ number_format(customerOrderClass::openCustomerOrderValue(myUser::user()->customerId), 0, ',', '.')}}</td>
                        </tr>
                        </tbody>
                    </table>
                        <!-- /.card-body -->
                 </div>
-                <a href="{{ route('customerOrders.index') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('customerOrders.index') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-6 col-md-6 col-xs-12 topmargin1em">
             <!-- small box -->
             <div class="small-box bg-default">
                 <div class="inner">
-                    <h3 class="card-title">{{ \App\Classes\langClass::trans('Hitel keret') }}</h3>
+                    <h3 class="card-title">{{ langClass::trans('Hitel keret') }}</h3>
                     <table class="table table-bordered">
                         <tbody>
                         <tr>
-                            <td>{{ \App\Classes\langClass::trans('Nyitott') }}</td>
+                            <td>{{ langClass::trans('Nyitott') }}</td>
                             <td class="text-right">{{ number_format(customerClass::CustomerDebitQuotaValue(myUser::user()->customerId, 'MaxCredit'), 0, ',', '.')}}</td>
                         </tr>
                         <tr>
-                            <td>{{ \App\Classes\langClass::trans('Felhasznált') }}</td>
+                            <td>{{ langClass::trans('Felhasznált') }}</td>
 {{--                            <td class="text-right">{{ number_format(App\Models\Customer::where('Deleted', 0)->get()->count() * 15, 0, ',', '.')}}</td>--}}
                             <td class="text-right">0</td>
                         </tr>
                         <tr>
-                            <td>{{ \App\Classes\langClass::trans('Szabad') }}</td>
+                            <td>{{ langClass::trans('Szabad') }}</td>
 {{--                            <td class="text-right">{{ number_format(App\Models\Customer::where('Deleted', 0)->get()->count() * 148321, 0, ',', '.')}}</td>--}}
                             <td class="text-right">0</td>
                         </tr>
@@ -184,14 +184,14 @@
                 select: false,
                 filter: false,
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Megrendelés szám') . "'"; ?>, data: 'VoucherNumber', width:'30%', name: 'VoucherNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Dátum') . "'"; ?>, data: 'VoucherDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'10%', name: 'VoucherDate'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Netto') . "'"; ?>, data: 'NetValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'15%', name: 'NetValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'15%', name: 'VatValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'15%', name: 'GrossValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Pénznem') . "'"; ?>, data: 'currencyName', sClass: "text-center", width:'5%', name: 'currencyName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Tétel') . "'"; ?>, data: 'tetelszam', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'10%', name: 'tetelszam'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Státusz') . "'"; ?>, data: 'statusName', name: 'statusName'},
+                    {title: <?php echo "'" . langClass::trans('Megrendelés szám') . "'"; ?>, data: 'VoucherNumber', width:'30%', name: 'VoucherNumber'},
+                    {title: <?php echo "'" . langClass::trans('Dátum') . "'"; ?>, data: 'VoucherDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'10%', name: 'VoucherDate'},
+                    {title: <?php echo "'" . langClass::trans('Netto') . "'"; ?>, data: 'NetValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'15%', name: 'NetValue'},
+                    {title: <?php echo "'" . langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'15%', name: 'VatValue'},
+                    {title: <?php echo "'" . langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'15%', name: 'GrossValue'},
+                    {title: <?php echo "'" . langClass::trans('Pénznem') . "'"; ?>, data: 'currencyName', sClass: "text-center", width:'5%', name: 'currencyName'},
+                    {title: <?php echo "'" . langClass::trans('Tétel') . "'"; ?>, data: 'tetelszam', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'10%', name: 'tetelszam'},
+                    {title: <?php echo "'" . langClass::trans('Státusz') . "'"; ?>, data: 'statusName', name: 'statusName'},
                 ],
                 fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
                     RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);

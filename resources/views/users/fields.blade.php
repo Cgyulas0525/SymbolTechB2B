@@ -6,7 +6,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-3">
-                {!! Form::label('employee_id', \App\Classes\langClass::trans('Felhasználó:')) !!}
+                {!! Form::label('employee_id', langClass::trans('Felhasználó:')) !!}
             </div>
             <div class="mylabel col-sm-9">
                 {!! Form::select('employee_id', ddwClass::employeeNotB2BDDW(), null,['class'=>'select2 form-control', 'required' => 'true', 'id' => 'employee_id']) !!}
@@ -31,7 +31,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-2">
-                {!! Form::label('rendszergazda', \App\Classes\langClass::trans('Státusz:')) !!}
+                {!! Form::label('rendszergazda', langClass::trans('Státusz:')) !!}
             </div>
             <div class="mylabel col-sm-10">
                 @if ( myUser::user()->name === "administrator")
@@ -48,7 +48,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-1">
-                {!! Form::label('megjegyzes', \App\Classes\langClass::trans('Megjegyzés:')) !!}
+                {!! Form::label('megjegyzes', langClass::trans('Megjegyzés:')) !!}
             </div>
             <div class="mylabel col-sm-11">
                 {!! Form::textarea('megjegyzes', null, ['class' => 'form-control', 'rows' => 4, 'id' => 'megjegyzes']) !!}
@@ -75,7 +75,7 @@
                     data: { id: employee_id },
                     success: function (response) {
                         if ( response.name != null ) {
-                            sw(<?php echo "'" . App\Classes\langClass::trans("Ennek a felhasználónak már van hozzáférése a rendszerhez!") . "'"; ?>);
+                            sw(<?php echo "'" . langClass::trans("Ennek a felhasználónak már van hozzáférése a rendszerhez!") . "'"; ?>);
                             $("#employee_id").val(null);
                             $("#employee_id").focus();
                         } else {
@@ -89,7 +89,7 @@
                                         $('#email').prop('readonly', true);
                                         $("#rendszergazda").focus();
                                     } else {
-                                        sw(<?php echo "'" . App\Classes\langClass::trans("Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!") . "'"; ?>);
+                                        sw(<?php echo "'" . langClass::trans("Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!") . "'"; ?>);
                                         $("#employee_id").val(null);
                                         $("#employee_id").focus();
                                     }
@@ -110,25 +110,64 @@
                 let rendszergazda = $('#rendszergazda').val();
 
                 if ( parseInt(employeeId) == 0) {
-                    swMove(<?php echo "'" . App\Classes\langClass::trans("Nem adott meg felhasználót!") . "'"; ?>);
+                    swMove(<?php echo "'" . langClass::trans("Nem adott meg felhasználót!") . "'"; ?>);
                     e.preventDefault();
                     $('#employee_id').focus();
                     return false;
                 } else {
                     if ( email.length == 0) {
-                        swMove(<?php echo "'" . App\Classes\langClass::trans("Nem adott meg email címet!") . "'"; ?>);
+                        swMove(<?php echo "'" . langClass::trans("Nem adott meg email címet!") . "'"; ?>);
                         e.preventDefault();
                         $('#email').focus();
                         return false;
                     } else {
                         if ( parseInt(rendszergazda) == 0) {
-                            swMove(<?php echo "'" . App\Classes\langClass::trans("Nem adott meg státuszt!") . "'"; ?>);
+                            swMove(<?php echo "'" . langClass::trans("Nem adott meg státuszt!") . "'"; ?>);
                             e.preventDefault();
                             $('#rendszergazda').focus();
                             return false;
                         }
                     }
                 }
+            });
+
+            $('#saveBtn1').click(function (e) {
+                let employeeId = $('#employee_id').val();
+                let email = $('#email').val();
+                let rendszergazda = $('#rendszergazda').val();
+
+                if ( parseInt(employeeId) == 0) {
+                    swMove(<?php echo "'" . langClass::trans("Nem adott meg felhasználót!") . "'"; ?>);
+                    e.preventDefault();
+                    $('#employee_id').focus();
+                    return false;
+                } else {
+                    if ( email.length == 0) {
+                        swMove(<?php echo "'" . langClass::trans("Nem adott meg email címet!") . "'"; ?>);
+                        e.preventDefault();
+                        $('#email').focus();
+                        return false;
+                    } else {
+                        if ( parseInt(rendszergazda) == 0) {
+                            swMove(<?php echo "'" . langClass::trans("Nem adott meg státuszt!") . "'"; ?>);
+                            e.preventDefault();
+                            $('#rendszergazda').focus();
+                            return false;
+                        }
+                    }
+                }
+                $.ajax({
+                    type: "GET",
+                    url:"{{url('firstUserStore')}}",
+                    data: { employee: employeeId },
+                    success: function (response) {
+                        window.location.href = "{{ url('/login') }}";
+                    },
+                    error: function (response) {
+                        alert('nem ok');
+                    }
+                });
+
             });
         });
 

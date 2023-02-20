@@ -6,7 +6,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-3">
-                {!! Form::label('customer', \App\Classes\langClass::trans('Cég:')) !!}
+                {!! Form::label('customer', langClass::trans('Cég:')) !!}
             </div>
             <div class="mylabel col-sm-9">
                 {!! Form::text('customer', $users->customerName, ['class'=>'form-control', 'required' => 'true', 'id' => 'customer', 'readonly' => 'true']) !!}
@@ -18,7 +18,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-3">
-                {!! Form::label('customercontact_id', \App\Classes\langClass::trans('Felhasználó:')) !!}
+                {!! Form::label('customercontact_id', langClass::trans('Felhasználó:')) !!}
             </div>
             <div class="mylabel col-sm-9">
                 {!! Form::text('userName', $users->name, ['class'=>'form-control', 'required' => 'true', 'id' => 'userName', 'readonly' => 'true']) !!}
@@ -44,7 +44,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-2">
-                {!! Form::label('CustomerAddress', \App\Classes\langClass::trans('Telephely:')) !!}
+                {!! Form::label('CustomerAddress', langClass::trans('Telephely:')) !!}
             </div>
             <div class="mylabel col-sm-10">
                 {!! Form::select('CustomerAddress', ddwClass::customerAddressDDW($users->customerId), $users->CustomerAddress,['class'=>'select2 form-control', 'required' => 'true', 'id' => 'CustomerAddress']) !!}
@@ -56,7 +56,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-3">
-                {!! Form::label('TransportMode', \App\Classes\langClass::trans('Szállítási mód:')) !!}
+                {!! Form::label('TransportMode', langClass::trans('Szállítási mód:')) !!}
             </div>
             <div class="mylabel col-sm-9">
                 {!! Form::select('TransportMode', ddwClass::transportmodeDDW(), null,['class'=>'select2 form-control', 'required' => 'true', 'id' => 'TransportMode']) !!}
@@ -69,7 +69,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-1">
-                {!! Form::label('megjegyzes', \App\Classes\langClass::trans('Megjegyzés:')) !!}
+                {!! Form::label('megjegyzes', langClass::trans('Megjegyzés:')) !!}
             </div>
             <div class="mylabel col-sm-11">
                 {!! Form::textarea('megjegyzes', null, ['class' => 'form-control', 'rows' => 4, 'id' => 'megjegyzes']) !!}
@@ -129,7 +129,7 @@
                             $('#email').prop('readonly', true);
                             $("#megjegyzes").focus();
                         }else{
-                            sw(<?php echo "'" . App\Classes\langClass::trans("Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!") . "'"; ?>);
+                            sw(<?php echo "'" . langClass::trans("Kérem a Symbol Ügyviteli rendszerben rendeljen a felhasználóhoz email címet!") . "'"; ?>);
                             $("#customercontact_id").val(null);
                             $("#customercontact_id").focus();
                         }

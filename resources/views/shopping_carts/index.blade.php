@@ -13,7 +13,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-xs-12">
                         <section class="content-header">
-                            <h4>{{ \App\Classes\langClass::trans('Kosár') }}</h4>
+                            <h4>{{ langClass::trans('Kosár') }}</h4>
                         </section>
                     </div>
                 </div>
@@ -54,17 +54,17 @@
                 columns: [
                     {title: '<a class="btn btn-primary" title="Felvitel" href="{!! route('shoppingCarts.create') !!}"><i class="fa fa-plus-square"></i></a>',
                         data: 'action', sClass: "text-center", width: '250px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Bizonylatszám') . "'"; ?>, data: 'VoucherNumber', name: 'VoucherNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Tétel') . "'"; ?>, data: 'DetailNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'DetailNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kelt') . "'"; ?>, data: 'VoucherDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'150px', name: 'VoucherDate'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Száll.hat.') . "'"; ?>, data: 'DeliveryDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'150px', name: 'DeliveryDate'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Netto') . "'"; ?>, data: 'NetValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'NetValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'VatValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'GrossValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Pénznem') . "'"; ?>, data: 'CurrencyName', sClass: "text-center", name: 'CurrencyName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Fizetési mód') . "'"; ?>, data: 'PaymentMethodName', name: 'PaymentMethodName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Rendelésszám') . "'"; ?>, data: 'CustomerOrderVoucherNumber', name: 'CustomerOrderVoucherNumber'},
+                    {title: <?php echo "'" . langClass::trans('Bizonylatszám') . "'"; ?>, data: 'VoucherNumber', name: 'VoucherNumber'},
+                    {title: <?php echo "'" . langClass::trans('Tétel') . "'"; ?>, data: 'DetailNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'DetailNumber'},
+                    {title: <?php echo "'" . langClass::trans('Kelt') . "'"; ?>, data: 'VoucherDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'150px', name: 'VoucherDate'},
+                    {title: <?php echo "'" . langClass::trans('Száll.hat.') . "'"; ?>, data: 'DeliveryDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'150px', name: 'DeliveryDate'},
+                    {title: <?php echo "'" . langClass::trans('Netto') . "'"; ?>, data: 'NetValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'NetValue'},
+                    {title: <?php echo "'" . langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'VatValue'},
+                    {title: <?php echo "'" . langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'GrossValue'},
+                    {title: <?php echo "'" . langClass::trans('Pénznem') . "'"; ?>, data: 'CurrencyName', sClass: "text-center", name: 'CurrencyName'},
+                    {title: <?php echo "'" . langClass::trans('Fizetési mód') . "'"; ?>, data: 'PaymentMethodName', name: 'PaymentMethodName'},
+                    {title: <?php echo "'" . langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
+                    {title: <?php echo "'" . langClass::trans('Rendelésszám') . "'"; ?>, data: 'CustomerOrderVoucherNumber', name: 'CustomerOrderVoucherNumber'},
                 ],
                 buttons: []
             });

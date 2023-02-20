@@ -5,7 +5,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name') }}</title>
-    <link rel="icon" href={{ URL::asset('/public/img/B2B.png')}}/>
+    <link rel="icon" href={{ URL::asset('/img/B2B.png')}}/>
 
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 
@@ -68,7 +68,7 @@
 
         <ul class="navbar-nav ml-auto">
             <select class="form-control changeLang">
-                @foreach(App\Classes\langClass::liveLanguages() as $language)
+                @foreach(langClass::liveLanguages() as $language)
                     <option value={{ $language->shortname }} {{ session()->get('locale') ==  $language->shortname ? 'selected' : '' }}>{{ $language->name }}</option>
                 @endforeach
             </select>
@@ -82,10 +82,10 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <li class="user-footer">
-                        <a href="{{ route('profil', myUser::user()->id) }}" class="btn btn-default btn-flat">{{ App\Classes\langClass::trans('Profil') }}</a>
+                        <a href="{{ route('profil', myUser::user()->id) }}" class="btn btn-default btn-flat">{{ langClass::trans('Profil') }}</a>
                         <a href="#" class="btn btn-default btn-flat float-right"
                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            {{ App\Classes\langClass::trans('Kilépés') }}
+                            {{ langClass::trans('Kilépés') }}
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
@@ -100,7 +100,7 @@
                     <?php $scc = new App\Classes\ShoppingCart\ShoppingCartOpened; ?>
                     @if (!empty($scc->openedShoppingCart()))
                         <a href="{{ route('shoppingCarts.edit', $scc->openedShoppingCart()->Id) }}" class="btn btn-default btn-flat">
-                            <h3 class="d-none d-md-inline"><i class="fas fa-shopping-cart"></i> {{ App\Classes\langClass::trans('Kosár') }}</h3>
+                            <h3 class="d-none d-md-inline"><i class="fas fa-shopping-cart"></i> {{ langClass::trans('Kosár') }}</h3>
                         </a>
                     @endif
 {{--                    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">--}}

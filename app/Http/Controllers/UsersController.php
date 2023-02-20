@@ -414,4 +414,55 @@ class UsersController extends AppBaseController
         }
     }
 
+    /*
+     * Első felhasználó felvitele
+     */
+    public function firstUserStore(Request $request)
+    {
+
+
+        $user = new Users;
+        $employee = Employee::find($request->get('employee'));
+
+        $user->name = $employee->Name;
+        $user->rendszergazda = 2;
+        $user->password = md5('PASSWORD'. $employee->Id);
+        $user->megjegyzes = 'PASSWORD'. $employee->Id;
+        $user->employee_id = $employee->Id;
+        $user->customercontact_id = NULL;
+        $user->CustomerAddress = NULL;
+        $user->TransportMode = NULL;
+        $user->email = $employee->Email;
+
+        $user->save();
+
+        $data["email"] = $user->email;
+        $data["title"] = $user->name.' B2B belépési engedély!';
+        $data["body"] = 'Ön számára hozzáférést engedélyeztek a Symbol Tech Ügyviteli rendszer B2B moduljához. Az Ön belépési adatai:';
+        $data["name"] = 'Név: ' . $user->name;
+        $data["password"] = 'Jelszó: ' . $user->megjegyzes;
+        $data['bodyEnd'] = 'Az első belépéskor kérem változatassa meg a jelszavát!';
+        $data["ugyfel"] = $user->name;
+        $data["datum"] = date('Y-m-d');
+
+        Mail::send('emails.newUserEmail', $data, function($message) use($data) {
+            $message->to($data["email"], $data["email"])
+                ->subject($data["title"]);
+        });
+
+        logClass::insertDeleteRecord( 5, "Users", $user->id);
+
+//        if ( myUser::user()->name === "administrator" ) {
+//            return redirect(route('myLogin'));
+//        } else {
+//            if (!empty($user->employee_id)) {
+//                return redirect(route('B2BUserIndex'));
+//            }
+//            if (!empty($user->customercontact_id)) {
+//                return redirect(route('B2BCustomerUserIndex'));
+//            }
+//        }
+    }
+
+
 }

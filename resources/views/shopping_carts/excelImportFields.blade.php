@@ -13,15 +13,15 @@
             {!! Form::label('import_file', 'File:') !!}
         </div>
         <div class="mylabel col-sm-10">
-            <label class="image__file-upload">{{ \App\Classes\langClass::trans('Válasszon') }}
+            <label class="image__file-upload">{{ langClass::trans('Válasszon') }}
                 {!! Form::file('import_file',['class'=>'d-none', 'id' => 'import_file', 'accept' => ".xlsx, .xls, .csv"]) !!}
             </label>
         </div>
         <h4>
             <div>
-                <p style="text-align: center;">{{ \App\Classes\langClass::trans('Kérem rakja az oszlopokat a következő sorrrendbe') }}:</p>
-                <p style="text-align: center;">{{ \App\Classes\langClass::trans('Kód') }}</p>
-                <p style="text-align: center;">{{ \App\Classes\langClass::trans('Mennyiség') }}</p>
+                <p style="text-align: center;">{{ langClass::trans('Kérem rakja az oszlopokat a következő sorrrendbe') }}:</p>
+                <p style="text-align: center;">{{ langClass::trans('Kód') }}</p>
+                <p style="text-align: center;">{{ langClass::trans('Mennyiség') }}</p>
             </div>
         </h4>
     </div>
@@ -36,7 +36,7 @@
         </div>
     </div>
     <div class="text-center"></div>
-    <h4>Rekord: <a id="rekord"> </a> {{ \App\Classes\langClass::trans('Feldolgozott') }}: <a id="feldolgozott"> </a> </h4>
+    <h4>Rekord: <a id="rekord"> </a> {{ langClass::trans('Feldolgozott') }}: <a id="feldolgozott"> </a> </h4>
 </div>
 
 

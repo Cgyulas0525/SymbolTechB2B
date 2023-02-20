@@ -10,14 +10,14 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel8 col-sm-2">
-                {!! Form::label('customercontact_id', \App\Classes\langClass::trans('Termék kategória') . ':', ['class'=>'font20px']) !!}
+                {!! Form::label('customercontact_id', langClass::trans('Termék kategória') . ':', ['class'=>'font20px']) !!}
             </div>
             <div class="mylabel8 col-sm-6">
                 {!! Form::select('productcategory', ddwClass::productCategoryDDW(), null,['class'=>'select2 form-control', 'id' => 'productCategory']) !!}
             </div>
             <div class="mylabel8 col-sm-2">
-                <a href="#" class="btn btn-dark mind" title={{ \App\Classes\langClass::trans('Minden termék') }}><i class="fas fa-warehouse"></i></a>
-                <a href="#" class="btn btn-primary kedvenc" title={{ \App\Classes\langClass::trans('Kedvenc') }}><i class="fas fa-hand-holding-heart"></i></a>
+                <a href="#" class="btn btn-dark mind" title={{ langClass::trans('Minden termék') }}><i class="fas fa-warehouse"></i></a>
+                <a href="#" class="btn btn-primary kedvenc" title={{ langClass::trans('Kedvenc') }}><i class="fas fa-hand-holding-heart"></i></a>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
                 dom: 'Bfrtip',
                 ajax: "{{ route('productCategoryProductindex', $category ) }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Termék') . "'"; ?>, data: 'Name', name: 'Name'},
+                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'Name', name: 'Name'},
                 ],
                 buttons: [],
 
@@ -108,7 +108,7 @@
                     }
                     filteredData();
                 } else {
-                    let stitle = <?php echo "'" . App\Classes\langClass::trans('Nem jelölt ki sort') . "'"; ?>;
+                    let stitle = <?php echo "'" . langClass::trans('Nem jelölt ki sort') . "'"; ?>;
                     alert(stitle);
                 }
             });

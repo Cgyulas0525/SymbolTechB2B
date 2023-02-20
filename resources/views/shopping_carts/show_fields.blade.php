@@ -6,7 +6,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('VoucherNumber', \App\Classes\langClass::trans('Bizonylatszám:')) !!}
+                {!! Form::label('VoucherNumber', langClass::trans('Bizonylatszám:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('VoucherNumber', $shoppingCart->VoucherNumber, ['class' => 'form-control', 'readonly' => 'true']) !!}
@@ -18,7 +18,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-2">
-                {!! Form::label('CustomerAddress', \App\Classes\langClass::trans('Telephely:')) !!}
+                {!! Form::label('CustomerAddress', langClass::trans('Telephely:')) !!}
             </div>
             <div class="mylabel col-sm-10">
                 {!! Form::text('CustomerAddress', $shoppingCart->CustomerAddressName,['class'=>'form-control', 'readonly' => 'true', 'id' => 'CustomerAddress']) !!}
@@ -30,7 +30,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('PaymentMethod', \App\Classes\langClass::trans('Fizetési mód:')) !!}
+                {!! Form::label('PaymentMethod', langClass::trans('Fizetési mód:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('PaymentMethod', $shoppingCart->PaymentMethodName, ['class'=>'form-control', 'readonly' => 'true', 'id' => 'PaymentMethod']) !!}
@@ -42,7 +42,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('TransportMode', \App\Classes\langClass::trans('Szállítási mód:')) !!}
+                {!! Form::label('TransportMode', langClass::trans('Szállítási mód:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('TransportMode', $shoppingCart->TransportModeName, ['class'=>'form-control', 'readonly' => 'true', 'id' => 'TransportMode']) !!}
@@ -54,7 +54,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('DepositValue', \App\Classes\langClass::trans('Előleg:')) !!}
+                {!! Form::label('DepositValue', langClass::trans('Előleg:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('DepositValue', number_format($shoppingCart->DepositValue, 4, ',', '.'), ['class' => 'form-control text-right', 'id' => 'DepositValue', 'readonly' => 'true', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.01"']) !!}
@@ -66,7 +66,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('DepositPercent', \App\Classes\langClass::trans('Előleg %:')) !!}
+                {!! Form::label('DepositPercent', langClass::trans('Előleg %:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('DepositPercent', number_format($shoppingCart->DepositPercent, 4, ',', '.'), ['class' => 'form-control text-right', 'id' => 'DepositPercent', 'readonly' => 'true', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.0001"']) !!}
@@ -78,7 +78,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('NetValue', \App\Classes\langClass::trans('Nettó érték:')) !!}
+                {!! Form::label('NetValue', langClass::trans('Nettó érték:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('NetValue', number_format($shoppingCart->NetValue, 4, ',', '.'), ['class' => 'form-control text-right', 'id' => 'NetValue', 'readonly' => 'true', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.0001"']) !!}
@@ -89,7 +89,7 @@
 <div class="form-group col-sm-4">
     <div class="row">
         <div class="mylabel col-sm-4">
-            {!! Form::label('VatValue', \App\Classes\langClass::trans('Áfa:')) !!}
+            {!! Form::label('VatValue', langClass::trans('Áfa:')) !!}
         </div>
         <div class="mylabel col-sm-8">
             {!! Form::text('VatValue', number_format($shoppingCart->VatValue, 4, ',', '.'), ['class' => 'form-control text-right', 'id' => 'VatValue', 'readonly' => 'true', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.0001"']) !!}
@@ -100,7 +100,7 @@
     <div class="form-group col-sm-12">
         <div class="row">
             <div class="mylabel col-sm-4">
-                {!! Form::label('GrossValue', \App\Classes\langClass::trans('Bruttó érték:')) !!}
+                {!! Form::label('GrossValue', langClass::trans('Bruttó érték:')) !!}
             </div>
             <div class="mylabel col-sm-8">
                 {!! Form::text('GrossValue', number_format($shoppingCart->GrossValue, 4, ',', '.'), ['class' => 'form-control text-right', 'id' => 'GrossValue', 'readonly' => 'true', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.0001"']) !!}
@@ -111,7 +111,7 @@
 
 <!-- Comment Field -->
 <div class="form-group col-sm-12">
-    {!! Form::label('Comment', \App\Classes\langClass::trans('Megjegyzés:')) !!}
+    {!! Form::label('Comment', langClass::trans('Megjegyzés:')) !!}
     {!! Form::textarea('Comment', $shoppingCart->Comment, ['class' => 'form-control', 'rows' => '2', 'placeholder' => 'Megjegyzés', 'readonly' => 'true', 'id' => 'Comment']) !!}
 </div>
 
@@ -130,8 +130,8 @@
 
                 const url = $(this).attr('href');
                 swal.fire({
-                    title:  <?php echo "'" . App\Classes\langClass::trans('Biztos törli a tételt?') . "'"; ?>,
-                    text:  <?php echo "'" . App\Classes\langClass::trans('Ez a bejegyzés véglegesen törlődik!') . "'"; ?>,
+                    title:  <?php echo "'" . langClass::trans('Biztos törli a tételt?') . "'"; ?>,
+                    text:  <?php echo "'" . langClass::trans('Ez a bejegyzés véglegesen törlődik!') . "'"; ?>,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
@@ -145,7 +145,7 @@
                             success: function (response) {
                                 window.location.href = url;
                                 if ( response.name != null ) {
-                                    sw( <?php echo "'" . App\Classes\langClass::trans('A tétel nem törölhető') . "'"; ?>);
+                                    sw( <?php echo "'" . langClass::trans('A tétel nem törölhető') . "'"; ?>);
                                 }
                             },
                             error: function (response) {

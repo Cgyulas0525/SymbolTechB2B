@@ -33,11 +33,11 @@
             </div>
 
             <div class="card-footer">
-                {!! Form::submit(\App\Classes\langClass::trans('Ment'), ['class' => 'btn btn-primary', 'id' => 'saveBtn']) !!}
+                {!! Form::submit(langClass::trans('Ment'), ['class' => 'btn btn-primary', 'id' => 'saveBtn']) !!}
                 @if ($users->rendszergazda > 0)
-                    <a href="{{ route('users.index') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                    <a href="{{ route('users.index') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
                 @else
-                    <a href="{{ route('B2BCustomerUserIndex') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                    <a href="{{ route('B2BCustomerUserIndex') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
                 @endif
             </div>
 

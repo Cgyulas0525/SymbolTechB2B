@@ -13,7 +13,7 @@
             <div class="box-body">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <section class="content-header">
-                        <h4>Apik </h4>
+                        <h4>apis </h4>
                     </section>
                     @include('flash::message')
                     <div class="clearfix"></div>
@@ -43,9 +43,9 @@
                             <div class="text-center"></div>
                         </div>
                         <div class="col-lg-1 col-md-6 col-xs-12 margintop10">
-                            <h1><a href="{!! route('getSUXML') !!}" class="btn btn-success adminDBButton">{{ \App\Classes\langClass::trans('SÜ Adatok') }}</a></h1>
-                            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ \App\Classes\langClass::trans('Árfolyam') }}</a></h1>
-                            <h1><a href="#" class="btn btn-success adminDBButton" id="sendBtn">{{ \App\Classes\langClass::trans('Kosár SÜ-be') }}</a></h1>
+                            <h1><a href="{!! route('getSUXML') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
+                            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('Árfolyam') }}</a></h1>
+                            <h1><a href="#" class="btn btn-success adminDBButton" id="sendBtn">{{ langClass::trans('Kosár SÜ-be') }}</a></h1>
                         </div>
                     </div>
                 </div>
@@ -104,9 +104,9 @@
                 ajax: "{{ route('apis.index') }}",
                 columns: [
                     // {title: '', data: 'action', sClass: "text-center", width: '30px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Dátum') . "'"; ?>, data: 'created_at', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD hh:mm:ss') : ''; }, sClass: "text-center", width:'150px', name: 'created_at'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('File') . "'"; ?>, data: 'filename', name: 'filename'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Id') . "'"; ?>, data: 'id', name: 'id'},
+                    {title: <?php echo "'" . langClass::trans('Dátum') . "'"; ?>, data: 'created_at', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD hh:mm:ss') : ''; }, sClass: "text-center", width:'150px', name: 'created_at'},
+                    {title: <?php echo "'" . langClass::trans('File') . "'"; ?>, data: 'filename', name: 'filename'},
+                    {title: <?php echo "'" . langClass::trans('Id') . "'"; ?>, data: 'id', name: 'id'},
                 ],
                 columnDefs: [
                     {
@@ -148,8 +148,8 @@
                         defaultContent: '',
                         width: '30px',
                     },
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Tábla') . "'"; ?>, data: 'model', name: 'model'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Id') . "'"; ?>, data: 'id', name: 'id'},
+                    {title: <?php echo "'" . langClass::trans('Tábla') . "'"; ?>, data: 'model', name: 'model'},
+                    {title: <?php echo "'" . langClass::trans('Id') . "'"; ?>, data: 'id', name: 'id'},
                 ],
                 columnDefs: [
                     {
@@ -191,7 +191,7 @@
                         defaultContent: '',
                         width: '30px',
                     },
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Hiba') . "'"; ?>, data: 'error', name: 'error'},
+                    {title: <?php echo "'" . langClass::trans('Hiba') . "'"; ?>, data: 'error', name: 'error'},
                 ],
             });
 
@@ -205,26 +205,26 @@
 
             $('#sendBtn').click(function (e) {
                 swal.fire({
-                    title: <?php echo "'" . App\Classes\langClass::trans("Kosár adatok SÜ ERP-be!") . "'"; ?>,
-                    text: <?php echo "'" . App\Classes\langClass::trans("Biztosan átadja a tételeket?") . "'"; ?>,
+                    title: <?php echo "'" . langClass::trans("Kosár adatok SÜ ERP-be!") . "'"; ?>,
+                    text: <?php echo "'" . langClass::trans("Biztosan átadja a tételeket?") . "'"; ?>,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
-                    confirmButtonText: <?php echo "'" . App\Classes\langClass::trans("SÜ ERP-be") . "'"; ?>,
-                    cancelButtonText: <?php echo "'" . App\Classes\langClass::trans("Kilép") . "'"; ?>
+                    confirmButtonText: <?php echo "'" . langClass::trans("SÜ ERP-be") . "'"; ?>,
+                    cancelButtonText: <?php echo "'" . langClass::trans("Kilép") . "'"; ?>
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
                             type:"GET",
-                            url:"http://localhost/Laravel/SymbolB2B/public/apis/SendShoppingCartXML.php",
+                            url:"{{ route('SendShoppingCart') }}",
                             // data: { Customer: 2},
                             success: function (response) {
-                                alert(response);
+                                // alert(response);
                                 console.log(response);
                             },
                             error: function (response) {
                                 console.log('Error:', response);
-                                alert('nem ok');
+                                // alert('nem ok');
                             }
                         });
                     }

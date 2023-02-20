@@ -22,9 +22,9 @@
         }
 
         var chart_customerOrderDetailSumInterval = highchartLine( 'customerOrderDetailSumInterval', 'line', 320, LineChartKategoria(coi), LineChartData(coi, ''),
-            <?php echo "'" . App\Classes\langClass::trans('Megrendelés tétel darab az elmúlt 12 hónapban') . "'"; ?>,
-            <?php echo "'" . App\Classes\langClass::trans('havi bontás') . "'"; ?>,
-            <?php echo "'" . App\Classes\langClass::trans('darab') . "'"; ?>);
+            <?php echo "'" . langClass::trans('Megrendelés tétel darab az elmúlt 12 hónapban') . "'"; ?>,
+            <?php echo "'" . langClass::trans('havi bontás') . "'"; ?>,
+            <?php echo "'" . langClass::trans('darab') . "'"; ?>);
 
     });
 

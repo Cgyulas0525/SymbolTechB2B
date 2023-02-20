@@ -33,9 +33,9 @@
 
             <div class="card-footer">
                 {!! Form::submit('Import', ['class' => 'btn btn-primary']) !!}
-               <a href="#" class="btn btn-success" id="shopButton">{{ \App\Classes\langClass::trans('Kosárba') }}</a>
-               <a href="{{ route('excelImportUseRecordsDelete') }}" class="btn btn-danger">{{ \App\Classes\langClass::trans('Törlés') }}</a>
-               <a href="{{ route('shoppingCarts.edit', $shoppingCart->Id) }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+               <a href="#" class="btn btn-success" id="shopButton">{{ langClass::trans('Kosárba') }}</a>
+               <a href="{{ route('excelImportUseRecordsDelete') }}" class="btn btn-danger">{{ langClass::trans('Törlés') }}</a>
+               <a href="{{ route('shoppingCarts.edit', $shoppingCart->Id) }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
             </div>
 
             {!! Form::close() !!}

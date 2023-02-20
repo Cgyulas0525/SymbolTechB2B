@@ -24,52 +24,52 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                    <table class="table table-bordered">
                        <tbody>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('Felhasználók összesen') }}</td>
+                           <td>{{ langClass::trans('Felhasználók összesen') }}</td>
                            <td class="text-right">{{ number_format(App\Models\Users::where('rendszergazda', '<>', '2')->get()->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ session('customer_name') . ' '. \App\Classes\langClass::trans('felhasználók') }}</td>
+                           <td>{{ session('customer_name') . ' '. langClass::trans('felhasználók') }}</td>
                            <td class="text-right">{{ number_format(App\Models\Users::where('rendszergazda', '1')->get()->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('B2B partnerek') }}</td>
+                           <td>{{ langClass::trans('B2B partnerek') }}</td>
                            <td class="text-right">{{ number_format(App\Classes\adminClass::B2BCustomerContactCount()->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('Partner felhasználók') }}</td>
+                           <td>{{ langClass::trans('Partner felhasználók') }}</td>
                            <td class="text-right">{{ number_format(App\Models\Users::where('rendszergazda', '0')->get()->count(), 0, ',', '.')}}</td>
                        </tr>
                        </tbody>
                    </table>
                        <!-- /.card-body -->
                 </div>
-                <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-md-6 col-xs-12 margintop10">
             <!-- small box -->
             <div class="small-box bg-default">
                <div class="inner">
-                   <h3 class="card-title">{{ \App\Classes\langClass::trans('Belépés 3 hónap') }}</h3>
+                   <h3 class="card-title">{{ langClass::trans('Belépés 3 hónap') }}</h3>
                    <table class="table table-bordered">
                        <tbody>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('Felhasználók összesen') }}</td>
+                           <td>{{ langClass::trans('Felhasználók összesen') }}</td>
                            <td class="text-right">{{ number_format(App\Classes\adminClass::B2BLogin(date('Y-m-d H:i:s', strtotime('today - 3 month')),
                                                                                                             date('Y-m-d H:i:s', strtotime('today + 1 day')), NULL)->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ session('customer_name') }} {{ \App\Classes\langClass::trans('felhasználók') }} </td>
+                           <td>{{ session('customer_name') }} {{ langClass::trans('felhasználók') }} </td>
                            <td class="text-right">{{ number_format(App\Classes\adminClass::B2BEmployeeLogin(date('Y-m-d H:i:s', strtotime('today - 3 month')),
                                                                                                             date('Y-m-d H:i:s', strtotime('today + 1 day')), [1])->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ session('customer_name') }} {{ \App\Classes\langClass::trans('rendszergazdák') }}</td>
+                           <td>{{ session('customer_name') }} {{ langClass::trans('rendszergazdák') }}</td>
                            <td class="text-right">{{ number_format(App\Classes\adminClass::B2BEmployeeLogin(date('Y-m-d H:i:s', strtotime('today - 3 month')),
                                                                                                             date('Y-m-d H:i:s', strtotime('today + 1 day')), [2])->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
-                           <td>{{ \App\Classes\langClass::trans('B2B partnerek') }}</td>
+                           <td>{{ langClass::trans('B2B partnerek') }}</td>
                            <td class="text-right">{{ number_format(App\Classes\adminClass::B2BCustomerContactLogin(date('Y-m-d H:i:s', strtotime('today - 3 month')),
                                                                                                                    date('Y-m-d H:i:s', strtotime('today + 1 day')))->count(), 0, ',', '.')}}</td>
                        </tr>
@@ -77,14 +77,14 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                    </table>
                        <!-- /.card-body -->
                 </div>
-                <a href="{{ route('B2BCustomerUserIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BCustomerUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-5 col-md-6 col-xs-12 margintop10">
             <!-- small box -->
             <div class="small-box bg-default">
                 <div class="inner">
-                    <h3 class="card-title">{{ \App\Classes\langClass::trans('B2B partnerek') }}</h3>
+                    <h3 class="card-title">{{ langClass::trans('B2B partnerek') }}</h3>
                     <div class="clearfix"></div>
                     <div class="box box-primary">
                         <div class="box-body"  >
@@ -94,13 +94,13 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                     </div>
                     <div class="text-center"></div>
                 </div>
-                <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
         <div class="col-lg-1 col-md-6 col-xs-12 margintop10">
-            <h1><a href="{!! route('settingIndex') !!}" class="btn btn-warning adminDBButton">{{ \App\Classes\langClass::trans('Beállítások') }}</a></h1>
-            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ \App\Classes\langClass::trans('Árfolyam') }}</a></h1>
+            <h1><a href="{!! route('settingIndex') !!}" class="btn btn-warning adminDBButton">{{ langClass::trans('Beállítások') }}</a></h1>
+            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('Árfolyam') }}</a></h1>
         </div>
 
 
@@ -109,7 +109,7 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
             <!-- small box -->
             <div class="small-box bg-default">
                <div class="inner">
-                   <h3 class="card-title">{{ \App\Classes\langClass::trans('Belépés 3 hónap') }}</h3>
+                   <h3 class="card-title">{{ langClass::trans('Belépés 3 hónap') }}</h3>
                        <!-- /.card-body -->
                    <div class="clearfix"></div>
                    <div class="box box-primary">
@@ -120,14 +120,14 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                    </div>
                    <div class="text-center"></div>
                 </div>
-                <a href="{{ route('customerIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('customerIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-6 col-md-6 col-xs-12 margintop10">
             <!-- small box -->
             <div class="small-box bg-default">
                <div class="inner">
-                   <h3 class="card-title">{{ \App\Classes\langClass::trans('Belépés 3 hónap') }}</h3>
+                   <h3 class="card-title">{{ langClass::trans('Belépés 3 hónap') }}</h3>
                        <!-- /.card-body -->
                    <div class="clearfix"></div>
                    <div>
@@ -137,14 +137,14 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                    </div>
                    <div class="text-center"></div>
                 </div>
-                <a href="{{ route('B2BCustomerUserIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BCustomerUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-12 col-md-12 col-xs-12 margintop10">
             <!-- small box -->
             <div class="small-box bg-default">
                 <div class="inner">
-                    <h3 class="card-title">{{ session('customer_name') }} {{ \App\Classes\langClass::trans('B2B felhasználók') }}</h3>
+                    <h3 class="card-title">{{ session('customer_name') }} {{ langClass::trans('B2B felhasználók') }}</h3>
                     <div class="clearfix"></div>
                     <div class="box box-primary">
                         <div class="box-body"  >
@@ -154,7 +154,7 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                     </div>
                     <div class="text-center"></div>
                 </div>
-                <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ \App\Classes\langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>
@@ -194,11 +194,11 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                 columns: [
                     {{--{title: '<a class="btn btn-primary"title="Felvitel" href="{!! route('users.create') !!}"><i class="fa fa-plus-square"></i></a>',--}}
                     {{--    data: 'action', sClass: "text-center", width: '150px', name: 'action', orderable: false, searchable: false},--}}
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'name', name: 'name'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Email') . "'"; ?>, data: 'email', name: 'email'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kép') . "'"; ?>, data: 'kep', sClass: "text-center", width: '150px', name: 'kep', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Beosztás') . "'"; ?>, data: 'rgnev', name: 'rgnev'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Belépett') . "'"; ?>, data: 'B2BLoginCount', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'B2BLoginCount'},
+                    {title: <?php echo "'" . langClass::trans('Név') . "'"; ?>, data: 'name', name: 'name'},
+                    {title: <?php echo "'" . langClass::trans('Email') . "'"; ?>, data: 'email', name: 'email'},
+                    {title: <?php echo "'" . langClass::trans('Kép') . "'"; ?>, data: 'kep', sClass: "text-center", width: '150px', name: 'kep', orderable: false, searchable: false},
+                    {title: <?php echo "'" . langClass::trans('Beosztás') . "'"; ?>, data: 'rgnev', name: 'rgnev'},
+                    {title: <?php echo "'" . langClass::trans('Belépett') . "'"; ?>, data: 'B2BLoginCount', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'B2BLoginCount'},
                 ],
                 fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
                     RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);
@@ -232,8 +232,8 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                 ajax: "{{ route('B2BCustomerLoginCountIndex') }}",
                 paging: false,
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'customerName', width:'250px', name: 'customerName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Belépett') . "'"; ?>, data: 'db', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'db'},
+                    {title: <?php echo "'" . langClass::trans('Név') . "'"; ?>, data: 'customerName', width:'250px', name: 'customerName'},
+                    {title: <?php echo "'" . langClass::trans('Belépett') . "'"; ?>, data: 'db', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'db'},
                 ],
                 fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
                     RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);
@@ -258,8 +258,8 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
 
             var kategoria = kategoriaFeltolt(<?php echo $customerLogin; ?>, 'customerName');
             var pieData = kategoriaPieData(<?php echo $customerLogin; ?>);
-            var chart = HighChartPie( 'ThreeMonthsLogin', 'pie', 365, kategoria, pieData, <?php echo "'" . App\Classes\langClass::trans('Felhasználói belépések') . "'"; ?>,
-                <?php echo "'" . App\Classes\langClass::trans('Felhasználónként') . "'"; ?>, 'DB', 200, true, true, '40%');
+            var chart = HighChartPie( 'ThreeMonthsLogin', 'pie', 365, kategoria, pieData, <?php echo "'" . langClass::trans('Felhasználói belépések') . "'"; ?>,
+                <?php echo "'" . langClass::trans('Felhasználónként') . "'"; ?>, 'DB', 200, true, true, '40%');
 
 
         });

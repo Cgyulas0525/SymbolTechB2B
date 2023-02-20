@@ -13,7 +13,7 @@
             <div class="box-body">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <section class="content-header">
-                        <h4>{{ \App\Classes\langClass::trans('Kedvenc termékek') }}</h4>
+                        <h4>{{ langClass::trans('Kedvenc termékek') }}</h4>
                     </section>
                     @include('flash::message')
                     <div class="clearfix"></div>
@@ -53,7 +53,7 @@
                 columns: [
                     {title: '<a class="btn btn-primary" title="Felvitel" href="{!! route('customerContactFavoriteProducts.create') !!}"><i class="fa fa-plus-square"></i></a>',
                         data: 'action', sClass: "text-center", width: '200px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
+                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
                 ],
                 buttons: [],
             });

@@ -13,7 +13,7 @@
             <div class="box-body">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <section class="content-header">
-                        <h4>{{ \App\Classes\langClass::trans('Vevők') }}</h4>
+                        <h4>{{ langClass::trans('Vevők') }}</h4>
                     </section>
                     @include('flash::message')
                     <div class="clearfix"></div>
@@ -48,10 +48,10 @@
                 colReorder: true,
                 ajax: "{{ route('customerIndex') }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Id') . "'"; ?>, data: 'Id', name: 'Id'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Név') . "'"; ?>, data: 'Name', name: 'Name'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kereső név') . "'"; ?>, data: 'SearchName', name: 'SearchName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kód') . "'"; ?>, data: 'Code', name: 'Code'},
+                    {title: <?php echo "'" . langClass::trans('Id') . "'"; ?>, data: 'Id', name: 'Id'},
+                    {title: <?php echo "'" . langClass::trans('Név') . "'"; ?>, data: 'Name', name: 'Name'},
+                    {title: <?php echo "'" . langClass::trans('Kereső név') . "'"; ?>, data: 'SearchName', name: 'SearchName'},
+                    {title: <?php echo "'" . langClass::trans('Kód') . "'"; ?>, data: 'Code', name: 'Code'},
                 ],
                 columnDefs: [
                     {

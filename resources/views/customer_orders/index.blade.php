@@ -15,7 +15,7 @@
                     <section class="content-header">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h4><a id="fejszoveg">{{ \App\Classes\langClass::trans('Összes megrendelés') }} </a></h4>
+                                <h4><a id="fejszoveg">{{ langClass::trans('Összes megrendelés') }} </a></h4>
                             </div>
                             <div class="col-sm-6">
                                 <div class="pull-left">
@@ -88,17 +88,17 @@
                 "bStateSave": true,
                 ajax: "{{ route('customerOrders.index') }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Tételek') . "'"; ?>, data: 'action', sClass: "text-center", width: '45px', name: 'action', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Másolás') . "'"; ?>, data: 'tetelszam', sClass: "text-center", width: '45px', name: 'tetelszam1', orderable: false, searchable: false},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Megrendelés szám') . "'"; ?>, data: 'VoucherNumber', name: 'VoucherNumber'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Dátum') . "'"; ?>, data: 'VoucherDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'150px', name: 'VoucherDate'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Netto') . "'"; ?>, data: 'NetValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'NetValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'VatValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'GrossValue'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Pénznem') . "'"; ?>, data: 'currencyName', sClass: "text-center", width:'25px', name: 'currencyName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Tétel') . "'"; ?>, data: 'tetelszam', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'tetelszam'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Státusz') . "'"; ?>, data: 'statusName', name: 'statusName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Id') . "'"; ?>, data: 'Id',  sClass: "text-right", width:'75px', name: 'Id', orderable: false, searchable: false, visible: false},
+                    {title: <?php echo "'" . langClass::trans('Tételek') . "'"; ?>, data: 'action', sClass: "text-center", width: '45px', name: 'action', orderable: false, searchable: false},
+                    {title: <?php echo "'" . langClass::trans('Másolás') . "'"; ?>, data: 'tetelszam', sClass: "text-center", width: '45px', name: 'tetelszam1', orderable: false, searchable: false},
+                    {title: <?php echo "'" . langClass::trans('Megrendelés szám') . "'"; ?>, data: 'VoucherNumber', name: 'VoucherNumber'},
+                    {title: <?php echo "'" . langClass::trans('Dátum') . "'"; ?>, data: 'VoucherDate', render: function (data, type, row) { return data ? moment(data).format('YYYY.MM.DD') : ''; }, sClass: "text-center", width:'150px', name: 'VoucherDate'},
+                    {title: <?php echo "'" . langClass::trans('Netto') . "'"; ?>, data: 'NetValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'NetValue'},
+                    {title: <?php echo "'" . langClass::trans('ÁFA') . "'"; ?>, data: 'VatValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'VatValue'},
+                    {title: <?php echo "'" . langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'GrossValue'},
+                    {title: <?php echo "'" . langClass::trans('Pénznem') . "'"; ?>, data: 'currencyName', sClass: "text-center", width:'25px', name: 'currencyName'},
+                    {title: <?php echo "'" . langClass::trans('Tétel') . "'"; ?>, data: 'tetelszam', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'tetelszam'},
+                    {title: <?php echo "'" . langClass::trans('Státusz') . "'"; ?>, data: 'statusName', name: 'statusName'},
+                    {title: <?php echo "'" . langClass::trans('Id') . "'"; ?>, data: 'Id',  sClass: "text-right", width:'75px', name: 'Id', orderable: false, searchable: false, visible: false},
                 ],
                 columnDefs: [
                     {  targets: 1,
@@ -111,37 +111,37 @@
             });
 
             $('.all').click(function () {
-                $('#fejszoveg').text(<?php echo "'" . App\Classes\langClass::trans('Összes megrendelés') . "'"; ?>);
+                $('#fejszoveg').text(<?php echo "'" . langClass::trans('Összes megrendelés') . "'"; ?>);
                 let url = '{{ route('customerOrders.index') }}';
                 table.ajax.url(url).load();
             });
 
             $('.yearAll').click(function () {
-                $('#fejszoveg').text(<?php echo "'" . App\Classes\langClass::trans('Idei megrendelés') . "'"; ?>);
+                $('#fejszoveg').text(<?php echo "'" . langClass::trans('Idei megrendelés') . "'"; ?>);
                 let url = '{{ route('indexAllThisYear') }}';
                 table.ajax.url(url).load();
             });
 
             $('.allOwn').click(function () {
-                $('#fejszoveg').text(<?php echo "'" . App\Classes\langClass::trans('Saját megrendelés') . "'"; ?>);
+                $('#fejszoveg').text(<?php echo "'" . langClass::trans('Saját megrendelés') . "'"; ?>);
                 let url = '{{ route('indexOwn') }}';
                 table.ajax.url(url).load();
             });
 
             $('.yearAllOwn').click(function () {
-                $('#fejszoveg').text(<?php echo "'" . App\Classes\langClass::trans('Idei saját megrendelés') . "'"; ?>);
+                $('#fejszoveg').text(<?php echo "'" . langClass::trans('Idei saját megrendelés') . "'"; ?>);
                 let url = '{{ route('indexYearAllOwn') }}';
                 table.ajax.url(url).load();
             });
 
             $('.cart').click(function () {
-                $('#fejszoveg').text(<?php echo "'" . App\Classes\langClass::trans('Összes kosár') . "'"; ?>);
+                $('#fejszoveg').text(<?php echo "'" . langClass::trans('Összes kosár') . "'"; ?>);
                 let url = '{{ route('indexSC') }}';
                 table.ajax.url(url).load();
             });
 
             $('.yearCart').click(function () {
-                $('#fejszoveg').text(<?php echo "'" . App\Classes\langClass::trans('Idei kosár') . "'"; ?>);
+                $('#fejszoveg').text(<?php echo "'" . langClass::trans('Idei kosár') . "'"; ?>);
                 let url = '{{ route('indexSCThisYear') }}';
                 table.ajax.url(url).load();
             });
@@ -149,18 +149,18 @@
 
         function copyCustomerOrderToShoppingCart(Row) {
             swal.fire({
-                title: <?php echo "'" . App\Classes\langClass::trans("Megrendelés kosárba másolás!") . "'"; ?>,
-                text: <?php echo "'" . App\Classes\langClass::trans("Biztosan kosárba másolja a megrendelés összes tételét?") . "'"; ?>,
+                title: <?php echo "'" . langClass::trans("Megrendelés kosárba másolás!") . "'"; ?>,
+                text: <?php echo "'" . langClass::trans("Biztosan kosárba másolja a megrendelés összes tételét?") . "'"; ?>,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: <?php echo "'" . App\Classes\langClass::trans("Kosárba") . "'"; ?>,
-                cancelButtonText: <?php echo "'" . App\Classes\langClass::trans("Kilép") . "'"; ?>
+                confirmButtonText: <?php echo "'" . langClass::trans("Kosárba") . "'"; ?>,
+                cancelButtonText: <?php echo "'" . langClass::trans("Kilép") . "'"; ?>
             }).then((result) => {
                 if (result.isConfirmed) {
                     var d = table.row(Row).data();
                     var fejszoveg = $('#fejszoveg').text();
-                    if (fejszoveg === <?php echo "'" . App\Classes\langClass::trans('Összes kosár') . "'"; ?> || fejszoveg === <?php echo "'" . App\Classes\langClass::trans('Idei kosár') . "'"; ?>) {
+                    if (fejszoveg === <?php echo "'" . langClass::trans('Összes kosár') . "'"; ?> || fejszoveg === <?php echo "'" . langClass::trans('Idei kosár') . "'"; ?>) {
                         $.ajax({
                             type:"GET",
                             url:"{{url('api/copyShoppingCartToShoppingCart')}}",

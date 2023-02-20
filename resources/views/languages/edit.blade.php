@@ -26,8 +26,8 @@
             </div>
 
             <div class="card-footer">
-{{--                {!! Form::submit( \App\Classes\langClass::trans('Ment'), ['class' => 'btn btn-primary']) !!}--}}
-                <a href="{{ route('languages.index') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+{{--                {!! Form::submit( langClass::trans('Ment'), ['class' => 'btn btn-primary']) !!}--}}
+                <a href="{{ route('languages.index') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
             </div>
 
            {!! Form::close() !!}

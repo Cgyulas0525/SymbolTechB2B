@@ -60,12 +60,12 @@
 
             <div class="card-footer">
                 @if ( $users->id != myUser::user()->id)
-                    {!! Form::submit(\App\Classes\langClass::trans('Töröl'), ['class' => 'btn btn-danger', 'id' => 'saveBtn']) !!}
+                    {!! Form::submit(langClass::trans('Töröl'), ['class' => 'btn btn-danger', 'id' => 'saveBtn']) !!}
                 @endif
                 @if ( $users->rendszergazda == 0 )
-                    <a href="{{ route('B2BCustomerUserIndex') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                    <a href="{{ route('B2BCustomerUserIndex') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
                 @else
-                    <a href="{{ route('users.index') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                    <a href="{{ route('users.index') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
                 @endif
             </div>
 

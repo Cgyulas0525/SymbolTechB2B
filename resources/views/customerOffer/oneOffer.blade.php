@@ -15,7 +15,7 @@
                         {{ $customerOffer->Name }} {{ date('Y.m.d', strtotime($customerOffer->ValidFrom)) }} - {{ date('Y.m.d', strtotime($customerOffer->ValidTo)) }}
                     </h1>
                     <div class="topmarginMinusz1em">
-                        <a class="btn btn-warning pull-right" title="Vezérlő pult" style="margin-top: -10px;margin-bottom: 5px" href="{{ route('dIndex') }}"><i class="nav-icon fas fa-tachometer-alt"></i> {{ \App\Classes\langClass::trans('Vezélő pult') }}</a>
+                        <a class="btn btn-warning pull-right" title="Vezérlő pult" style="margin-top: -10px;margin-bottom: 5px" href="{{ route('dIndex') }}"><i class="nav-icon fas fa-tachometer-alt"></i> {{ langClass::trans('Vezélő pult') }}</a>
                     </div>
                 </div>
             </div>
@@ -54,12 +54,12 @@
                 paging: false,
                 ajax: "{{ route('customerOfferDetailIndex', $customerOffer->Id) }}",
                 columns: [
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Termék') . "'"; ?>, data: 'productName', name: 'productName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Kép') . "'"; ?>, data: 'kep', sClass: "text-center", width: '50px', name: 'action', orderable: false, searchable: false},
+                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'productName', name: 'productName'},
+                    {title: <?php echo "'" . langClass::trans('Kép') . "'"; ?>, data: 'kep', sClass: "text-center", width: '50px', name: 'action', orderable: false, searchable: false},
                     {title: 'Min', data: 'QuantityMinimum', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'QuantityMinimum'},
                     {title: 'Max', data: 'QuantityMaximum', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'QuantityMaximum'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Megys') . "'"; ?>, data: 'quantityUnitName', sClass: "text-center", width:'25px', name: 'quantityUnitName'},
-                    {title: <?php echo "'" . App\Classes\langClass::trans('Ár') . "'"; ?>, data: 'SalesPrice', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'SalesPrice'},
+                    {title: <?php echo "'" . langClass::trans('Megys') . "'"; ?>, data: 'quantityUnitName', sClass: "text-center", width:'25px', name: 'quantityUnitName'},
+                    {title: <?php echo "'" . langClass::trans('Ár') . "'"; ?>, data: 'SalesPrice', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'SalesPrice'},
                     {title: '', data: 'currencyName', sClass: "text-center", width:'25px', name: 'currencyName'},
                 ]
             });

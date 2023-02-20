@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-12" >
-                    <h1> {{ \App\Classes\langClass::trans('Kedvenc termék kiválasztás') }}</h1>
+                    <h1> {{ langClass::trans('Kedvenc termék kiválasztás') }}</h1>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
 
             <div class="card-footer">
 {{--                {!! Form::submit('Ment', ['class' => 'btn btn-primary']) !!}--}}
-                <a href="{{ route('customerContactFavoriteProducts.index') }}" class="btn btn-default">{{ \App\Classes\langClass::trans('Kilép') }}</a>
+                <a href="{{ route('customerContactFavoriteProducts.index') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
             </div>
 
             {!! Form::close() !!}

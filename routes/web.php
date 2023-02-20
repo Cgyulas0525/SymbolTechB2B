@@ -31,6 +31,10 @@ use App\Http\Controllers\ApimodelerrorController;
 |
 */
 
+Route::fallback(function() {
+    return view('setting.404');
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -60,6 +64,7 @@ Route::get('B2BUserIndex', [UsersController::class, 'B2BUserIndex'])->name('B2BU
 Route::get('belsoUserDestroy/{id}', [UsersController::class, 'belsoUserDestroy'])->name('belsoUserDestroy');
 Route::get('B2BUserDestroy/{id}', [UsersController::class, 'B2BUserDestroy'])->name('B2BUserDestroy');
 Route::get('profil/{id}', [UsersController::class, 'profil'])->name('profil');
+Route::get('firstUserStore', [UsersController::class, 'firstUserStore'])->name('firstUserStore');
 
 Route::get('B2BCustomerLoginCountIndex', [AdminController::class, 'B2BCustomerLoginCountIndex'])->name('B2BCustomerLoginCountIndex');
 

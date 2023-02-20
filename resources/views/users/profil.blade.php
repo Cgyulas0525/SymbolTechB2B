@@ -33,7 +33,7 @@
             </div>
 
             <div class="card-footer">
-                <a href="{{ route('dIndex') }}" class="btn btn-primary">{{ \App\Classes\langClass::trans('Vissza') }}</a>
+                <a href="{{ route('dIndex') }}" class="btn btn-primary">{{ langClass::trans('Vissza') }}</a>
             </div>
 
             {!! Form::close() !!}
