@@ -1,0 +1,6 @@
+
+N	php:S18085"9Put exactly one space before and after the "use" keyword.(‘ž·…
+Q	php:S1142"<This method has 4 returns, which is more than the 3 allowed.(À€¶’
+>	php:S1781?")Write this "NULL" constant in lower case.(¡‘è–
+>	php:S1781I")Write this "NULL" constant in lower case.(¡‘è–
+i	php:S3776"TRefactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.(À€¶’
