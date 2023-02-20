@@ -9,20 +9,14 @@ define('PATH_FILES', dirname(__DIR__, 2) . '/apik/files');
 define('PATH_MODELS', dirname(__DIR__, 3) . '/app/Models/');
 define('PATH_OUTPUT', dirname(__DIR__, 2) . '/output/');
 
-echo PATH_INC;
-
 require PATH_INC . '/utility.php';
 $utility = new Utility();
 
-define("DB_USERNAME", "SYSDBA");
-define("DB_PASSWORD", "masterke");
-define("DB_DNS", "firebird:dbname=localhost:c:/SymbolUgyvitelDB/DEFAULT_A.DATABASE");
-
-define('MYSQL_HOST', $utility->envLoader('DB_HOST'));
-define('MYSQL_DATABASE', $utility->envLoader('DB_DATABASE'));
-define('MYSQL_USERNAME', $utility->envLoader('DB_USERNAME'));
-define('MYSQL_PASSWORD', $utility->envLoader('DB_PASSWORD'));
-define('MYSQL_CHARSET', $utility->envLoader('DB_CHARSET'));
+define('MYSQL_HOST', "localhost");
+define('MYSQL_DATABASE', "b2b");
+define('MYSQL_USERNAME', "root");
+define('MYSQL_PASSWORD', "PASSWORD");
+define('MYSQL_CHARSET', "utf8");
 
 define('CURRENCYRATE_URL', 'http://api.napiarfolyam.hu?bank=');
 

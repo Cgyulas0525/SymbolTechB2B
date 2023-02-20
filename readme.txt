@@ -1,7 +1,7 @@
 B2B telep�t�s �s kezdeti adatfelt�lt�s.
 
 git pull
-mysql �res adatb�zis import ( ebben n�h�ny t�bl�ban van csak �rt�k �s a USERS t�bl�ban van 2 rekord, egy administrator/administrator, �s egy cseszneki Gyula)
+mysql �res adatb�zis import ( ebben n�h�ny t�bl�ban van csak �rt�k �s a USERS t�bl�ban van 2 rekord, egy administrator/administrator, �s egy Cseszneki Gyula rendszergazdai joggal)
 
 mysql -u username -p database_name < file.sql
 --

@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . "/inc/bootstrap.php";
-require PATH_INC . "/utility.php";
+//require PATH_INC . "/utility.php";
 require PATH_INC . "/ModelChange.php";
 require PATH_MODEL . "/mySQLDatabase.php";
 

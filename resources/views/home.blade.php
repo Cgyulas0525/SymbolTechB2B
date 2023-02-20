@@ -4,10 +4,7 @@
 <div class="container">
     <div class="row">
         @if (myUser::user()->name === "administrator")
-            @if ((env('INSTALL_STATUS') == 1) && (env('MAIL_SET') == 0))
-            @else
-                @include('dashboard.createUser')
-            @endif
+            @include('dashboard.createUser')
         @else
             @if (md5(myUser::user()->megjegyzes) == myUser::user()->password ) {
                 @include('dashboard.passwordChange')

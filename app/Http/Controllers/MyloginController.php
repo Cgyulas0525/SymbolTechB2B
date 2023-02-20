@@ -19,11 +19,11 @@ class MyloginController extends Controller
     {
 
         $name = $request->name;
-        if ($name === "administrator") {
-            if ((env('INSTALL_STATUS') == 2) && (env('MAIL_SET') == 1)) {
-                return redirect(route('myLogin'));
-            }
-        }
+//        if ($name === "administrator") {
+//            if ((env('INSTALL_STATUS') == 2) && (env('MAIL_SET') == 1)) {
+//                return redirect(route('myLogin'));
+//            }
+//        }
 
         $password = $request->password;
 

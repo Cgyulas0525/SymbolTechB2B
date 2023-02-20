@@ -459,12 +459,6 @@ class MyApiController extends Controller
 
     }
 
-    public function getCurrencyRate ( Request $request)
-    {
-        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getCurrency.php');
-        return redirect(route('apis.index'));
-    }
-
     public function changeEnv($key, $value)
     {
         $path = base_path('.env');
@@ -503,10 +497,17 @@ class MyApiController extends Controller
         Artisan::call('optimize:clear');
     }
 
+    public function getCurrencyRate ( Request $request)
+    {
+        $response = Http::get(url('/apik/getCurrency.php'));
+//        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getCurrency.php');
+        return redirect(route('apis.index'));
+    }
 
     public function getSUXML ( Request $request)
     {
-        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXML.php');
+//        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXML.php');
+        $response = Http::get(url('/apik/getSUXML.php'));
         $this->changeEnv('INSTALL_STATUS', '2');
         Artisan::call('optimize:clear');
         return redirect(route('home'));
@@ -514,7 +515,8 @@ class MyApiController extends Controller
 
     public function getSUXSD ( Request $request)
     {
-        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXSD.php');
+//        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXSD.php');
+        $response = Http::get(url('/apik/getSUXSD.php'));
         $this->changeEnv('INSTALL_STATUS', '1');
         Artisan::call('optimize:clear');
         return redirect(route('home'));

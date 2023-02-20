@@ -54,45 +54,45 @@
         </div>
     </div>
 </div>
-<div class="form-group col-sm-6">
-    <div class="form-group col-sm-12">
-        <div class="row">
-            <div class="mylabel col-sm-3">
-                {!! Form::label('FTP_HOST', 'FTP_HOST:') !!}
-            </div>
-            <div class="mylabel col-sm-9">
-                {!! Form::text('FTP_HOST', env('FTP_HOST'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_HOST']) !!}
-                {!! Form::hidden('FTP_HOST_OLD', env('FTP_HOST'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_HOST']) !!}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="form-group col-sm-6">
-    <div class="form-group col-sm-12">
-        <div class="row">
-            <div class="mylabel col-sm-3">
-                {!! Form::label('FTP_USERNAME', 'FTP_USERNAME:') !!}
-            </div>
-            <div class="mylabel col-sm-9">
-                {!! Form::text('FTP_USERNAME', env('FTP_USERNAME'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_USERNAME']) !!}
-                {!! Form::hidden('FTP_USERNAME_OLD', env('FTP_USERNAME'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_USERNAME_OLD']) !!}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="form-group col-sm-6">
-    <div class="form-group col-sm-12">
-        <div class="row">
-            <div class="mylabel col-sm-3">
-                {!! Form::label('FTP_PASSWORD', 'FTP_PASSWORD:') !!}
-            </div>
-            <div class="mylabel col-sm-9">
-                {!! Form::text('FTP_PASSWORD', env('FTP_PASSWORD'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_PASSWORD']) !!}
-                {!! Form::hidden('FTP_PASSWORD_OLD', env('FTP_PASSWORD'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_PASSWORD_OLD']) !!}
-            </div>
-        </div>
-    </div>
-</div>
+{{--<div class="form-group col-sm-6">--}}
+{{--    <div class="form-group col-sm-12">--}}
+{{--        <div class="row">--}}
+{{--            <div class="mylabel col-sm-3">--}}
+{{--                {!! Form::label('FTP_HOST', 'FTP_HOST:') !!}--}}
+{{--            </div>--}}
+{{--            <div class="mylabel col-sm-9">--}}
+{{--                {!! Form::text('FTP_HOST', env('FTP_HOST'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_HOST']) !!}--}}
+{{--                {!! Form::hidden('FTP_HOST_OLD', env('FTP_HOST'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_HOST']) !!}--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
+{{--<div class="form-group col-sm-6">--}}
+{{--    <div class="form-group col-sm-12">--}}
+{{--        <div class="row">--}}
+{{--            <div class="mylabel col-sm-3">--}}
+{{--                {!! Form::label('FTP_USERNAME', 'FTP_USERNAME:') !!}--}}
+{{--            </div>--}}
+{{--            <div class="mylabel col-sm-9">--}}
+{{--                {!! Form::text('FTP_USERNAME', env('FTP_USERNAME'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_USERNAME']) !!}--}}
+{{--                {!! Form::hidden('FTP_USERNAME_OLD', env('FTP_USERNAME'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_USERNAME_OLD']) !!}--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
+{{--<div class="form-group col-sm-6">--}}
+{{--    <div class="form-group col-sm-12">--}}
+{{--        <div class="row">--}}
+{{--            <div class="mylabel col-sm-3">--}}
+{{--                {!! Form::label('FTP_PASSWORD', 'FTP_PASSWORD:') !!}--}}
+{{--            </div>--}}
+{{--            <div class="mylabel col-sm-9">--}}
+{{--                {!! Form::text('FTP_PASSWORD', env('FTP_PASSWORD'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_PASSWORD']) !!}--}}
+{{--                {!! Form::hidden('FTP_PASSWORD_OLD', env('FTP_PASSWORD'),['class'=>'form-control', 'required' => 'true', 'id' => 'FTP_PASSWORD_OLD']) !!}--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
 {{--<div class="form-group col-sm-6">--}}
 {{--    <div class="form-group col-sm-12">--}}
 {{--        <div class="row">--}}

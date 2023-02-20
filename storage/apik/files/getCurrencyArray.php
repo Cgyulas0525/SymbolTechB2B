@@ -122,6 +122,7 @@ class getCurrencyArray
     public function dbEvent() {
         $sql = "SELECT Id FROM currency WHERE Name = '" . $this->itemvalues[$this->arrayItem('penznem')] . "'";
         $smtp = $this->pdo->executeStatement($sql);
+
         if ($smtp) {
             $record = $smtp->fetchAll();
             if (count($record) > 0) {
