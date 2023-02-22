@@ -510,7 +510,7 @@ class MyApiController extends Controller
         $response = Http::get(url('/apik/getSUXML.php'));
 //        $this->changeEnv('INSTALL_STATUS', '2');
         Artisan::call('optimize:clear');
-        return redirect(route('home'));
+        return back();
     }
 
     public function getSUXMLInstall ( Request $request)
@@ -528,7 +528,7 @@ class MyApiController extends Controller
         $response = Http::get(url('/apik/getSUXSD.php'));
 //        $this->changeEnv('INSTALL_STATUS', '1');
         Artisan::call('optimize:clear');
-        return redirect(route('home'));
+        return back();
     }
 
     public function getSUXSDInstall ( Request $request)
