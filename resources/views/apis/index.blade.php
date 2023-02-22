@@ -43,6 +43,7 @@
                             <div class="text-center"></div>
                         </div>
                         <div class="col-lg-1 col-md-6 col-xs-12 margintop10">
+{{--                            <h1><a href="{!! route('getSUXSD') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>--}}
                             <h1><a href="{!! route('getSUXML') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
                             <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('Árfolyam') }}</a></h1>
                             <h1><a href="#" class="btn btn-success adminDBButton" id="sendBtn">{{ langClass::trans('Kosár SÜ-be') }}</a></h1>

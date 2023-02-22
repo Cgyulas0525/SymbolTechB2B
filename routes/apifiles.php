@@ -45,4 +45,7 @@ Route::get('api/getSUXML', [MyApiController::class, 'getSUXML'])->name('getSUXML
 Route::get('api/getSUXSD', [MyApiController::class, 'getSUXSD'])->name('getSUXSD');
 Route::get('api/postCustomerPrice', [MyApiController::class, 'postCustomerPrice'])->name('postCustomerPrice');
 
+Route::get('api/getSUXMLInstall', [MyApiController::class, 'getSUXMLInstall'])->name('getSUXMLInstall');
+Route::get('api/getSUXSDInstall', [MyApiController::class, 'getSUXSDInstall'])->name('getSUXSDInstall');
+
 

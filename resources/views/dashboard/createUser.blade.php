@@ -8,10 +8,10 @@
                     @if (App\Models\Employee::count() == 0)
                         <h1>{{ langClass::trans('Kezdeti adatbetöltés') }}</h1>
                         @if  (env('INSTALL_STATUS') == 0)
-                            <h1><a href="{!! route('getSUXSD') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>
+                            <h1><a href="{!! route('getSUXSDInstall') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>
                         @endif
                         @if (env('INSTALL_STATUS') == 1)
-                            <h1><a href="{!! route('getSUXML') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
+                            <h1><a href="{!! route('getSUXMLInstall') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
                         @endif
                         <div>
                             @if  (env('INSTALL_STATUS') == 0)

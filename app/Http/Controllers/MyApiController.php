@@ -508,12 +508,30 @@ class MyApiController extends Controller
     {
 //        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXML.php');
         $response = Http::get(url('/apik/getSUXML.php'));
+//        $this->changeEnv('INSTALL_STATUS', '2');
+        Artisan::call('optimize:clear');
+        return redirect(route('home'));
+    }
+
+    public function getSUXMLInstall ( Request $request)
+    {
+//        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXML.php');
+        $response = Http::get(url('/apik/getSUXML.php'));
         $this->changeEnv('INSTALL_STATUS', '2');
         Artisan::call('optimize:clear');
         return redirect(route('home'));
     }
 
     public function getSUXSD ( Request $request)
+    {
+//        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXSD.php');
+        $response = Http::get(url('/apik/getSUXSD.php'));
+//        $this->changeEnv('INSTALL_STATUS', '1');
+        Artisan::call('optimize:clear');
+        return redirect(route('home'));
+    }
+
+    public function getSUXSDInstall ( Request $request)
     {
 //        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getSUXSD.php');
         $response = Http::get(url('/apik/getSUXSD.php'));
