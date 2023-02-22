@@ -43,5 +43,17 @@ class Utility {
         echo $response;
     }
 
+
+    public function unZip($file) {
+        $zip = new ZipArchive;
+        $res = $zip->open(PATH_XML . $file);
+        if ($res === TRUE) {
+            $zip->extractTo(PATH_XML);
+            $zip->close();
+//            echo 'woot!';
+        } else {
+            echo 'Nem sikerült kicsomagolni!';
+        }
+    }
 }
 
