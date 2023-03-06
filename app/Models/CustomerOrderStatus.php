@@ -35,17 +35,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class CustomerOrderStatus extends Model
 {
-    use SoftDeletes;
+//    use SoftDeletes;
 
     use HasFactory;
 
     public $table = 'customerorderstatus';
-    
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
 
-
-    protected $dates = ['deleted_at'];
+//    const CREATED_AT = 'created_at';
+//    const UPDATED_AT = 'updated_at';
+//
+//
+//    protected $dates = ['deleted_at'];
 
 
 
@@ -87,5 +87,5 @@ class CustomerOrderStatus extends Model
         'RowModify' => 'nullable'
     ];
 
-    
+
 }

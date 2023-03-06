@@ -302,7 +302,9 @@ class CustomerOrderDetail extends Model
         'RowPosition',
         'OriginalVoucher',
         'PickingNumber',
-        'ParcelIdentifier'
+        'ParcelIdentifier',
+        'SupplierDeliveryDate',
+        'SupplierQuantity'
     ];
 
     /**
@@ -425,7 +427,9 @@ class CustomerOrderDetail extends Model
         'RowPosition' => '',
         'OriginalVoucher' => 'integer',
         'PickingNumber' => 'string',
-        'ParcelIdentifier' => 'string'
+        'ParcelIdentifier' => 'string',
+        'SupplierDeliveryDate' => 'datetime',
+        'SupplierQuantity' => 'decimal:4'
     ];
 
     /**

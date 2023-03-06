@@ -6,48 +6,58 @@ require PATH_FILES . "/GetXsd.php";
 require PATH_INC. "/curlPost.php";
 require PATH_MODEL . "/mySQLDatabase.php";
 
+date_default_timezone_set("Europe/Budapest");
+
 $utility = new Utility();
 $xsd = new XSD();
 $modelChange = new ModelChange();
 
+$outputFile = fopen(PATH_OUTPUT . 'getXSD-' . uniqid() . '.txt', "w") or die("Unable to open file!");
+$txt = "B2B getXSD\n";
+fwrite($outputFile, $txt);
+$txt = "Start: " . date('Y.m.d h:m:s', strtotime('now')) . "\n";
+fwrite($outputFile, $txt);
+
 $files = array_diff(preg_grep('~\.(xsd)$~', scandir(PATH_XML)), array('.', '..'));
-foreach ( $files as $file ) {
-    $xmlFile = substr( $file, 0, strpos( $file, '.xsd' )) . "mas.xml";
-    $array = $xsd->getXSD(substr( $file, 0, strpos( $file, '.xsd' )));
+if (count($files) > 0) {
+    foreach ($files as $file) {
+        $txt = "File: " . $file . "\n";
+        fwrite($outputFile, $txt);
 
-    foreach ($array as $item) {
-        $fieldArray = array_values($item['value']);
+        $xmlFile = substr($file, 0, strpos($file, '.xsd')) . "mas.xml";
+        $array = $xsd->getXSD(substr($file, 0, strpos($file, '.xsd')));
 
-        $modelArray = $modelChange->modelRead($item['table']);
-        if (is_array($modelArray)) {
-            $castsArray = $modelChange->modelExchange($modelArray);
-            if ( count($castsArray) != count($fieldArray)) {
-                // ha van új mező
-                if (count($castsArray) < count($fieldArray)) {
-                    $modelChange->fieldArrayControll($fieldArray, $item);
-                }
-                // ha kikerült mező a táblából
-                if (count($castsArray) > count($fieldArray)) {
-                    echo $item['table'] . " ". count($castsArray) . " " . count($fieldArray) . "\n";
+        foreach ($array as $item) {
+            $fieldArray = array_values($item['value']);
+
+            $modelArray = $modelChange->modelRead($item['table']);
+            if (is_array($modelArray)) {
+                $castsArray = $modelChange->modelExchange($modelArray);
+                if (count($castsArray) != count($fieldArray)) {
+                    // ha van új mező
+                    if (count($castsArray) < count($fieldArray)) {
+                        $modelChange->fieldArrayControll($fieldArray, $item);
+                    }
+                    // ha kikerült mező a táblából
+                    if (count($castsArray) > count($fieldArray)) {
+                        $txt = $item['table'] . " " . count($castsArray) . " " . count($fieldArray) . "\n";;
+                        fwrite($outputFile, $txt);
+                    }
                 }
             }
         }
+        $utility->fileUnlink(PATH_XML . $file);
+        $utility->fileUnlink(PATH_XML . $xmlFile);
     }
-    $utility->fileUnlink(PATH_XML.$file);
-    $utility->fileUnlink(PATH_XML.$xmlFile);
+}
+if ( count($files) == 0 )  {
+    $txt = "Nem található feldogozandó file!\n";
+    fwrite($outputFile, $txt);
 }
 
-//$utility->httpPost(PATH_XML, "OK");
 
-$curl = new CurlPost('http://localhost/Laravel/SymbolB2B/public/xml');
+$txt = "End: " . date('Y.m.d h:m:s', strtotime('now')) . "\n";
+fwrite($outputFile, $txt);
+fclose($outputFile);
 
-try {
-    // execute the request
-    echo $curl([
-        'ok' => 'OK',
-    ]);
-} catch (\RuntimeException $ex) {
-    // catch errors
-    die(sprintf('Http error %s with code %d', $ex->getMessage(), $ex->getCode()));
-}
 

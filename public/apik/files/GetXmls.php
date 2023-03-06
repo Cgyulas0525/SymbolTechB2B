@@ -17,6 +17,7 @@ class XML {
     public $makeDateFormat = NULL;
     public $api = NULL;
     public $apimodel = NULL;
+    public $outputFile = NULL;
 
     function __construct()
     {
@@ -28,6 +29,12 @@ class XML {
         $this->makeDateFormat = new MakeDateFormat();
         $this->api = new api();
         $this->apimodel = new apimodel();
+
+        $this->outputFile = fopen(PATH_OUTPUT . 'getXML-' . uniqid() . '.txt', "w") or die("Unable to open file!");
+        $txt = "B2B getXSD\n";
+        fwrite($this->outputFile, $txt);
+        $txt = "Start: " . date('Y.m.d h:m:s', strtotime('now')) . "\n";
+        fwrite($this->outputFile, $txt);
 
     }
 
@@ -59,11 +66,16 @@ class XML {
                 $tableFieldName = 'LeadId';
                 $smtpField = $i == count($keys) - 1 ? $smtpField . 'LeadId' . ") " : $smtpField . 'LeadId' . ", ";
             }
+
+
             for ( $j = 0; $j < count($this->castsValues); $j++) {
                 if (strpos($this->castsValues[$j], $keys[$i])) {
                     $string = trim(preg_replace('/\s+/',' ', $this->castsValues[$j]));
                     $fieldName = $this->witchStrpos->getSubstr($string, 1);
                     if ( $tableFieldName == $fieldName) {
+                        if ( $tableFieldName == "CompanyType" && $model == "CustomerAddress") {
+                            $vmi = $tableFieldName;
+                        }
                         $type = $this->witchStrpos->getSubstr($string, 3);
                         switch ($type) {
                             case "integer" :
@@ -84,7 +96,8 @@ class XML {
                                 $smtpValue = $i == count($keys) - 1 ? $smtpValue . $values[$i] . ")" : $smtpValue . $values[$i] . ", ";
                                 break;
                             default :
-                                echo $string . "\n";
+                                $txt = $fieldName . " mező típusa nem értelmezhető a " . $model . "táblában! \n";
+                                fwrite($this->outputFile, $txt);
                         }
                         break;
                     }
@@ -139,7 +152,9 @@ class XML {
                                 $smtpValue = $i == count($keys) - 1 ? $smtpValue . " " . $keyName . "=" . $values[$i] . " " : $smtpValue . " " . $keyName . "=" . $values[$i] . ", ";
                                 break;
                             default :
-                                echo "????? \n";
+                                $txt = $fieldName . " mező típusa nem értelmezhető a " . $model . "táblában! \n";
+                                fwrite($this->outputFile, $txt);
+//                                echo "????? \n";
                         }
                         break;
                     }
@@ -157,6 +172,42 @@ class XML {
         $this->pdo->executeStatement($smtp);
     }
 
+    /**
+     * truncate database tables
+     */
+    public function truncateTables() {
+        $vmi = $this->utility->envLoader('INSTALL_STATUS');
+        if ($this->utility->envLoader('INSTALL_STATUS') === "1") {
+            $tables = $this->pdo->tablesName();
+
+            foreach ($tables as $table) {
+                $value = array_values($table);
+                if ($value[0] != 'dictionaries' && $value[0] != 'languages' && $value[0] != 'users') {
+                    $sql = "DELETE FROM " . $value[0];
+                    $this->pdo->executeStatement($sql);
+                }
+            }
+        }
+    }
+
+    public function unzipFile() {
+        $files = array_diff(preg_grep('~\.(zip)$~', scandir(PATH_XML)), array('.', '..'));
+
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                $txt = "ZIP file: " . $file . "\n";
+                fwrite($this->outputFile, $txt);
+
+                $this->utility->unZip($file);
+                $this->utility->fileUnlink(PATH_XML.$file);
+            }
+        }
+        if (count($files) == 0) {
+            $txt = "Nem található kicsomagolandó file!\n";
+            fwrite($this->outputFile, $txt);
+        }
+    }
+
     /*
      * file loader and json processing
      *
@@ -164,79 +215,94 @@ class XML {
      */
     public function xmlLoader()
     {
+//        $this->truncateTables();
+        $this->unzipFile();
         $files = array_diff(preg_grep('~\.(xml)$~', scandir(PATH_XML)), array('.', '..'));
-        foreach ($files as $file) {
-            $this->api->insert($file);
-            $phpDataArray = $this->utility->fileLoader(PATH_XML . $file);
-            for ($j = 0; $j < count($phpDataArray); $j++) {
-                $model = array_keys($phpDataArray)[$j];
-                if ($model != "PlugIn") {
+        if (count($files) == 0) {
+            $txt = "Nem található feldolgozandó file!\n";
+            fwrite($this->outputFile, $txt);
+        }
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                $txt = "XML file: " . $file . "\n";
+                fwrite($this->outputFile, $txt);
 
-                    if ( $model == 'Lead') {
-                        $model = "Leed";
-                    }
+                $this->api->insert($file);
+                $phpDataArray = $this->utility->fileLoader(PATH_XML . $file);
+                for ($j = 0; $j < count($phpDataArray); $j++) {
+                    $model = array_keys($phpDataArray)[$j];
+                    if ($model != "PlugIn") {
 
-                    $modelArray = $this->modelChange->modelRead($model);
-                    if (!is_null($modelArray)) {
-                        $castsArray = $this->modelChange->modelExchange($modelArray);
-                        $this->castsKeys = array_keys($castsArray);
-                        $this->castsValues = array_values($castsArray);
+                        if ( $model == 'Lead') {
+                            $model = "Leed";
+                        }
 
-                        $count = $model == 'Leed' ? count($phpDataArray['Lead']) : count($phpDataArray[$model]);
+                        $modelArray = $this->modelChange->modelRead($model);
+                        if (!is_null($modelArray)) {
+                            $castsArray = $this->modelChange->modelExchange($modelArray);
+                            $this->castsKeys = array_keys($castsArray);
+                            $this->castsValues = array_values($castsArray);
 
-                        // insert apimodel
-                        $this->apimodel->api_id = $this->api->id;
-                        $this->apimodel->model = $model;
-                        $this->apimodel->recordnumber = $count;
-                        $this->apimodel->insertednumber = 0;
-                        $this->apimodel->updatednumber = 0;
-                        $this->apimodel->errornumber = 0;
+                            $count = $model == 'Leed' ? count($phpDataArray['Lead']) : count($phpDataArray[$model]);
 
-                        $this->apimodel->insert();
+                            // insert apimodel
+                            $this->apimodel->api_id = $this->api->id;
+                            $this->apimodel->model = $model;
+                            $this->apimodel->recordnumber = $count;
+                            $this->apimodel->insertednumber = 0;
+                            $this->apimodel->updatednumber = 0;
+                            $this->apimodel->errornumber = 0;
 
-                        $this->apimodel->id = $this->apimodel->selectId();
+                            $this->apimodel->insert();
 
-                        if ($count > 0) {
-                            foreach ($phpDataArray[$model == 'Leed' ? 'Lead' : $model] as $index => $data) {
-                                if (!is_array($data)) {
-                                    $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                    $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                } else {
-                                    $keys = array_keys($data);
-                                    $values = array_values($data);
-                                }
-                                $sql = "SELECT Count(*) as db FROM " . $model . " WHERE Id = '" . $values[array_search('Id', $keys)] . "'";
-                                $smtp = $this->pdo->executeStatement($sql);
-                                if ($smtp) {
-                                    $record = $smtp->fetchAll();
-                                    if (count($record) > 0) {
-                                        foreach ($record as $row) {
-                                            if (intval($row['db']) === 1) {
-                                                $smtp = $this->makeUpdate($model, $keys, $values, $values[array_search('Id', $keys)]);
-                                            } else {
-                                                $smtp = $this->makeInsert($model, $keys, $values);
+                            $this->apimodel->id = $this->apimodel->selectId();
+
+                            if ($count > 0) {
+                                foreach ($phpDataArray[$model == 'Leed' ? 'Lead' : $model] as $index => $data) {
+                                    if (!is_array($data)) {
+                                        $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                        $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                    } else {
+                                        $keys = array_keys($data);
+                                        $values = array_values($data);
+                                    }
+                                    $sql = "SELECT Count(*) as db FROM " . $model . " WHERE Id = '" . $values[array_search('Id', $keys)] . "'";
+                                    $smtp = $this->pdo->executeStatement($sql);
+                                    if ($smtp) {
+                                        $record = $smtp->fetchAll();
+                                        if (count($record) > 0) {
+                                            foreach ($record as $row) {
+                                                if (intval($row['db']) === 1) {
+                                                    $smtp = $this->makeUpdate($model, $keys, $values, $values[array_search('Id', $keys)]);
+                                                } else {
+                                                    $smtp = $this->makeInsert($model, $keys, $values);
+                                                }
                                             }
                                         }
+                                    } else {
+                                        return $sql . ' hibával tért vissza!';
                                     }
-                                } else {
-                                    return $sql . ' hibával tért vissza!';
-                                }
-                                $return = $this->pdo->executeStatementReturnFail($smtp);
-                                if (gettype($return) != "object") {
-                                    if (strpos($return, "Failed") > 0) {
-                                        $this->apimodelerrorInsert($smtp, $return);
-                                        $this->apimodel->errornumber++;
+                                    $return = $this->pdo->executeStatementReturnFail($smtp);
+                                    if (gettype($return) != "object") {
+                                        if (strpos($return, "Failed") > 0) {
+                                            $this->apimodelerrorInsert($smtp, $return);
+                                            $this->apimodel->errornumber++;
+                                        }
                                     }
                                 }
+                                $this->apimodel->updateErrornumber();
                             }
-                            $this->apimodel->updateErrornumber();
                         }
                     }
                 }
+                $this->utility->fileUnlink(PATH_XML.$file);
             }
-            $this->utility->fileUnlink(PATH_XML.$file);
         }
-        $this->utility->httpPost(PATH_XML, "OK");
+
+        $txt = "End: ". date('Y.m.d h:m:s', strtotime('now')) . "\n";
+        fwrite($this->outputFile, $txt);
+        fclose($this->outputFile);
+
     }
 }
 

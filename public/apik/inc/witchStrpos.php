@@ -53,6 +53,7 @@ class witchStrpos {
         $beginPos = $this->getPos($string, $witch);
         $endPos = $this->getPos($string, $witch + 1);
 
+        $vmi = substr($string, $beginPos + $witch , $endPos  - $beginPos);
         return substr($string, $beginPos + $witch , $endPos  - $beginPos);
     }
 

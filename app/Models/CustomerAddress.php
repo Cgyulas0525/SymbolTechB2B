@@ -198,8 +198,8 @@ class CustomerAddress extends Model
         'GLN' => 'string',
         'IsPerson' => 'integer',
         'ParcelInfo' => 'integer',
-        'EUMembership' => '',
-        'CompanyType' => ''
+        'EUMembership' => 'integer',
+        'CompanyType' => 'integer'
     ];
 
     /**
