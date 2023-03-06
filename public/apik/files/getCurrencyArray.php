@@ -21,6 +21,8 @@ class getCurrencyArray
     public $date = NULL;
     public $utility = NULL;
     public $pdo = NULL;
+    public $outputFile = NULL;
+
 
     function __construct($bank) {
         $this->utility = new Utility();
@@ -32,6 +34,12 @@ class getCurrencyArray
         $this->date = date('Y-m-d H:i:s', strtotime('now'));
         $this->api = new api();
         $this->apimodel = new apimodel();
+        $this->outputFile = fopen(PATH_OUTPUT . 'getCurrency-' . uniqid() . '.txt', "w") or die("Unable to open file!");
+        $txt = "B2B getCurrency\n";
+        fwrite($this->outputFile, $txt);
+        $txt = "Start: " . date('Y.m.d h:m:s', strtotime('now')) . "\n";
+        fwrite($this->outputFile, $txt);
+
     }
 
     public function getArray()
@@ -69,6 +77,10 @@ class getCurrencyArray
         }
 
         $this->apimodel->updateErrornumber();
+
+        $txt = "End: ". date('Y.m.d h:m:s', strtotime('now')) . "\n";
+        fwrite($this->outputFile, $txt);
+        fclose($this->outputFile);
     }
 
 
