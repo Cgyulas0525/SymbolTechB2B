@@ -499,6 +499,7 @@ class MyApiController extends Controller
 
     public function getCurrencyRate ( Request $request)
     {
+
         $response = Http::get(url('/apik/getCurrency.php'));
 //        $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/getCurrency.php');
         return redirect(route('apis.index'));

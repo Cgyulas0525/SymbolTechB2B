@@ -47,6 +47,7 @@ class PriceCategory extends Model
     use HasFactory;
 
     public $table = 'pricecategory';
+    public $timestamps = false;
 
     // const CREATED_AT = 'created_at';
     // const UPDATED_AT = 'updated_at';

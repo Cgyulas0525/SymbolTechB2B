@@ -1,6 +1,7 @@
 <?php
+namespace App\Classes\Api\Inc;
 
-class witchStrpos {
+class witchStrposClass {
 
     public $howMany = 0;
     public $actPos = 0;
@@ -53,6 +54,7 @@ class witchStrpos {
         $beginPos = $this->getPos($string, $witch);
         $endPos = $this->getPos($string, $witch + 1);
 
+        $vmi = substr($string, $beginPos + $witch , $endPos  - $beginPos);
         return substr($string, $beginPos + $witch , $endPos  - $beginPos);
     }
 

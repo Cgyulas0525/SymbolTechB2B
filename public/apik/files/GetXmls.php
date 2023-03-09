@@ -25,7 +25,7 @@ class XML {
         $this->utility = new Utility();
         $this->pdo = new mySQLDatabase();
         $this->witchStrpos = new witchStrpos();
-        $this->modelChange = new ModelChange();
+        $this->modelChange = new ModelChangeClass();
         $this->makeDateFormat = new MakeDateFormat();
         $this->api = new api();
         $this->apimodel = new apimodel();

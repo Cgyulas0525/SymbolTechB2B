@@ -37,6 +37,7 @@ class TransportModeLang extends Model
     use HasFactory;
 
     public $table = 'transportmodelang';
+    public $timestamps = false;
 
     // const CREATED_AT = 'created_at';
     // const UPDATED_AT = 'updated_at';

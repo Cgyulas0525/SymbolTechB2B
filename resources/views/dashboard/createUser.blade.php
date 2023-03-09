@@ -8,7 +8,7 @@
                     @if (App\Models\Employee::count() == 0)
                         <h1>{{ langClass::trans('Kezdeti adatbetöltés') }}</h1>
                         @if  (env('INSTALL_STATUS') == 0)
-                            <h1><a href="{!! route('getSUXSDInstall') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>
+                            <h1><a href="#" class="btn btn-success firstSUDataUploadButton" id="getSUXSDButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>
                         @endif
                         @if (env('INSTALL_STATUS') == 1)
                             <h1><a href="{!! route('getSUXMLInstall') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
@@ -77,3 +77,78 @@
         </div>
     </div>
 @endsection
+
+@section('scripts')
+
+    <script type="text/javascript">
+
+        var currentLocation = window.location;
+
+        $(function () {
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('.getSUXSDButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy betölti az SÜ adatbázis struktúra exportot?",
+                    text: "Adatbázis struktúra változás átvezetés!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: "Betöltés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/structureProcess')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                                window.location.href = currentLocation;
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
+                    }
+                })
+            });
+
+            $('.getSUXMLButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy betölti a SÜ adatbázis exportot?",
+                    text: "Adatbázis betöltés!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: "Betöltés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        alert(currentLocation);
+                        window.location.href = currentLocation;
+                        {{--$.ajax({--}}
+                        {{--    type: "GET",--}}
+                        {{--    url:"{{url('api/deleteOutputFiles')}}",--}}
+                        {{--    success: function (response) {--}}
+                        {{--        console.log('Response:', response);--}}
+                        {{--    },--}}
+                        {{--    error: function (response) {--}}
+                        {{--        console.log('Error:', response);--}}
+                        {{--    }--}}
+                        {{--});--}}
+                    }
+                })
+            });
+
+        });
+    </script>
+@endsection
+
+

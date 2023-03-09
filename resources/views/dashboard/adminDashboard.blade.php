@@ -100,7 +100,8 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
 
         <div class="col-lg-1 col-md-6 col-xs-12 margintop10">
             <h1><a href="{!! route('settingIndex') !!}" class="btn btn-warning adminDBButton">{{ langClass::trans('Beállítások') }}</a></h1>
-            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('Árfolyam') }}</a></h1>
+{{--            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('Árfolyam') }}</a></h1>--}}
+            <h1><a href="#" class="btn btn-success adminDBButton" id="currencyButton">{{ langClass::trans('Árfolyam') }}</a></h1>
         </div>
 
 
@@ -261,6 +262,31 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
             var chart = HighChartPie( 'ThreeMonthsLogin', 'pie', 365, kategoria, pieData, <?php echo "'" . langClass::trans('Felhasználói belépések') . "'"; ?>,
                 <?php echo "'" . langClass::trans('Felhasználónként') . "'"; ?>, 'DB', 200, true, true, '40%');
 
+            $('#currencyButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy betölti az árfolyamokat?",
+                    text: "A mai napi MNB árfolyamok!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: "Betöltés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/importCurrency')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
+                    }
+                })
+            });
 
         });
     </script>

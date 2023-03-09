@@ -35,6 +35,7 @@ class QuantityUnitLang extends Model
     use HasFactory;
 
     public $table = 'quantityunitlang';
+    public $timestamps = false;
 
     // const CREATED_AT = 'created_at';
     // const UPDATED_AT = 'updated_at';

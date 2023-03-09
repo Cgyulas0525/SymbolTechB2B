@@ -13,12 +13,44 @@
             <div class="box-body">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <section class="content-header">
-                        <h4>apis </h4>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h4>{{ langClass::trans('API futtatások') }}</h4>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="pull-left">
+                                    @include('tools.buttonNonPict', ['akcio' => ["btn btn-primary currencyButton",
+                                                                                "btn btn-warning getSUXSDButton",
+                                                                                "btn btn-success getSUXMLButton",
+                                                                                "btn btn-danger deleteOutputButton",
+                                                                                "btn btn-secondary sendBtn"],
+                                                              'btnName' => ['Árfolyam',
+                                                                            'SÜ Struktúra',
+                                                                            'SÜ Adatok',
+                                                                            'Output törlés',
+                                                                            'Kosár SÜ-be'],
+                                                              'title' => ['Árfolyam',
+                                                                          'SÜ Struktúra',
+                                                                          'SÜ Adatok',
+                                                                          'Output törlés',
+                                                                          'Kosár SÜ-be']])
+                                </div>
+                            </div>
+                        </div>
+
+
+{{--                        <div class="col-lg-1 col-md-6 col-xs-12 margintop10">--}}
+{{--                            --}}{{--                            <h1><a href="{!! route('getSUXSD') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>--}}
+{{--                            <h1><a href="{!! route('getSUXML') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>--}}
+{{--                            <h1><a href="#" class="btn btn-success adminDBButton" id="currencyButton">{{ langClass::trans('Árfolyam') }}</a></h1>--}}
+{{--                            <h1><a href="#" class="btn btn-success adminDBButton" id="sendBtn">{{ langClass::trans('Kosár SÜ-be') }}</a></h1>--}}
+{{--                        </div>--}}
+
                     </section>
                     @include('flash::message')
                     <div class="clearfix"></div>
                     <div class="row">
-                        <div class="col-lg-4 col-md-4 col-xs-12">
+                        <div class="col-lg-5 col-md-12 col-xs-12">
                             <div class="box box-primary">
                                 <div class="box-body"  >
                                     <table class="table table-hover table-bordered partners-table" style="width: 100%;"></table>
@@ -26,7 +58,7 @@
                             </div>
                             <div class="text-center"></div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-xs-12">
+                        <div class="col-lg-5 col-md-12 col-xs-12">
                             <div class="box box-primary">
                                 <div class="box-body"  >
                                     <table class="table table-hover table-bordered apimodel-table" style="width: 100%;"></table>
@@ -34,19 +66,13 @@
                             </div>
                             <div class="text-center"></div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-xs-12">
+                        <div class="col-lg-2 col-md-12 col-xs-12" style="margin-top: 37px;">
                             <div class="box box-primary">
                                 <div class="box-body"  >
-                                    <table class="table table-hover table-bordered apimodelerror-table" style="width: 100%;"></table>
+                                    <table class="table table-hover table-bordered apimodelerror-table" style="width: 100%; "></table>
                                 </div>
                             </div>
                             <div class="text-center"></div>
-                        </div>
-                        <div class="col-lg-1 col-md-6 col-xs-12 margintop10">
-{{--                            <h1><a href="{!! route('getSUXSD') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>--}}
-                            <h1><a href="{!! route('getSUXML') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
-                            <h1><a href="{!! route('getCurrencyRate') !!}" class="btn btn-success adminDBButton">{{ langClass::trans('Árfolyam') }}</a></h1>
-                            <h1><a href="#" class="btn btn-success adminDBButton" id="sendBtn">{{ langClass::trans('Kosár SÜ-be') }}</a></h1>
                         </div>
                     </div>
                 </div>
@@ -64,6 +90,8 @@
     <script type="text/javascript">
 
         $('[data-widget="pushmenu"]').PushMenu('collapse');
+
+        var currentLocation = window.location;
 
         function format(d) {
             // `d` is the original data object for the row
@@ -194,6 +222,7 @@
                     },
                     {title: <?php echo "'" . langClass::trans('Hiba') . "'"; ?>, data: 'error', name: 'error'},
                 ],
+                buttons: [],
             });
 
             $('.apimodel-table tbody').on('click', 'td.dt-control', function () {
@@ -204,7 +233,7 @@
                 dtControl(this, aetable, errorformat);
             });
 
-            $('#sendBtn').click(function (e) {
+            $('.sendBtn').click(function (e) {
                 swal.fire({
                     title: <?php echo "'" . langClass::trans("Kosár adatok SÜ ERP-be!") . "'"; ?>,
                     text: <?php echo "'" . langClass::trans("Biztosan átadja a tételeket?") . "'"; ?>,
@@ -230,6 +259,114 @@
                         });
                     }
                 });
+            });
+
+            $('.currencyButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy betölti az árfolyamokat?",
+                    text: "A mai napi MNB árfolyamok!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: "Betöltés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/importCurrency')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                                window.location.href = currentLocation;
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
+                    }
+                })
+            });
+
+            $('.deleteOutputButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy törli az output könyvtár file-it?",
+                    text: "Output könyvtár ürítés!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: "Törlés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/deleteOutputFiles')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
+                    }
+                })
+            });
+
+            $('.getSUXSDButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy betölti az SÜ adatbázis struktúra exportot?",
+                    text: "Adatbázis struktúra változás átvezetés!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: "Betöltés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/structureProcess')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                                window.location.href = currentLocation;
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
+                    }
+                })
+            });
+
+            $('.getSUXMLButton').click(function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Biztos, hogy betölti a SÜ adatbázis exportot?",
+                    text: "Adatbázis betöltés!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: "Betöltés",
+                    cancelButtonText: "Kilép",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        alert(currentLocation);
+                        window.location.href = currentLocation;
+                        {{--$.ajax({--}}
+                        {{--    type: "GET",--}}
+                        {{--    url:"{{url('api/deleteOutputFiles')}}",--}}
+                        {{--    success: function (response) {--}}
+                        {{--        console.log('Response:', response);--}}
+                        {{--    },--}}
+                        {{--    error: function (response) {--}}
+                        {{--        console.log('Error:', response);--}}
+                        {{--    }--}}
+                        {{--});--}}
+                    }
+                })
             });
 
         });

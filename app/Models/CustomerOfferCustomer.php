@@ -41,6 +41,7 @@ class CustomerOfferCustomer extends Model
     use HasFactory;
 
     public $table = 'customeroffercustomer';
+    public $timestamps = false;
 
 //    const CREATED_AT = 'created_at';
 //    const UPDATED_AT = 'updated_at';

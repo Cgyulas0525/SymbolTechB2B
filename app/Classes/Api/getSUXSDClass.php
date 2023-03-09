@@ -1,14 +1,36 @@
 <?php
 
-class XSD {
+namespace App\Classes\Api;
+
+use App\Classes\Api\apiUtilityClass;
+use App\Classes\Api\ModelChangeClass;
+use DOMDocument;
+
+class getSUXSDClass
+{
+    public $utility = NULL;
+    public $outputFile = NULL;
+    public $modelChange = NULL;
+
+    function __construct() {
+        require_once dirname(__DIR__, 2). "/Classes/Api/Inc/config.php";
+
+        $this->modelChange = new ModelChangeClass();
+        $this->utility = new apiUtilityClass();
+
+        $this->outputFile = fopen(PATH_OUTPUT . 'getXSD-' . uniqid() . '.txt', "w") or die("Unable to open file!");
+        $this->utility->fileWrite($this->outputFile, "B2B getXSD\n");
+        $this->utility->fileWrite($this->outputFile, "Start: " . date('Y.m.d h:m:s', strtotime('now')) . "\n");
+    }
+
 
     /*
-     * field name
-     *
-     * @param $type - string
-     *
-     * @return string
-     */
+ * field name
+ *
+ * @param $type - string
+ *
+ * @return string
+ */
     public function fieldLongString($type) {
         $pos = strpos($type, "(");
         if (!empty($pos)) {
@@ -29,7 +51,8 @@ class XSD {
      */
     public function makeDataArray($xsdFile) {
 
-        $file = PATH_XML.$xsdFile.'.xsd';
+        $file = PATH_INPUT.$xsdFile.'.xsd';
+
         $xmlfile = file_get_contents($file);
         $xmlfile = preg_replace('/(<\?xml[^?]+?)utf-16/i', '$1utf-8', $xmlfile);
         $xmlfile = str_replace('msprop:', ' ', $xmlfile);
@@ -38,11 +61,11 @@ class XSD {
         $dom->preserveWhiteSpace = FALSE;
         $dom->loadXML($xmlfile);
 
-        $dom->save(PATH_XML.$xsdFile.'mas.xml');
+        $dom->save(PATH_INPUT.$xsdFile.'mas.xml');
 
         $doc = new DOMDocument();
         $doc->preserveWhiteSpace = true;
-        $file = PATH_XML.$xsdFile.'mas.xml';
+        $file = PATH_INPUT.$xsdFile.'mas.xml';
         $doc->load($file);
         $xmlfile = file_get_contents($file);
 
@@ -52,6 +75,7 @@ class XSD {
         return json_decode($json, true);
 
     }
+
 
     /*
      * json processing
@@ -146,5 +170,54 @@ class XSD {
                 }
             }
         }
+    }
+
+    public function process() {
+        $files = array_diff(preg_grep('~\.(xsd)$~', scandir(PATH_INPUT)), array('.', '..'));
+        if ( count($files) == 0 )  {
+            $this->utility->fileWrite($this->outputFile, "Nem található feldogozandó file!\n");
+        }
+        if (count($files) > 0) {
+
+            foreach ($files as $file) {
+                $this->utility->fileWrite($this->outputFile, "File: " . $file . "\n");
+
+                $xmlFile = substr($file, 0, strpos($file, '.xsd')) . "mas.xml";
+                $array = $this->getXSD(substr($file, 0, strpos($file, '.xsd')));
+
+                foreach ($array as $item) {
+                    $fieldArray = array_values($item['value']);
+
+                    $modelArray = $this->modelChange->modelRead($item['table'], $this->outputFile);
+
+                    if (is_array($modelArray)) {
+
+                        $castsArray = $this->modelChange->modelExchange($modelArray);
+
+                        if (count($castsArray) != count($fieldArray)) {
+                            // ha van új mező
+                            if (count($castsArray) < count($fieldArray)) {
+
+                                $this->modelChange->fieldArrayControll($fieldArray, $item, $this->outputFile);
+
+                            }
+                            // ha kikerült mező a táblából
+                            if (count($castsArray) > count($fieldArray)) {
+                                $this->utility->fileWrite($this->outputFile, $item['table'] . " " . count($castsArray) . " " . count($fieldArray) . "\n");
+                            }
+                        }
+                    }
+                }
+
+                $this->utility->fileUnlink(PATH_INPUT . $file);
+                $this->utility->fileUnlink(PATH_INPUT . $xmlFile);
+                $this->utility->fileWrite($this->outputFile, "Törölve: " . $file . "\n");
+
+            }
+        }
+
+        $this->utility->fileWrite($this->outputFile, "End: " . date('Y.m.d h:m:s', strtotime('now')) . "\n");
+        fclose($this->outputFile);
+
     }
 }

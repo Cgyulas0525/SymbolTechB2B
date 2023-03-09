@@ -1,14 +1,16 @@
 <?php
 
-class MakeDateFormat {
+namespace App\Classes\Api\Inc;
 
+class makeDateFormatClass
+{
     /*
-     * date format for sql
-     *
-     * @param $date - string
-     *
-     * @return string
-     */
+      * date format for sql
+      *
+      * @param $date - string
+      *
+      * @return string
+      */
     public function sqlDate($date)
     {
         return "DATE_FORMAT('" . $date ."', '%Y-%m-%d %H:%i:%s')";

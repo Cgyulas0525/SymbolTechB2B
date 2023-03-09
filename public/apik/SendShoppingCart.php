@@ -6,7 +6,7 @@ require PATH_MODEL . "/mySQLDatabase.php";
 
 $pdo = new mySQLDatabase();
 $utility = new Utility();
-$modelChange = new ModelChange();
+$modelChange = new ModelChangeClass();
 
 $sql = "SELECT * FROM shoppingcart WHERE Opened = 1 AND CustomerOrder IS NULL AND deleted_at IS NULL";
 $smtp = $pdo->executeStatement($sql);

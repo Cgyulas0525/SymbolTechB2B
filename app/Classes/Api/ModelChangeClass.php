@@ -1,6 +1,9 @@
 <?php
+namespace App\Classes\Api;
 
-class ModelChange {
+use App\Classes\Api\apiUtilityClass;
+
+class ModelChangeClass {
 
     public $fillableStart = NULL;
     public $fillableEnd = NULL;
@@ -20,12 +23,11 @@ class ModelChange {
     public $saveArray = [];
 
     public $utility = NULL;
-    public $pdo = NULL;
 
     function __construct() {
-        date_default_timezone_set("Europe/Budapest");
-        $this->utility = new Utility();
-        $this->pdo = new mySQLDatabase();
+        require_once dirname(__DIR__, 2). "/Classes/Api/Inc/config.php";
+
+        $this->utility = new apiUtilityClass();
     }
 
 
@@ -60,14 +62,15 @@ class ModelChange {
     /*
      * Model read from App\Models
      */
-    public function modelRead($item) {
+    public function modelRead($item, $outputFile) {
         $item = $item != 'Lead' ? $item : "Leed";
         $fileName = PATH_MODELS. $item . '.php';
+
         if (file_exists($fileName)) {
             $current = file($fileName);
             return array_values($current);
         } else {
-            echo $fileName . "\n";
+            $this->utility->fileWrite($outputFile, "Nem található a MODEL!: " . $fileName . "\n");
         }
 
         return NUll;
@@ -77,6 +80,7 @@ class ModelChange {
      * Model exchange
      */
     public function modelExchange($values) {
+
         $this->getFilleable($values);
         $this->arraysFill($values);
 
@@ -140,7 +144,7 @@ class ModelChange {
     /*
      * Model arrays save
      */
-    public function fieldArrayControll($fieldArray, $item) {
+    public function fieldArrayControll($fieldArray, $item, $outputFile) {
         for ( $i = 0; $i < count($fieldArray); $i++) {
             $fieldArrayValues = array_values($fieldArray[$i]);
             $field = $fieldArrayValues[0];
@@ -152,7 +156,7 @@ class ModelChange {
                 }
             }
             if ( $pos === false ) {
-                $this->createNewField($item, $fieldArrayValues);
+                $this->createNewField($item, $fieldArrayValues, $outputFile);
             }
         }
 
@@ -198,10 +202,28 @@ class ModelChange {
         }
     }
 
+
+    /**
+     * must a new field in table
+     *
+     * @param $tableFileds
+     * @param $field
+     * @return bool
+     */
+    public function fieldInTable($tableFileds, $field) {
+        foreach($tableFileds as $tableField) {
+            if ( $tableField == $field ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     /*
      * Create new field in database
      */
-    public function createNewField($item, $fieldArrayValues) {
+    public function createNewField($item, $fieldArrayValues, $outputFile) {
         $fieldEOL = "'" .$fieldArrayValues[0] . "'\n";
         $newFieldFillable = str_repeat(' ', strpos($this->fillableArray[0], "'")) . $fieldEOL;
         $this->fillableArray[count($this->fillableArray) - 1] = substr($this->fillableArray[count($this->fillableArray) - 1], 0, iconv_strpos($this->fillableArray[count($this->fillableArray) - 1], "\n", 0)) . ','."\n";
@@ -220,24 +242,9 @@ class ModelChange {
         $this->castsArray[count($this->castsArray) - 1] = substr($this->castsArray[count($this->castsArray) - 1], 0, iconv_strpos($this->castsArray[count($this->castsArray) - 1], "\n", 0)) . ','."\n";
         array_push($this->castsArray, $newFieldCasts);
 
-        $smtp = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = LOWER( '" . $item['table']. "') AND TABLE_SCHEMA= '" . getenv('DB_DATABASE') ."'";
-        $results = $this->pdo->executeStatement($smtp);
-
-        $changing = true;
-        foreach($results->fetchAll(PDO::FETCH_ASSOC) as $result) {
-            $values = array_values($result);
-            foreach ($values as $value) {
-                if ( $value == $fieldArrayValues[0] ) {
-                    $changing = false;
-                    break;
-                }
-            }
-        }
-
-        if ( $changing ) {
-            $smtp = 'ALTER TABLE ' . $item['table'] . ' ADD';
-            $smtp = $smtp. " ". $fieldArrayValues[0] . " " . $fieldArrayValues[1];
-            $this->pdo->executeStatement($smtp);
+        if ( $this->fieldInTable(Schema::getColumnListing('Customer'), $fieldArrayValues[0]) ) {
+            DB::statement('ALTER TABLE ' . $item['table'] . ' ADD '. $fieldArrayValues[0] . " " . $fieldArrayValues[1]);
+            $this->utility->fileWrite($outputFile, "Új mező " . $item['table'] . " táblában: ". $fieldArrayValues[0] . " típusa: ". $fieldArrayValues[1] . "\n");
         }
     }
 

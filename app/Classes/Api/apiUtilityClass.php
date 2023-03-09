@@ -1,7 +1,9 @@
 <?php
 
-class Utility {
+namespace App\Classes\Api;
 
+class apiUtilityClass
+{
     public function fileLoader($url)
     {
         $xmlDataString = file_get_contents($url);
@@ -11,18 +13,6 @@ class Utility {
         return json_decode($json, true);
     }
 
-
-    public function envLoader($label) {
-        $path = dirname(__DIR__,3);
-
-        $current = file($path . "/.env");
-        $values = array_values($current);
-        for ($i = 0; $i < count($values); $i++) {
-            if ( strpos($values[$i], $label) !== false) {
-                return substr(substr($values[$i], strlen($label) + 1, strlen($values[$i]) - 2) , 0, strpos(substr($values[$i], strlen($label) + 1, strlen($values[$i]) - 2), "\n"));
-            };
-        }
-    }
 
     public function fileUnlink($file)
     {
@@ -43,5 +33,20 @@ class Utility {
         echo $response;
     }
 
-}
 
+    public function unZip($file) {
+        $zip = new ZipArchive;
+        $res = $zip->open(PATH_XML . $file);
+        if ($res === TRUE) {
+            $zip->extractTo(PATH_XML);
+            $zip->close();
+        } else {
+            echo 'Nem sikerült kicsomagolni!';
+        }
+    }
+
+    public function fileWrite($file, $content) {
+        fwrite($file, $content);
+    }
+
+}

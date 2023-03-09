@@ -10,7 +10,7 @@ date_default_timezone_set("Europe/Budapest");
 
 $utility = new Utility();
 $xsd = new XSD();
-$modelChange = new ModelChange();
+$modelChange = new ModelChangeClass();
 
 $outputFile = fopen(PATH_OUTPUT . 'getXSD-' . uniqid() . '.txt', "w") or die("Unable to open file!");
 $txt = "B2B getXSD\n";

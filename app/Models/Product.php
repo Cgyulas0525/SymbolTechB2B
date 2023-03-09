@@ -264,6 +264,7 @@ class Product extends Model
     use HasFactory;
 
     public $table = 'product';
+    public $timestamps = false;
 
     // const CREATED_AT = 'created_at';
     // const UPDATED_AT = 'updated_at';
