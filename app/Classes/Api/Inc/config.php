@@ -1,4 +1,7 @@
 <?php
+ini_set('memory_limit', '-1');
+ini_set('max_execution_time', 6000);
+
 date_default_timezone_set("Europe/Budapest");
 
 define("PROJECT_ROOT_PATH", dirname(__DIR__, 3));

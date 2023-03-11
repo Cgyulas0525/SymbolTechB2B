@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\getCurrencyController;
 use App\Http\Controllers\Api\outputFilesDeleteController;
 use App\Http\Controllers\Api\getSUXSDController;
 use App\Http\Controllers\Api\getSUXMLController;
+use App\Http\Controllers\Api\truncateTablesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,4 @@ Route::get('importCurrency', [getCurrencyController::class, 'importCurrency']);
 Route::get('deleteOutputFiles', [outputFilesDeleteController::class, 'deleteOutputFiles']);
 Route::get('structureProcess', [getSUXSDController::class, 'structureProcess']);
 Route::get('dataProcess', [getSUXMLController::class, 'dataProcess']);
+Route::get('truncateAllTables', [truncateTablesController::class, 'truncateAllTables']);

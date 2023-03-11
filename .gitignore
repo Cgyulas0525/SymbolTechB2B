@@ -29,3 +29,10 @@ _ide_helper.php
 /dist/
 /temp/
 /.idea/
+/public/apik/
+/storage/input/
+/storage/output/
+/public/uj/
+/public/output/
+/_ide_helper.php
+/.idea/

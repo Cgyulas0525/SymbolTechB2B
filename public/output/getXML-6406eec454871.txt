@@ -1,5 +1,0 @@
-B2B getXSD
-Start: 2023.03.07 08:03:00
-ZIP file: B2BData.zip
-XML file: B2BData.xml
-End: 2023.03.07 08:03:51

@@ -2,6 +2,7 @@
 namespace App\Classes\Api;
 
 use App\Classes\Api\apiUtilityClass;
+use DB;
 
 class ModelChangeClass {
 
@@ -68,6 +69,7 @@ class ModelChangeClass {
 
         if (file_exists($fileName)) {
             $current = file($fileName);
+            $this->utility->fileWrite($outputFile, "MODEL: " . $fileName . "\n");
             return array_values($current);
         } else {
             $this->utility->fileWrite($outputFile, "Nem található a MODEL!: " . $fileName . "\n");

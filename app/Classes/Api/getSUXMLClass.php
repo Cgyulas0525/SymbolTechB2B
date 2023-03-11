@@ -8,6 +8,8 @@ use App\Classes\Api\Inc\witchStrposClass;
 use App\Models\Api;
 use App\Models\ApiModel;
 use DB;
+use ZipArchive;
+use Schema;
 
 class getSUXMLClass
 {
@@ -37,14 +39,24 @@ class getSUXMLClass
 
     public function unzipFile() {
         $files = array_diff(preg_grep('~\.(zip)$~', scandir(PATH_INPUT)), array('.', '..'));
-
         if (count($files) > 0) {
             foreach ($files as $file) {
-                $txt = "ZIP file: " . $file . "\n";
-                fwrite($this->outputFile, $txt);
+                $this->utility->fileWrite($this->outputFile, "ZIP file: " . $file . "\n");
 
-                $this->utility->unZip($file);
-                $this->utility->fileUnlink(PATH_INPUT.$file);
+                $zip = new ZipArchive;
+                $res = $zip->open(PATH_INPUT . $file);
+                if ($res === TRUE) {
+                    $zip->extractTo(PATH_INPUT);
+                    $zip->close();
+                } else {
+                    $this->utility->fileWrite($this->outputFile, "$file Nem sikerült kicsomagolni!\n");
+                }
+                if (!unlink(PATH_INPUT . $file)) {
+                    $this->utility->fileWrite($this->outputFile, "$file nem sikerült törölni\n");
+                }
+                else {
+                    $this->utility->fileWrite($this->outputFile, "$file törölve\n");
+                }
             }
         }
         if (count($files) == 0) {
@@ -96,7 +108,7 @@ class getSUXMLClass
                                 $record->$keyName = $value;
                                 break;
                             case "datetime" :
-                                $record->$keyName = date('%Y-%m-%d %H:%i:%s', strtotime($values[$i]));
+                                $record->$keyName = date('Y-m-d H:i:s', strtotime($values[$i]));
                                 break;
                             case "decimal:4" :
                                 $record->$keyName = $values[$i];
@@ -109,6 +121,7 @@ class getSUXMLClass
                 }
             }
         }
+
         return $record;
     }
 
@@ -130,7 +143,6 @@ class getSUXMLClass
 
         $this->apimodel->updatednumber++;
         $record->save();
-
     }
 
     public function makeInsert($model, $keys, $values) {
@@ -148,22 +160,30 @@ class getSUXMLClass
 
         $this->unzipFile();
         $files = array_diff(preg_grep('~\.(xml)$~', scandir(PATH_INPUT)), array('.', '..'));
+        $this->utility->fileWrite($this->outputFile, count($files) . "\n");
         if ( count($files) == 0 ) {
             $this->utility->fileWrite($this->outputFile, "Nem található feldolgozandó file!\n");
         }
         if ( count($files) > 0 ) {
             foreach ($files as $file) {
-                $this->utility->fileWrite($this->outputFile, "XML file: " . $file . "\n");
+                $this->utility->fileWrite($this->outputFile, "XML file: " . PATH_INPUT . $file . "\n");
                 $this->insertApiRecord($file);
 
-                $phpDataArray = $this->utility->fileLoader(PATH_INPUT . $file);
+                $xmlDataString = file_get_contents(PATH_INPUT . $file);
+                $xmlDataString = preg_replace('/(<\?xml[^?]+?)utf-16/i', '$1utf-8', $xmlDataString);
+                $xmlObject = simplexml_load_string($xmlDataString);
+                $json = json_encode($xmlObject);
+                $phpDataArray =  json_decode($json, true);
+
                 for ($j = 0; $j < count($phpDataArray); $j++) {
                     $model = array_keys($phpDataArray)[$j];
+
                     if ($model != "PlugIn") {
 
                         $model == 'Lead' ? "Leed" : $model;
 
-                        $modelArray = $this->modelChange->modelRead($model);
+                        $modelArray = $this->modelChange->modelRead($model, $this->outputFile);
+
                         if (!is_null($modelArray)) {
                             $castsArray = $this->modelChange->modelExchange($modelArray);
                             $this->castsKeys = array_keys($castsArray);
@@ -174,24 +194,28 @@ class getSUXMLClass
 
                             if ($count > 0) {
                                 foreach ($phpDataArray[$model == 'Leed' ? 'Lead' : $model] as $index => $data) {
-                                    if (!is_array($data)) {
-                                        $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                        $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                    } else {
-                                        $keys = array_keys($data);
-                                        $values = array_values($data);
-                                    }
+//                                    if ( $model == "Product") {
+                                        if (!is_array($data)) {
+                                            $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                            $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                        } else {
+                                            $keys = array_keys($data);
+                                            $values = array_values($data);
+                                        }
 
-                                    $model_name =  'App\Models\\'.$model;
-                                    $record = array_search('Deleted', Schema::getColumnListing('App\Models\\'.$model_name)) ?
-                                                                $model_name::where('Id', $values[array_search('Id', $keys)])->where('Deleted', 0)->first() :
-                                                                $model_name::where('Id', $values[array_search('Id', $keys)])->first();
+                                        $model_name =  'App\Models\\'.$model;
+                                        $modelFieldArray = array_keys(Schema::getConnection()
+                                            ->getDoctrineSchemaManager()
+                                            ->listTableColumns($model) );
 
-                                    if ( !empty($record) ) {
-                                        $this->makeUpdate($model, $keys, $values, $values[array_search('Id', $keys)]);
-                                    } else {
-                                        $this->makeInsert($model, $keys, $values);
-                                    }
+                                        $record = $model_name::where('Id', $values[array_search('Id', $keys)])->first();
+
+                                        if ( !empty($record) ) {
+                                            $this->makeUpdate($model, $keys, $values, $record->Id);
+                                        } else {
+                                            $this->makeInsert($model, $keys, $values);
+                                        }
+//                                    }
 
                                 }
                                 $this->apimodel->save();

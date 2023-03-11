@@ -36,9 +36,9 @@ class apiUtilityClass
 
     public function unZip($file) {
         $zip = new ZipArchive;
-        $res = $zip->open(PATH_XML . $file);
+        $res = $zip->open(PATH_INPUT . $file);
         if ($res === TRUE) {
-            $zip->extractTo(PATH_XML);
+            $zip->extractTo(PATH_INPUT);
             $zip->close();
         } else {
             echo 'Nem sikerült kicsomagolni!';
