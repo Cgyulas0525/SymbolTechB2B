@@ -9,7 +9,7 @@ use App\Classes\Api\sendShoppingCartClass;
 
 class sendShoppingCartController extends Controller
 {
-    public function shoppingCartToSU() {
+    public function sendCart() {
         $sc = new sendShoppingCartClass();
         $sc->sendShoppingCart();
     }

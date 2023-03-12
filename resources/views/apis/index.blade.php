@@ -233,7 +233,8 @@
                 dtControl(this, aetable, errorformat);
             });
 
-            $('.sendBtn').click(function (e) {
+            $('.sendBtn').click(function (event) {
+                event.preventDefault();
                 swal.fire({
                     title: <?php echo "'" . langClass::trans("Kosár adatok SÜ ERP-be!") . "'"; ?>,
                     text: <?php echo "'" . langClass::trans("Biztosan átadja a tételeket?") . "'"; ?>,
@@ -245,16 +246,14 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            type:"GET",
-                            url:"{{ route('api/shoppingCartToSU') }}",
-                            // data: { Customer: 2},
+                            type: "GET",
+                            url:"{{url('api/sendCart')}}",
                             success: function (response) {
-                                // alert(response);
-                                console.log(response);
+                                console.log('Response:', response);
+                                window.location.href = currentLocation;
                             },
                             error: function (response) {
                                 console.log('Error:', response);
-                                // alert('nem ok');
                             }
                         });
                     }

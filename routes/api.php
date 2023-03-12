@@ -30,4 +30,4 @@ Route::get('deleteOutputFiles', [outputFilesDeleteController::class, 'deleteOutp
 Route::get('structureProcess', [getSUXSDController::class, 'structureProcess']);
 Route::get('dataProcess', [getSUXMLController::class, 'dataProcess']);
 Route::get('truncateAllTables', [truncateTablesController::class, 'truncateAllTables']);
-Route::get('shoppingCartToSU', [sendShoppingCartController::class, 'shoppingCartToSU']);
+Route::get('sendCart', [sendShoppingCartController::class, 'sendCart']);
