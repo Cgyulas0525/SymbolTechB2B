@@ -131,7 +131,6 @@
                     cancelButtonText: "Kilép",
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        alert(currentLocation);
                         window.location.href = currentLocation;
                         $.ajax({
                             type: "GET",
