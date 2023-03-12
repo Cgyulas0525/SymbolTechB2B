@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\outputFilesDeleteController;
 use App\Http\Controllers\Api\getSUXSDController;
 use App\Http\Controllers\Api\getSUXMLController;
 use App\Http\Controllers\Api\truncateTablesController;
+use App\Http\Controllers\Api\sendShoppingCartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +30,4 @@ Route::get('deleteOutputFiles', [outputFilesDeleteController::class, 'deleteOutp
 Route::get('structureProcess', [getSUXSDController::class, 'structureProcess']);
 Route::get('dataProcess', [getSUXMLController::class, 'dataProcess']);
 Route::get('truncateAllTables', [truncateTablesController::class, 'truncateAllTables']);
+Route::get('shoppingCartToSU', [sendShoppingCartController::class, 'shoppingCartToSU']);

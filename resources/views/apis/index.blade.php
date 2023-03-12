@@ -246,7 +246,7 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             type:"GET",
-                            url:"{{ route('SendShoppingCart') }}",
+                            url:"{{ route('api/shoppingCartToSU') }}",
                             // data: { Customer: 2},
                             success: function (response) {
                                 // alert(response);
@@ -355,16 +355,16 @@
                     if (result.isConfirmed) {
                         alert(currentLocation);
                         window.location.href = currentLocation;
-                        {{--$.ajax({--}}
-                        {{--    type: "GET",--}}
-                        {{--    url:"{{url('api/deleteOutputFiles')}}",--}}
-                        {{--    success: function (response) {--}}
-                        {{--        console.log('Response:', response);--}}
-                        {{--    },--}}
-                        {{--    error: function (response) {--}}
-                        {{--        console.log('Error:', response);--}}
-                        {{--    }--}}
-                        {{--});--}}
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/dataProcess')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
                     }
                 })
             });

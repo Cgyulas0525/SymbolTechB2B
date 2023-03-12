@@ -133,16 +133,16 @@
                     if (result.isConfirmed) {
                         alert(currentLocation);
                         window.location.href = currentLocation;
-                        {{--$.ajax({--}}
-                        {{--    type: "GET",--}}
-                        {{--    url:"{{url('api/deleteOutputFiles')}}",--}}
-                        {{--    success: function (response) {--}}
-                        {{--        console.log('Response:', response);--}}
-                        {{--    },--}}
-                        {{--    error: function (response) {--}}
-                        {{--        console.log('Error:', response);--}}
-                        {{--    }--}}
-                        {{--});--}}
+                        $.ajax({
+                            type: "GET",
+                            url:"{{url('api/dataProcess')}}",
+                            success: function (response) {
+                                console.log('Response:', response);
+                            },
+                            error: function (response) {
+                                console.log('Error:', response);
+                            }
+                        });
                     }
                 })
             });
