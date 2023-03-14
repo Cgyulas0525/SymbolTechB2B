@@ -83,6 +83,7 @@
 
 @section('scripts')
     @include('layouts.datatables_js')
+    @include('functions.clickEvent')
     <script src="{{asset('/public/js/dtControl.js')}}"></script>
     <script src="{{asset('/public/js/currencyFormat.js')}}"></script>
 
@@ -92,6 +93,8 @@
         $('[data-widget="pushmenu"]').PushMenu('collapse');
 
         var currentLocation = window.location;
+        // const url = $(this).attr('href');
+
 
         function format(d) {
             // `d` is the original data object for the row
@@ -233,138 +236,70 @@
                 dtControl(this, aetable, errorformat);
             });
 
+
             $('.sendBtn').click(function (event) {
-                event.preventDefault();
-                swal.fire({
-                    title: <?php echo "'" . langClass::trans("Kosár adatok SÜ ERP-be!") . "'"; ?>,
-                    text: <?php echo "'" . langClass::trans("Biztosan átadja a tételeket?") . "'"; ?>,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: <?php echo "'" . langClass::trans("SÜ ERP-be") . "'"; ?>,
-                    cancelButtonText: <?php echo "'" . langClass::trans("Kilép") . "'"; ?>
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/sendCart')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                                window.location.href = currentLocation;
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                });
+
+                var url = <?php echo "'" . url('api/sendCart') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Kosár adatok SÜ ERP-be!") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("Biztosan átadja a tételeket?") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("SÜ ERP-be") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
             $('.currencyButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy betölti az árfolyamokat?",
-                    text: "A mai napi MNB árfolyamok!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: "Betöltés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/importCurrency')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                                window.location.href = currentLocation;
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+
+                var url = <?php echo "'" . url('api/importCurrency') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy betölti az árfolyamokat?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("A mai napi MNB árfolyamok!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Betöltés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
             $('.deleteOutputButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy törli az output könyvtár file-it?",
-                    text: "Output könyvtár ürítés!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: "Törlés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/deleteOutputFiles')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+
+                var url = <?php echo "'" . url('api/deleteOutputFiles') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy törli az output könyvtár file-it?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("Output könyvtár ürítés!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Törlés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
             $('.getSUXSDButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy betölti az SÜ adatbázis struktúra exportot?",
-                    text: "Adatbázis struktúra változás átvezetés!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: "Betöltés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/structureProcess')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                                window.location.href = currentLocation;
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+
+                var url = <?php echo "'" . url('api/structureProcess') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy betölti az SÜ adatbázis struktúra exportot?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("Adatbázis struktúra változás átvezetés!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Betöltés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
             $('.getSUXMLButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy betölti a SÜ adatbázis exportot?",
-                    text: "Adatbázis betöltés!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: "Betöltés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = currentLocation;
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/dataProcess')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+
+                var url = <?php echo "'" . url('api/dataProcess') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy betölti a SÜ adatbázis exportot?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("Adatbázis betöltés!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Betöltés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
         });

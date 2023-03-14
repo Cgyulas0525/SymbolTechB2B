@@ -194,28 +194,26 @@ class getSUXMLClass
 
                             if ($count > 0) {
                                 foreach ($phpDataArray[$model == 'Leed' ? 'Lead' : $model] as $index => $data) {
-//                                    if ( $model == "Product") {
-                                        if (!is_array($data)) {
-                                            $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                            $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
-                                        } else {
-                                            $keys = array_keys($data);
-                                            $values = array_values($data);
-                                        }
+                                    if (!is_array($data)) {
+                                        $keys = array_keys($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                        $values = array_values($phpDataArray[$model == 'Leed' ? 'Lead' : $model]);
+                                    } else {
+                                        $keys = array_keys($data);
+                                        $values = array_values($data);
+                                    }
 
-                                        $model_name =  'App\Models\\'.$model;
-                                        $modelFieldArray = array_keys(Schema::getConnection()
-                                            ->getDoctrineSchemaManager()
-                                            ->listTableColumns($model) );
+                                    $model_name =  'App\Models\\'.$model;
+                                    $modelFieldArray = array_keys(Schema::getConnection()
+                                        ->getDoctrineSchemaManager()
+                                        ->listTableColumns($model) );
 
-                                        $record = $model_name::where('Id', $values[array_search('Id', $keys)])->first();
+                                    $record = $model_name::where('Id', $values[array_search('Id', $keys)])->first();
 
-                                        if ( !empty($record) ) {
-                                            $this->makeUpdate($model, $keys, $values, $record->Id);
-                                        } else {
-                                            $this->makeInsert($model, $keys, $values);
-                                        }
-//                                    }
+                                    if ( !empty($record) ) {
+                                        $this->makeUpdate($model, $keys, $values, $record->Id);
+                                    } else {
+                                        $this->makeInsert($model, $keys, $values);
+                                    }
 
                                 }
                                 $this->apimodel->save();

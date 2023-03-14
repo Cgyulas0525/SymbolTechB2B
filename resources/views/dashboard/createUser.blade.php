@@ -80,6 +80,8 @@
 
 @section('scripts')
 
+    @include('functions.clickEvent')
+
     <script type="text/javascript">
 
         var currentLocation = window.location;
@@ -93,57 +95,29 @@
             });
 
             $('.getSUXSDButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy betölti az SÜ adatbázis struktúra exportot?",
-                    text: "Adatbázis struktúra változás átvezetés!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: "Betöltés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/structureProcess')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                                window.location.href = currentLocation;
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+
+                var url = <?php echo "'" . url('api/structureProcess') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy betölti az SÜ adatbázis struktúra exportot?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("Adatbázis struktúra változás átvezetés!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Betöltés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
             $('.getSUXMLButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy betölti a SÜ adatbázis exportot?",
-                    text: "Adatbázis betöltés!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: "Betöltés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = currentLocation;
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/dataProcess')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+
+                var url = <?php echo "'" . url('api/dataProcess') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy betölti a SÜ adatbázis exportot?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("Adatbázis betöltés!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Betöltés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
             });
 
         });
