@@ -166,6 +166,7 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
     @include('layouts.RowCallBack_js')
     @include('layouts.highcharts_js')
     @include('hsjs.hsjs')
+    @include('functions.clickEvent')
 
     <script type="text/javascript">
         $(function () {
@@ -263,29 +264,14 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                 <?php echo "'" . langClass::trans('Felhasználónként') . "'"; ?>, 'DB', 200, true, true, '40%');
 
             $('#currencyButton').click(function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Biztos, hogy betölti az árfolyamokat?",
-                    text: "A mai napi MNB árfolyamok!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: "Betöltés",
-                    cancelButtonText: "Kilép",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "GET",
-                            url:"{{url('api/importCurrency')}}",
-                            success: function (response) {
-                                console.log('Response:', response);
-                            },
-                            error: function (response) {
-                                console.log('Error:', response);
-                            }
-                        });
-                    }
-                })
+                var url = <?php echo "'" . url('api/importCurrency') . "'"; ?>;
+                var title = <?php echo "'" . langClass::trans("Biztos, hogy betölti az árfolyamokat?") . "'"; ?>;
+                var text = <?php echo "'" . langClass::trans("A mai napi MNB árfolyamok!") . "'"; ?>;
+                var icon = "warning";
+                var confirmButtonText = <?php echo "'" . langClass::trans("Betöltés") . "'"; ?>;
+                var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
+
+                clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
             });
 
         });
