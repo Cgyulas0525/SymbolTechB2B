@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+@section('css')
+    <link rel="stylesheet" href="pubic/css/app.css">
+    @include('layouts.datatables_css')
+    @include('layouts.costumcss')
+@endsection
+
+
 @section('content')
     <section class="content-header">
         <div class="container-fluid">
@@ -8,10 +15,10 @@
                     @if (App\Models\Employee::count() == 0)
                         <h1>{{ langClass::trans('Kezdeti adatbetöltés') }}</h1>
                         @if  (env('INSTALL_STATUS') == 0)
-                            <h1><a href="#" class="btn btn-success firstSUDataUploadButton" id="getSUXSDButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>
+                            <h1><a href="#" class="btn btn-success firstSUDataUploadButton getSUXSDButton">{{ langClass::trans('SÜ Adat struktúra') }}</a></h1>
                         @endif
                         @if (env('INSTALL_STATUS') == 1)
-                            <h1><a href="{!! route('getSUXMLInstall') !!}" class="btn btn-success firstSUDataUploadButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
+                            <h1><a href="{!! route('getSUXMLInstall') !!}" class="btn btn-success firstSUDataUploadButton getSUXMLButton">{{ langClass::trans('SÜ Adatok') }}</a></h1>
                         @endif
                         <div>
                             @if  (env('INSTALL_STATUS') == 0)
@@ -94,6 +101,24 @@
                 }
             });
 
+            function changeEnvironmentVariable(key, value) {
+                $.ajax({
+                    type: "GET",
+                    url:"{{url('api/changeEnvironmentVariable')}}",
+                    data: { key: key, value: value },
+                    success: function (response) {
+                        if ( response.name != null ) {
+                            console.log('Error:', response);
+                        }
+                    },
+                    error: function (response) {
+                        console.log('Error:', response);
+                        alert('nem ok');
+                    }
+                });
+            }
+
+
             $('.getSUXSDButton').click(function (event) {
 
                 var url = <?php echo "'" . url('api/structureProcess') . "'"; ?>;
@@ -104,6 +129,8 @@
                 var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
 
                 clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
+                changeEnvironmentVariable('INSTALL_STATUS', 1);
 
             });
 
@@ -117,6 +144,8 @@
                 var cancelButtonText = <?php echo "'" . langClass::trans("Kilép") . "'"; ?>;
 
                 clickEvent(event, url, title, text, icon, confirmButtonText, cancelButtonText);
+
+                changeEnvironmentVariable('INSTALL_STATUS', 2);
 
             });
 

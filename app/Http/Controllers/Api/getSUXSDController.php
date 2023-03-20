@@ -12,5 +12,7 @@ class getSUXSDController extends Controller
     public function structureProcess() {
         $su = new getSUXSDClass();
         $su->process();
+
+        return redirect(route('login'));
     }
 }
