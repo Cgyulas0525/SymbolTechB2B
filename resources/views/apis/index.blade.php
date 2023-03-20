@@ -53,7 +53,7 @@
                         <div class="col-lg-5 col-md-12 col-xs-12">
                             <div class="box box-primary">
                                 <div class="box-body"  >
-                                    <table class="table table-hover table-bordered partners-table" style="width: 100%;"></table>
+                                    <table class="table table-hover table-bordered partners-table w-100"></table>
                                 </div>
                             </div>
                             <div class="text-center"></div>
@@ -61,7 +61,7 @@
                         <div class="col-lg-5 col-md-12 col-xs-12">
                             <div class="box box-primary">
                                 <div class="box-body"  >
-                                    <table class="table table-hover table-bordered apimodel-table" style="width: 100%;"></table>
+                                    <table class="table table-hover table-bordered apimodel-table w-100"></table>
                                 </div>
                             </div>
                             <div class="text-center"></div>
@@ -69,7 +69,7 @@
                         <div class="col-lg-2 col-md-12 col-xs-12" style="margin-top: 37px;">
                             <div class="box box-primary">
                                 <div class="box-body"  >
-                                    <table class="table table-hover table-bordered apimodelerror-table" style="width: 100%; "></table>
+                                    <table class="table table-hover table-bordered apimodelerror-table w-100"></table>
                                 </div>
                             </div>
                             <div class="text-center"></div>
@@ -157,7 +157,6 @@
                             } else {
                                 let id = -999999;
                                 url = url.replace(':id', id);
-
                             }
                             aptable.ajax.url(url).load();
                         }
