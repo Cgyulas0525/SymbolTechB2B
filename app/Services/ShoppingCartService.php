@@ -95,8 +95,7 @@ class ShoppingCartService
 
     }
 
-    public function shoppingCartOpenedUpdate($shoppingCart)
-    {
+    public function shoppingCartOpenedUpdate($shoppingCart) {
 
         $modifiedShoppingCart = $shoppingCart;
 
@@ -105,6 +104,19 @@ class ShoppingCartService
         $modifiedShoppingCart->save();
 
         logClass::modifyRecord( "ShoppingCart", $shoppingCart, $modifiedShoppingCart);
+
+    }
+
+    public function shoppingCartUpdateValueModify($request) {
+
+        $shoppingCart = ShoppingCart::find($request->get('Id'));
+        $shoppingCart->NetValue = $request->get('NetValue');
+        $shoppingCart->VatValue = $request->get('VatValue');
+        $shoppingCart->GrossValue = $request->get('GrossValue');
+        $shoppingCart->updated_at = Carbon::now();
+        $shoppingCart->save();
+
+        return $shoppingCart;
 
     }
 

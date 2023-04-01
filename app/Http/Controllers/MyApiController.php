@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Response;
 use DB;
-use Flash;
+use \Carbon\Carbon;
 
 use myUser;
 use shoppingCartClass;
@@ -31,9 +31,16 @@ use App\Imports\excelImportImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Http;
 
+use App\Services\ShoppingCartService;
+
 
 class MyApiController extends Controller
 {
+    private $shoppingCartService;
+
+    public function __construct() {
+        $this->shoppingCartService = new ShoppingCartService();
+    }
 
     public function itemTraslation(Request $request)
     {
@@ -233,16 +240,7 @@ class MyApiController extends Controller
     public function shoppingCartUpdate(Request $request)
     {
 
-        DB::table('ShoppingCart')
-            ->where('Id', $request->get('Id'))
-            ->update([
-                'NetValue'         => $request->get('NetValue'),
-                'VatValue'         => $request->get('VatValue'),
-                'GrossValue'       => $request->get('GrossValue'),
-                'updated_at'       => \Carbon\Carbon::now()
-            ]);
-
-        return Response::json( ShoppingCart::find($request->get('Id')) );
+        return Response::json($this->shoppingCartService->shoppingCartUpdateValueModify($request));
 
     }
 
@@ -310,34 +308,25 @@ class MyApiController extends Controller
         $netValue = $quantity * $productPrice;
         $vatValue = $netValue * ( $vat->Rate / 100 );
 
-        $newShoppingCartDetail = DB::table('ShoppingCartDetail')
-            ->insertGetId([
-                'ShoppingCart' => $request->get('Id'),
-                'Currency'     => -1,
-                'CurrencyRate' => 1,
-                'Product'      => $request->get('Product'),
-                'Vat'          => $product->Vat,
-                'QuantityUnit' => $product->QuantityUnit,
-                'Quantity'     => $quantity,
-                'UnitPrice'    => $productPrice,
-                'NetValue'     => $netValue,
-                'VatValue'     => $vatValue,
-                'GrossValue'   => $netValue + $vatValue,
-                'created_at'   => \Carbon\Carbon::now()
-            ]);
+        $newShoppingCartDetail = new ShoppingCartDetail;
 
+        $newShoppingCartDetail->ShoppingCart = $request->get('Id');
+        $newShoppingCartDetail->Currency     = -1;
+        $newShoppingCartDetail->CurrencyRate = 1;
+        $newShoppingCartDetail->Product      = $request->get('Product');
+        $newShoppingCartDetail->Vat          = $product->Vat;
+        $newShoppingCartDetail->QuantityUnit = $product->QuantityUnit;
+        $newShoppingCartDetail->Quantity     = $quantity;
+        $newShoppingCartDetail->UnitPrice    = $productPrice;
+        $newShoppingCartDetail->NetValue     = $netValue;
+        $newShoppingCartDetail->VatValue     = $vatValue;
+        $newShoppingCartDetail->GrossValue   = $netValue + $vatValue;
+        $newShoppingCartDetail->created_at   = Carbon::now();
+        $newShoppingCartDetail->save();
 
-        $newShoppingCartDetail = ShoppingCartDetail::find($newShoppingCartDetail);
         $shoppingCart          = ShoppingCart::find($request->get('Id'));
 
-        DB::table('ShoppingCart')
-            ->where('Id', $shoppingCart->Id)
-            ->update([
-                'NetValue'   => $shoppingCart->NetValue + $newShoppingCartDetail->NetValue,
-                'VatValue'   => $shoppingCart->VatValue + $newShoppingCartDetail->VatValue,
-                'GrossValue' => $shoppingCart->GrossValue + $newShoppingCartDetail->GrossValue,
-                'updated_at' => \Carbon\Carbon::now()
-            ]);
+        $this->shoppingCartService->shoppingCartValueUpdate($shoppingCart, $newShoppingCartDetail);
 
         return Response::json(ShoppingCart::find($request->get('Id')));
 
