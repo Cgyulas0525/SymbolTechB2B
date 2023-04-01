@@ -11,8 +11,8 @@ use Flash;
 use Response;
 use logClass;
 
-use App\Actions\ShoppingCart\ShoppingCartValueUpdate;
-use App\Actions\ShoppingCart\ShoppincCartDetailDelete;
+use App\Services\ShoppingCartService;
+use App\Services\ShoppingCartDetailService;
 
 use App\Traits\ShoppingCart\ProductIndexTrait;
 use App\Traits\ShoppingCart\FavoriteProductIndexTrait;
@@ -24,14 +24,14 @@ class ShoppingCartDetailController extends AppBaseController
 {
     /** @var  ShoppingCartDetailRepository */
     private $shoppingCartDetailRepository;
-    private $shoppingCartValueUpdate;
-    private $shoppingCartDetailDelete;
+    private $shoppingCartService;
+    private $shoppingCartDetailService;
 
     public function __construct(ShoppingCartDetailRepository $shoppingCartDetailRepo)
     {
         $this->shoppingCartDetailRepository = $shoppingCartDetailRepo;
-        $this->shoppingCartValueUpdate = new ShoppingCartValueUpdate();
-        $this->shoppingCartDetailDelete = new ShoppincCartDetailDelete();
+        $this->shoppingCartService = new ShoppingCartService();
+        $this->shoppingCartDetailService = new ShoppingCartDetailService();
     }
 
     use ProductIndexTrait, FavoriteProductIndexTrait, CustomerOfferProductIndexTrait, CustomerContractProductIndexTrait, ShoppingCartDetailIndexTrait;
@@ -149,10 +149,10 @@ class ShoppingCartDetailController extends AppBaseController
             return redirect(route('shoppingCartDetails.index'));
         }
 
-        $shoppingCart = $this->shoppingCartValueUpdate->handle($shoppingCart, $shoppingCartDetail);
-        logClass::modifyRecord( "ShoppingCart", $shoppingCart, $shoppingCart);
+        $modifiedShoppingCart = $this->shoppingCartService->shoppingCartValueUpdate($shoppingCart, $shoppingCartDetail);
+        logClass::modifyRecord( "ShoppingCart", $shoppingCart, $modifiedShoppingCart);
 
-        $this->shoppingCartDetailDelete->handle($shoppingCartDetail);
+        $this->shoppingCartDetailService->shoppingCartDetailDelete($shoppingCartDetail);
 
         logClass::insertDeleteRecord( 5, "ShoppingCartDetail", $id);
 
