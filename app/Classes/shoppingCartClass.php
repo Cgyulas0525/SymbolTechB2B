@@ -1,72 +1,23 @@
 <?php
 namespace App\Classes;
 
-use App\Models\ProductCustomerCode;
 use Illuminate\Http\Request;
 use myUser;
-use Response;
-use logClass;
-use DB;
 
 use productPriceClass;
 
 use App\Models\CustomerOrderDetail;
-use App\Models\ShoppingCart;
-use App\Models\Customer;
-use App\Models\CustomerAddress;
 use App\Models\ShoppingCartDetail;
 use App\Models\Product;
 use App\Models\ExcelImport;
 use App\Models\Vat;
 use App\Classes\ShoppingCart\ShoppingCartOpened;
-use App\Classes\ShoppingCart\voucherNumber;
+
+use App\Actions\ShoppingCartDetail\ShoppingCartDetailInsertGetIdAction;
+use App\Actions\ShoppingCart\ShoppingCartInsertGetIdAction;
+use App\Actions\ShoppingCart\ShoppingCartValueUpdate;
 
 Class shoppingCartClass {
-
-//    public static function isOpenedShoppingCart($customerContact)
-//    {
-//        return ShoppingCart::where('CustomerContact', $customerContact)->where('Opened', 0)->get()->count();
-//    }
-//
-//    public static function openedShoppingCart($customerContact)
-//    {
-//        return ShoppingCart::where('CustomerContact', $customerContact)->where('Opened', 0)->first();
-//    }
-
-//    public static function nextB2BVoucherNumber()
-//    {
-//        $bizonylatSzam = ShoppingCart::max('VoucherNumber');
-//
-//        if (is_null($bizonylatSzam)) {
-//            return "B2B-" . Customer::where('Id', session('customer_id'))->first()->Code . '-00001';
-//        }
-//
-//        return "B2B-" . Customer::where('Id', session('customer_id'))->first()->Code . '-'. str_pad(strval(intval(substr($bizonylatSzam, -5)) + 1),5,"0",STR_PAD_LEFT);
-//    }
-
-//    public static function customerPaymentMethod()
-//    {
-//        $paymentMethod = NULL;
-//        if ( !is_null(myUser::user()->CustomerAddress) ) {
-//            $paymentMethod = CustomerAddress::where('Id', myUser::user()->CustomerAddress)->first()->PaymentMethod;
-//            if ( is_null($paymentMethod) ) {
-//                if ( !is_null(session('customer_id')) ) {
-//                    $paymentMethod = Customer::where('Id', session('customer_id'))->first()->PaymentMethod;
-//                }
-//            }
-//        } else {
-//            if ( !is_null(session('customer_id')) ) {
-//                $paymentMethod = Customer::where('Id', session('customer_id'))->first()->PaymentMethod;
-//            }
-//        }
-//
-//        return !empty($paymentMethod) ? $paymentMethod : NULL;
-//    }
-
-//    public static function getShoppingCartDetails($id)
-//    {
-//        return ShoppingCartDetail::where('ShoppingCart', $id)->get();
-//    }
 
     public function getSCDs(Request $request)
     {
@@ -89,49 +40,17 @@ Class shoppingCartClass {
             $vatValue = ($customerOrderDetail->Quantity * $productPrice) * (( 100 + $vat->Rate) / 100);
 
             if ( empty($shoppingCart)) {
-                $scId = DB::table('ShoppingCart')
-                    ->insertGetId([
-                        'VoucherNumber' => voucherNumber::nextB2BVoucherNumber(),
-                        'Customer' => myUser::user()->customerId,
-                        'CustomerAddress' => myUser::user()->CustomerAddressId,
-                        'CustomerContact' => myUser::user()->customercontact_id,
-                        'VoucherDate' => \Carbon\Carbon::now(),
-                        'PaymentMethod' => -1,
-                        'Currency' => -1,
-                        'CurrencyRate' => 1,
-                        'TransportMode' => -2,
-                        'NetValue' => $netValue,
-                        'GrossValue' => $netValue + $vatValue,
-                        'VatValue' => $vatValue,
-                        'created_at' => \Carbon\Carbon::now()
-                    ]);
-                logClass::insertDeleteRecord( 1, "ShoppingCart", $scId);
+                $action = new ShoppingCartInsertGetIdAction();
+                $action->handle($netValue, $vatValue);
             } else {
-                $shoppingCart->NetValue = $shoppingCart->NetValue + $netValue;
-                $shoppingCart->GrossValue = $shoppingCart->GrossValue + $netValue + $vatValue;
-                $shoppingCart->VatValue = $shoppingCart->VatValue + $vatValue;
-                $shoppingCart->save();
+                $action = new ShoppingCartValueUpdate();
+                $action->handle($shoppingCart, $netValue, $vatValue);
             }
 
 
             if ( empty($shoppingCartDetail) ) {
-                $scdId = DB::table('ShoppingCartDetail')
-                    ->insertGetId([
-                        'ShoppingCart' => $shoppingCart->Id,
-                        'Currency' => -1,
-                        'CurrencyRate' => 1,
-                        'Product' => $productId,
-                        'Vat' => $product->Vat,
-                        'QuantityUnit' => $product->QuantityUnit,
-                        'Reverse' => 0,
-                        'Quantity' => $customerOrderDetail->Quantity,
-                        'UnitPrice' => $productPrice,
-                        'NetValue' => $netValue,
-                        'GrossValue' => $netValue + $vatValue,
-                        'VatValue' => $vatValue,
-                        'created_at' => \Carbon\Carbon::now()
-                    ]);
-                logClass::insertDeleteRecord( 1, "ShoppingCartDetail", $scdId);
+                $action = new ShoppingCartDetailInsertGetIdAction();
+                $action->handle($shoppingCart, $productId, $product, $customerOrderDetail->Quantity, $productPrice, $netValue, $vatValue);
             }
 
         }
@@ -153,49 +72,17 @@ Class shoppingCartClass {
             $vatValue = ($shoppingCartDetailFrom->Quantity * $productPrice) * (( 100 + $vat->Rate) / 100);
 
             if ( empty($shoppingCart)) {
-                $scId = DB::table('ShoppingCart')
-                    ->insertGetId([
-                        'VoucherNumber' => voucherNumber::nextB2BVoucherNumber(),
-                        'Customer' => myUser::user()->customerId,
-                        'CustomerAddress' => myUser::user()->CustomerAddressId,
-                        'CustomerContact' => myUser::user()->customercontact_id,
-                        'VoucherDate' => \Carbon\Carbon::now(),
-                        'PaymentMethod' => -1,
-                        'Currency' => -1,
-                        'CurrencyRate' => 1,
-                        'TransportMode' => -2,
-                        'NetValue' => $netValue,
-                        'GrossValue' => $netValue + $vatValue,
-                        'VatValue' => $vatValue,
-                        'created_at' => \Carbon\Carbon::now()
-                    ]);
-                logClass::insertDeleteRecord( 1, "ShoppingCart", $scId);
+                $action = new ShoppingCartInsertGetIdAction();
+                $action->handle($netValue, $vatValue);
             } else {
-                $shoppingCart->NetValue = $shoppingCart->NetValue + $netValue;
-                $shoppingCart->GrossValue = $shoppingCart->GrossValue + $netValue + $vatValue;
-                $shoppingCart->VatValue = $shoppingCart->VatValue + $vatValue;
-                $shoppingCart->save();
+                $action = new ShoppingCartValueUpdate();
+                $action->handle($shoppingCart, $netValue, $vatValue);
             }
 
 
             if ( empty($shoppingCartDetail) ) {
-                $scdId = DB::table('ShoppingCartDetail')
-                    ->insertGetId([
-                        'ShoppingCart' => $shoppingCart->Id,
-                        'Currency' => -1,
-                        'CurrencyRate' => 1,
-                        'Product' => $productId,
-                        'Vat' => $product->Vat,
-                        'QuantityUnit' => $product->QuantityUnit,
-                        'Reverse' => 0,
-                        'Quantity' => 0,
-                        'UnitPrice' => $productPrice,
-                        'NetValue' => $netValue,
-                        'GrossValue' => $netValue + $vatValue,
-                        'VatValue' => $vatValue,
-                        'created_at' => \Carbon\Carbon::now()
-                    ]);
-                logClass::insertDeleteRecord( 1, "ShoppingCartDetail", $scdId);
+                $action = new ShoppingCartDetailInsertGetIdAction();
+                $action->handle($shoppingCart, $productId, $product, 0, $productPrice, $netValue, $vatValue);
             }
         }
     }
@@ -224,23 +111,8 @@ Class shoppingCartClass {
                     $netValue = ($quantity * $productPrice);
                     $vatValue = ($quantity * $productPrice) * (( 100 + $vat->Rate) / 100);
 
-                    $scdId = DB::table('ShoppingCartDetail')
-                        ->insertGetId([
-                            'ShoppingCart' => $shoppingCart->Id,
-                            'Currency' => -1,
-                            'CurrencyRate' => 1,
-                            'Product' => $product->Id,
-                            'Vat' => $product->Vat,
-                            'QuantityUnit' => $product->QuantityUnit,
-                            'Reverse' => 0,
-                            'Quantity' => $quantity,
-                            'UnitPrice' => $productPrice,
-                            'NetValue' => $netValue,
-                            'GrossValue' => $netValue + $vatValue,
-                            'VatValue' => $vatValue,
-                            'created_at' => \Carbon\Carbon::now()
-                        ]);
-                    logClass::insertDeleteRecord( 1, "ShoppingCartDetail", $scdId);
+                    $action = new ShoppingCartDetailInsertGetIdAction();
+                    $action->handle($shoppingCart, $product->Id, $product, $quantity, $productPrice, $netValue, $vatValue);
 
                 }
             }
