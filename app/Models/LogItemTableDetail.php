@@ -145,4 +145,8 @@ class LogItemTableDetail extends Model
         }
     }
 
+    public function logitemtable() {
+        return $this->belongsTo(LogItemTable::class, 'logitemtable_id', 'id');
+    }
+
 }

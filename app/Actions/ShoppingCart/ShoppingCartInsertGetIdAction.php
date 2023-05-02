@@ -11,6 +11,7 @@ use DB;
 class ShoppingCartInsertGetIdAction
 {
     public function handle($netValue, $vatValue) {
+
         $scId = DB::table('ShoppingCart')
             ->insertGetId([
                 'VoucherNumber' => voucherNumber::nextB2BVoucherNumber(),
@@ -27,6 +28,7 @@ class ShoppingCartInsertGetIdAction
                 'VatValue' => $vatValue,
                 'created_at' => Carbon::now()
             ]);
+
         logClass::insertDeleteRecord( 1, "ShoppingCart", $scId);
 
     }

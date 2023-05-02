@@ -20,6 +20,7 @@ use App\Http\Controllers\TranslationsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ApimodelController;
 use App\Http\Controllers\ApimodelerrorController;
+use App\Http\Controllers\DestroysController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -95,6 +96,7 @@ Route::get('productIndex', [ShoppingCartDetailController::class, 'productIndex']
 Route::get('customerOfferProductIndex', [ShoppingCartDetailController::class, 'customerOfferProductIndex'])->name('customerOfferProductIndex');
 Route::get('customerContractProductIndex', [ShoppingCartDetailController::class, 'customerContractProductIndex'])->name('customerContractProductIndex');
 Route::get('favoriteProductIndex', [ShoppingCartDetailController::class, 'favoriteProductIndex'])->name('favoriteProductIndex');
+Route::get('beforeSCDDestroy/{id}', [ShoppingCartDetailController::class, 'beforeSCDDestroy'])->name('beforeSCDDestroy');
 
 Route::get('customerOrderDetailIndex/{id}', [CustomerOrderController::class, 'customerOrderDetailIndex'])->name('customerOrderDetailIndex');
 Route::get('indexAllThisYear', [CustomerOrderController::class, 'indexAllThisYear'])->name('indexAllThisYear');
@@ -103,6 +105,7 @@ Route::get('indexYearAllOwn', [CustomerOrderController::class, 'indexYearAllOwn'
 Route::get('indexSC', [CustomerOrderController::class, 'indexSC'])->name('indexSC');
 Route::get('indexSCThisYear', [CustomerOrderController::class, 'indexSCThisYear'])->name('indexSCThisYear');
 Route::get('indexCOLastTreeMonth', [CustomerOrderController::class, 'indexCOLastTreeMonth'])->name('indexCOLastTreeMonth');
+Route::get('editSc/{id}', [CustomerOrderController::class, 'editSc'])->name('editSc');
 
 Route::post('importExcel', [ShoppingCartController::class, 'importExcel'])->name('importExcel');
 Route::get('excelImport', [ShoppingCartController::class, 'excelImport'])->name('excelImport');
@@ -111,7 +114,7 @@ Route::get('excelIndex', [ShoppingCartController::class, 'excelIndex'])->name('e
 Route::get('excelImportUseRecordsDelete', [ShoppingCartController::class, 'excelImportUseRecordsDelete'])->name('excelImportUseRecordsDelete');
 
 Route::resource('customerContactFavoriteProducts', App\Http\Controllers\CustomerContactFavoriteProductController::class);
-Route::get('productCategoryProductindex/{category}', [CustomerContactFavoriteProductController::class, 'productCategoryProductindex'])->name('productCategoryProductindex');
+Route::get('productCategoryProductIndex/{category}', [CustomerContactFavoriteProductController::class, 'productCategoryProductIndex'])->name('productCategoryProductIndex');
 Route::get('destroyMe/{id}', [CustomerContactFavoriteProductController::class, 'destroyMe'])->name('cCFPDestroyMe');
 
 Route::get('lan-change', [LanguageController::class, 'langChange'])->name('lan.change');
@@ -132,5 +135,10 @@ Route::resource('apimodelerrors', App\Http\Controllers\ApimodelerrorController::
 
 Route::get('index/{id}', [ApimodelController::class, 'index'])->name('indexApimodel');
 Route::get('indexApimodelerror/{id}', [ApimodelerrorController::class, 'indexApimodelerror'])->name('indexApimodelerror');
+
+Route::get('destroy/{table}/{id}/{route}', [DestroysController::class, 'destroy'])->name('destroys');
+Route::get('destroyWithParam/{table}/{id}/{route}/{param}', [DestroysController::class, 'destroyWithParam'])->name('destroyWithParam');
+
+Route::get('beforeDestroys/{table}/{id}/{route}', [DestroysController::class, 'beforeDestroys'])->name('beforeDestroys');
 
 

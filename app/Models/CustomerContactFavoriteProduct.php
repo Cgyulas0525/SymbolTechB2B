@@ -94,11 +94,15 @@ class CustomerContactFavoriteProduct extends Model
         return !empty($this->customercontact_id) ? !empty($customerContact) ? $customerContact->Name : ' ' : ' ';
     }
 
-    public function product() {
+    public function productRelation() {
         return $this->belongsTo(Product::class, 'product_id', 'Id');
     }
 
-    public function customercontact() {
+    public function productNameRelation() {
+        return $this->belongsTo(Product::class, 'product_id', 'Id')->select(['Id', 'Name']);
+    }
+
+    public function customercontactRelation() {
         return $this->belongsTo(CustomerContact::class, 'customercontact_id', 'Id');
     }
 

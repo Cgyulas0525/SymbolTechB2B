@@ -56,7 +56,7 @@
                     <div class="clearfix"></div>
                     <div class="box box-primary">
                         <div class="box-body"  >
-                            <table class="table table-hover table-bordered partners-table" style="width: 100%;"></table>
+                            <table class="table table-hover table-bordered partners-table w-100"></table>
                         </div>
                     </div>
                     <div class="text-center"></div>
@@ -181,7 +181,7 @@
                         url:"{{url('api/setShoppingCartDetail')}}",
                         data: { Id: sCId, Product: d.Id, Quantity: value},
                         success: function (response) {
-                            console.log('Error:', response);
+                            console.log('Ok:', response);
                             $('#netto').text(custom_number_format(response.NetValue, 4, ',', '.'));
                             $('#vat').text(custom_number_format(response.VatValue, 4, ',', '.'));
                             $('#brutto').text(custom_number_format(response.GrossValue, 4, ',', '.'));

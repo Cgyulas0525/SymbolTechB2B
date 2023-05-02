@@ -68,30 +68,6 @@
         </div>
     </div>
     <div class="row topmarginMinusz2em">
-{{--        <div class="form-group col-sm-2">--}}
-{{--            <div class="form-group col-sm-12">--}}
-{{--                <div class="row">--}}
-{{--                    <div class="mylabel8 col-sm-3">--}}
-{{--                        {!! Form::label('DepositValue', langClass::trans('Előleg:')) !!}--}}
-{{--                    </div>--}}
-{{--                    <div class="mylabel8 col-sm-9">--}}
-{{--                        {!! Form::number('DepositValue', $shoppingCart->DepositValue, ['class' => 'form-control cellLabel text-right', 'readonly' => 'true', 'id' => 'DepositValue', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.0001"']) !!}--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--        <div class="form-group col-sm-2">--}}
-{{--            <div class="form-group col-sm-12">--}}
-{{--                <div class="row">--}}
-{{--                    <div class="mylabel8 col-sm-3">--}}
-{{--                        {!! Form::label('DepositPercent', langClass::trans('Előleg %:')) !!}--}}
-{{--                    </div>--}}
-{{--                    <div class="mylabel8 col-sm-9">--}}
-{{--                        {!! Form::number('DepositPercent', $shoppingCart->DepositPercent, ['class' => 'form-control cellLabel text-right', 'readonly' => 'true', 'id' => 'DepositPercent', 'pattern="[0-9]+([\.,][0-9]+)?" step="0.0001"']) !!}--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
         <div class="form-group col-sm-8">
             <div class="row">
                 <div class="form-group col-sm-4">
@@ -313,28 +289,16 @@
                     url:"{{url('api/shoppingCartDetailQuantityUpdate')}}",
                     data: { Id: d.Id, Quantity: d.Quantity, NetValue: d.NetValue, VatValue: d.VatValue, GrossValue: d.GrossValue },
                     success: function (response) {
-                        console.log('Error:', response);
+                        console.log('Response:', response);
                     },
                     error: function (response) {
-                        // console.log('Error:', response);
-                        alert('nem ok');
+                        console.log('Error:', response);
+                        // alert('nem ok');
                     }
                 });
 
                 table.row(Row).invalidate();
 
-                $.ajax({
-                    type:"GET",
-                    url:"{{url('api/shoppingCartUpdate')}}",
-                    data: { Id: sCId, NetValue: netValue, VatValue: vatValue, GrossValue: grossValue },
-                    success: function (response) {
-                        console.log('Error:', response);
-                    },
-                    error: function (response) {
-                        // console.log('Error:', response);
-                        alert('nem ok');
-                    }
-                });
             }
         }
     </script>

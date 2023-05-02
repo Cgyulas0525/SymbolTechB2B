@@ -25,6 +25,6 @@ Class customerOrderClass{
             ->whereIn('CustomerOrder', function ($query) use($customer) {
                 return $query->select('Id')->from('customerorder')->where('Customer', $customer)->get();
             })->get();
-        return !empty($ertek[0]->ertek) ? $ertek[0]->ertek : 0;
+        return !empty($ertek->first()->ertek) ? $ertek->first()->ertek : 0;
     }
 }

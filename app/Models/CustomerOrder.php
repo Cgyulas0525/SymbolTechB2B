@@ -205,7 +205,7 @@ class CustomerOrder extends Model
 //    const UPDATED_AT = 'updated_at';
 //
 //
-//    protected $dates = ['deleted_at'];
+//    public $dates = ['deleted_at'];
 
 
 
@@ -340,7 +340,7 @@ class CustomerOrder extends Model
      *
      * @var array
      */
-    protected $casts = [
+    public $casts = [
         'Id' => 'integer',
         'VoucherType' => 'integer',
         'VoucherSequence' => 'integer',
@@ -561,40 +561,64 @@ class CustomerOrder extends Model
         'CloseReason' => 'nullable|string|max:100'
     ];
 
-    protected $append = [
-        'tetelszam',
+    public $append = [
+        'DetailNumber',
         'currencyName',
         'paymentMethodName',
         'statusName'
     ];
 
-    public function getTetelSzamAttribute()
-    {
-        return CustomerOrderDetail::where('CustomerOrder', $this->Id)->get()->count();
+    public function customerOrderDetailsRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'CustomerOrder', 'Id');
     }
 
-//    public function getOsszErtekAttribute()
-//    {
-//        $ertek = CustomerOrderDetail::selectRaw('sum(Quantity * UnitPrice) as ertek')
-//            ->where('CustomerOrder', $this->Id)
-//            ->get();
-//        return !empty($ertek[0]->ertek) ? $ertek[0]->ertek : 0;
-//    }
+    public function currencyRelation() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
+    }
 
-    protected function getCurrencyNameAttribute()
+    public function paymentMethodRelation() {
+        return $this->belongsTo(PaymentMethod::class, 'PaymentMethod', 'Id');
+    }
+
+    public function customerRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
+    }
+
+    public function customerAddressRelation() {
+        return $this->belongsTo(CustomerAddress::class, 'CustomerAddress', 'Id');
+    }
+
+    public function customerContactRelation() {
+        return $this->belongsTo(CustomerContact::class, 'CustomerContact', 'Id');
+    }
+
+    public function customerContractRelation() {
+        return $this->belongsTo(CustomerContract::class, 'CustomerContract', 'Id');
+    }
+
+    public function customerOrderStatusRelation() {
+        return $this->belongsTo(CustomerOrderStatus::class, 'CustomerOrderStatus', 'Id');
+    }
+
+
+    public function getCurrencyNameAttribute()
     {
         return !empty($this->Currency) ? Currency::find($this->Currency)->Name : '';
     }
 
-    protected function getPaymentMethodNameAttribute()
+    public function getPaymentMethodNameAttribute()
     {
         return !empty($this->PaymentMethod) ? PaymentMethod::find($this->PaymentMethod)->Name : '';
     }
 
-    protected function getStatusNameAttribute()
+    public function getStatusNameAttribute()
     {
         return !empty($this->CustomerOrderStatus) ? CustomerOrderStatus::find($this->CustomerOrderStatus)->Name : '';
     }
 
+    public function getDetailNumberAttribute()
+    {
+        return CustomerOrderDetail::where('CustomerOrder', $this->Id)->get()->count();
+    }
 
 }

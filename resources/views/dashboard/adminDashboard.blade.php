@@ -132,7 +132,7 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                        <!-- /.card-body -->
                    <div class="clearfix"></div>
                    <div>
-                       <figure class="highcharts-figure">
+                       <figure class="highcharts-figure" style="width: 100%; height: 50%;">
                            <div id="ThreeMonthsLogin"></div>
                        </figure>
                    </div>
@@ -205,6 +205,7 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
                 fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
                     RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);
                 },
+                buttons: []
             });
 
             var table = $('.b2bcustomer').DataTable({
@@ -228,11 +229,12 @@ $customerLogin = App\Classes\adminClass::B2BCustomerLoginCount(date('Y-m-d H:i:s
 
             var cltable = $('.customerLogin-table').DataTable({
                 serverSide: true,
-                scrollY: 250,
+                scrollY: 255,
                 colReorder: true,
                 order: [[0, 'asc']],
                 ajax: "{{ route('B2BCustomerLoginCountIndex') }}",
                 paging: false,
+                buttons: [],
                 columns: [
                     {title: <?php echo "'" . langClass::trans('Név') . "'"; ?>, data: 'customerName', width:'250px', name: 'customerName'},
                     {title: <?php echo "'" . langClass::trans('Belépett') . "'"; ?>, data: 'db', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'50px', name: 'db'},

@@ -182,8 +182,16 @@ class Warehouse extends Model
         'IsConsigner' => 'required'
     ];
 
-    public function CustomerBid() {
-        return $this->hasMany('App\Models\CustomerBid', 'Warehouse');
+    public function CustomerBidRelation() {
+        return $this->hasMany(CustomerBid::class, 'Warehouse', 'id');
+    }
+
+    public function warehouseBalanceRelation() {
+        return $this->hasMany(WarehouseBalance::class, 'Warehouse', 'id');
+    }
+
+    public function warehouseDailyBalanceRelation() {
+        return $this->hasMany(WarehouseDailyBalance::class, 'Warehouse', 'id');
     }
 
 }

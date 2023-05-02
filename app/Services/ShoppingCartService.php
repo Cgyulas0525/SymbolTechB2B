@@ -6,8 +6,10 @@ use App\Classes\logClass;
 use App\Classes\utilityClass;
 use App\Models\ShoppingCart;
 use Carbon\Carbon;
+use DB;
 
 use App\Services\ShoppingCartDetailService;
+use App\Actions\ShoppingCartDetail\ShoppingCartDetailsDelete;
 
 class ShoppingCartService
 {
@@ -44,32 +46,30 @@ class ShoppingCartService
 
     public function shoppingCartUpdate($input, $id) {
 
-        $shoppingCart = ShoppingCart::find($id);
+        ShoppingCart::where('Id', $id)
+            ->update([
+                    'VoucherNumber'    => $input['VoucherNumber'],
+                    'Customer'         => $input['Customer'],
+                    'CustomerAddress'  => $input['CustomerAddress'],
+                    'CustomerContact'  => $input['CustomerContact'],
+                    'VoucherDate'      => $input['VoucherDate'],
+                    'DeliveryDate'     => $input['DeliveryDate'],
+                    'PaymentMethod'    => $input['PaymentMethod'],
+                    'Currency'         => $input['Currency'],
+                    'CurrencyRate'     => $input['CurrencyRate'],
+                    'TransportMode'    => $input['TransportMode'],
+                    'CustomerContract' => $input['CustomerContact'],
+                    'DepositValue'     => $input['DepositValue'],
+                    'DepositPercent'   => $input['DepositPercent'],
+                    'NetValue'         => (float)$input['NetValue'],
+                    'GrossValue'       => (float)$input['GrossValue'],
+                    'VatValue'         => (float)$input['VatValue'],
+                    'Comment'          => $input['Comment'],
+                    'Opened'           => $input['Opened'],
+                    'CustomerOrder'    => $input['CustomerOrder']
+                ]);
 
-        $shoppingCart->VoucherNumber    = $input['VoucherNumber'];
-        $shoppingCart->Customer         = $input['Customer'];
-        $shoppingCart->CustomerAddress  = $input['CustomerAddress'];
-        $shoppingCart->CustomerContact  = $input['CustomerContact'];
-        $shoppingCart->VoucherNumber    = $input['VoucherNumber'];
-        $shoppingCart->VoucherDate      = $input['VoucherDate'];
-        $shoppingCart->DeliveryDate     = $input['DeliveryDate'];
-        $shoppingCart->PaymentMethod    = $input['PaymentMethod'];
-        $shoppingCart->Currency         = $input['Currency'];
-        $shoppingCart->CurrencyRate     = $input['CurrencyRate'];
-        $shoppingCart->TransportMode    = $input['TransportMode'];
-        $shoppingCart->CustomerContract = $input['CustomerContact'];
-        $shoppingCart->DepositValue     = $input['DepositValue'];
-        $shoppingCart->DepositPercent   = $input['DepositPercent'];
-        $shoppingCart->NetValue         = $input['NetValue'];
-        $shoppingCart->GrossValue       = $input['GrossValue'];
-        $shoppingCart->VatValue         = $input['VatValue'];
-        $shoppingCart->Comment          = $input['Comment'];
-        $shoppingCart->Opened           = $input['Opened'];
-        $shoppingCart->CustomerOrder    = $input['CustomerOrder'];
-
-        $shoppingCart->save();
-
-        return $shoppingCart;
+        return ShoppingCart::find($id);
 
     }
 
@@ -85,13 +85,28 @@ class ShoppingCartService
 
     }
 
-    public function shoppingCartDelete($shoppingCart, ShoppingCartDetailService $shoppingCartDetailService) {
+    public function shoppingCartDelete($shoppingCart) {
 
-        $shoppingCartDetailService->shoppingCartDetailsDelete($shoppingCart->Id);
-        $shoppingCart->deleted_at = Carbon::now();
-        $shoppingCart->save();
+        DB::beginTransaction();
 
-        logClass::insertDeleteRecord( 5, "ShoppingCart", $shoppingCart->Id);
+        try {
+
+            $scdd = new ShoppingCartDetailsDelete($shoppingCart->Id);
+            $scdd->handle();
+
+            $shoppingCart->deleted_at = Carbon::now();
+            $shoppingCart->save();
+
+            logClass::insertDeleteRecord( 5, "ShoppingCart", $shoppingCart->Id);
+
+            DB::commit();
+
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+        }
 
     }
 

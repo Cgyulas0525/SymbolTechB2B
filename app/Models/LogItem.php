@@ -120,4 +120,15 @@ class LogItem extends Model
         return LogItemTable::where('logitem_id', $this->id)->count();
     }
 
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'customer_id', 'Id');
+    }
+
+    public function user() {
+        return $this->belongsTo(Users::class, 'user_id', 'id');
+    }
+
+    public function logitemtable() {
+        return $this->hasMany(LogItemTable::class, 'logitem_id', 'id');
+    }
 }

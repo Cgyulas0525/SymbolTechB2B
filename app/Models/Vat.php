@@ -120,5 +120,25 @@ class Vat extends Model
         'ShowDetailName' => 'required'
     ];
 
+    public function shoppingCartDetailRelation() {
+        return $this->hasMany(ShoppingCartDetail::class, 'Vat', 'Id');
+    }
+
+    public function productRelation() {
+        return $this->hasMany(Product::class, 'Vat', 'Id');
+    }
+
+    public function customerContractDetailRelation() {
+        return $this->hasMany(CustomerContractDetail::class, 'Vat', 'Id');
+    }
+
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'Vat', 'Id');
+    }
+
+    public function productCategoryRelation() {
+        return $this->hasMany(ProductCategory::class, 'Vat', 'Id');
+    }
+
 
 }

@@ -92,8 +92,8 @@ class CurrencyRate extends Model
         'RowModify' => 'nullable'
     ];
 
-    public function CurrencyAdat() {
-        return $this->belongsTo('App\Models\Currency', 'Currency');
+    public function CurrencyRealtion() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
     }
 
 

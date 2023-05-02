@@ -100,8 +100,41 @@ class Currency extends Model
         'RowModify' => 'nullable'
     ];
 
-    public function CurrencyRateAdat() {
-        return $this->hasMany('App\Models\CurrencyRate', 'Currency');
+    public function CurrencyRateAdatRelation() {
+        return $this->hasMany(CurrencyRate::class, 'Currency', 'Id');
     }
+
+    public function shoppingCartDetailRelation() {
+        return $this->hasMany(ShoppingCartDetail::class, 'Currency', 'Id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'Currency', 'Id');
+    }
+
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'Currency', 'Id');
+    }
+
+    public function customerOrderRelation() {
+        return $this->hasMany(CustomerOrder::class, 'Currency', 'Id');
+    }
+
+    public function customerRelation() {
+        return $this->hasMany(Customer::class, 'Currency', 'Id');
+    }
+
+    public function customerContractDetailRelation() {
+        return $this->hasMany(CustomerContractDetail::class, 'Currency', 'Id');
+    }
+
+    public function customerOfferDetailRelation() {
+        return $this->hasMany(CustomerOfferDetail::class, 'Currency', 'Id');
+    }
+
+    public function productPriceRelation() {
+        return $this->hasMany(ProductPrice::class, 'Currency', 'Id');
+    }
+
 
 }

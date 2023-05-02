@@ -188,9 +188,24 @@ class ProductCategory extends Model
         'NonEuVatBuy' => 'nullable'
     ];
 
-    public function childs() {
-        return $this->hasMany('App\Models\Category', 'Parent', 'Id');
+//    public function childsRelation() {
+//        return $this->hasMany('App\Models\Category', 'Parent', 'Id');
+//    }
+
+    public function childsRelation() {
+        return $this->hasMany(ProductCategory::class, 'Parent', 'Id');
     }
 
+    public function productRelation() {
+        return $this->hasMany(Product::class, 'ProductCategory', 'Id');
+    }
+
+    public function vatRelation() {
+        return $this->belongsTo(Vat::class, 'Vat', 'Id');
+    }
+
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
+    }
 
 }

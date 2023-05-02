@@ -162,5 +162,28 @@ class CustomerContract extends Model
         'Investment' => 'nullable'
     ];
 
+    public function customerRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
+    }
+
+    public function customerAddressRelation() {
+        return $this->belongsTo(CustomerAddress::class, 'CustomerAddress', 'Id');
+    }
+
+    public function paymentMethodRelation() {
+        return $this->belongsTo(PaymentMethod::class, 'PaymentMethod', 'Id');
+    }
+
+    public function customerContractDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'CustomerContract', 'Id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'CustomerContract', 'Id');
+    }
+
+    public function customerOrderRelation() {
+        return $this->hasMany(CustomerOrder::class, 'CustomerContract', 'Id');
+    }
 
 }

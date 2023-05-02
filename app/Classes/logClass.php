@@ -3,37 +3,39 @@ namespace App\Classes;
 
 use App\Models\LogItem;
 use App\Models\LogItemTable;
-use App\Models\LogItemTableDetail;
 use DB;
-use App\Models\VoucherSequence;
-use App\Models\CustomerOrder;
-use App\Classes\utilityClass;
-use Carbon\Carbon;
-use function Symfony\Component\String\b;
 use myUser;
 
 Class logClass{
 
     public static function insertLogIn($type)
     {
-        return LogItem::create([
-            "customer_id" => session('customer_id'),
-            "user_id" => myUser::user()->id,
-            "eventtype" => $type,
-            "eventdatetime" => now(),
-            "remoteaddress" => '127.0.0.1'
-        ]);
+
+        $id = DB::table('LogItem')->insertGetId(
+            [   "customer_id" => session('customer_id'),
+                "user_id" => myUser::user()->id,
+                "eventtype" => $type,
+                "eventdatetime" => now(),
+                "remoteaddress" => '127.0.0.1'
+            ]
+        );
+
+        return LogItem::find($id);
+
     }
 
     public static function insertDeleteRecord( $type, $tableName, $recordId)
     {
-        $logItem = logClass::insertLogIn($type);
+        $logItem = self::insertLogIn($type);
 
-        return LogItemTable::create([
-            "logitem_id" => $logItem->id,
-            "tablename" => $tableName,
-            "recordid" => $recordId,
-        ]);
+        $id = DB::table('LogItemTable')->insertGetId(
+            [   "logitem_id" => $logItem->id,
+                "tablename" => $tableName,
+                "recordid" => $recordId,
+            ]
+        );
+
+        return LogItemTable::find($id);
     }
 
     public static function modifyRecord( $tableName, $old, $new)
@@ -51,25 +53,25 @@ Class logClass{
             if ( empty($pos) ) {
                 if ( $newValues[$i] != $oldValues[$i] ) {
                     if ( $headRecord == false ) {
-                        $logItemTable = logClass::insertDeleteRecord(6, $tableName, $new->id );
+                        $logItemTable = self::insertDeleteRecord(6, $tableName, $new->id );
                         $headRecord = true;
                     }
 
                     $castsValue = $castsValues[array_search($keys[$i], $castsKeys)];
 
-
-                    LogItemTableDetail::create([
-                       "logitemtable_id" => $logItemTable->id,
-                        "changedfield" => $keys[$i],
-                        "oldinteger" => $castsValue == "integer" ? $oldValues[$i] : NULL,
-                        "newinteger" => $castsValue == "integer" ? $newValues[$i] : NULL,
-                        "oldstring" => $castsValue == "string" ? $oldValues[$i] : NULL,
-                        "newstring" => $castsValue == "string" ? $newValues[$i] : NULL,
-                        "olddecimal" => $castsValue == "decimal" ? $oldValues[$i] : NULL,
-                        "newdecimal" => $castsValue == "decimal" ? $newValues[$i] : NULL,
-                        "olddatetime" => $castsValue == "datetime" ? $oldValues[$i] : NULL,
-                        "newdatetime" => $castsValue == "datetime" ? $newValues[$i] : NULL,
-                    ]);
+                    DB::table('LogItemTableDetail')->insert(
+                        [
+                            "logitemtable_id" => $logItemTable->id,
+                            "changedfield" => $keys[$i],
+                            "oldinteger" => $castsValue == "integer" ? $oldValues[$i] : NULL,
+                            "newinteger" => $castsValue == "integer" ? $newValues[$i] : NULL,
+                            "oldstring" => $castsValue == "string" ? $oldValues[$i] : NULL,
+                            "newstring" => $castsValue == "string" ? $newValues[$i] : NULL,
+                            "olddecimal" => $castsValue == "decimal" ? $oldValues[$i] : NULL,
+                            "newdecimal" => $castsValue == "decimal" ? $newValues[$i] : NULL,
+                            "olddatetime" => $castsValue == "datetime" ? $oldValues[$i] : NULL,
+                            "newdatetime" => $castsValue == "datetime" ? $newValues[$i] : NULL,
+                        ]);
                 }
             }
         }

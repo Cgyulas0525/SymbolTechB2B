@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use DataTables;
 
 trait ShoppingCartDetailIndexTrait {
+
     public function index(Request $request, $id)
     {
         if( myUser::check() ){

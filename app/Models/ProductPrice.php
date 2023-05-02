@@ -95,5 +95,21 @@ class ProductPrice extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
+
+    public function currencyRelation() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
+    }
+
+    public function priceCategoryRelation() {
+        return $this->belongsTo(PriceCategory::class, 'PriceCategory', 'Id');
+    }
+
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
+    }
+
 
 }

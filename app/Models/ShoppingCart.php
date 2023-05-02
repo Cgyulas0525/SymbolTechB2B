@@ -173,6 +173,38 @@ class ShoppingCart extends Model
         'CustomerOrderVoucherNumber'
     ];
 
+    public function shoppingCartDetailRelation() {
+        return $this->hasMany(ShoppingCartDetail::class, 'ShoppingCart', 'Id');
+    }
+
+    public function currencyRelation() {
+        return $this->belongsTo('Currency', 'Currency', 'Id');
+    }
+
+    public function customerRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
+    }
+
+    public function customerAddressRelation() {
+        return $this->belongsTo(CustomerAddress::class, 'CustomerAddress', 'Id');
+    }
+
+    public function customerContactRelation() {
+        return $this->belongsTo(CustomerContact::class, 'CustomerContact', 'Id');
+    }
+
+    public function customerContractRelation() {
+        return $this->belongsTo(CustomerContract::class, 'CustomerContract', 'Id');
+    }
+
+    public function transportModeRelation() {
+        return $this->belongsTo(TransportMode::class, 'TransportMode', 'Id');
+    }
+
+    public function pyamentMethodRelation() {
+        return $this->belongsTo(PaymentMethod::class, 'PaymentMethod', 'Id');
+    }
+
     public function getDetailNumberAttribute() {
         return ShoppingCartDetail::where('ShoppingCart', $this->Id)->get()->count();
     }
@@ -217,8 +249,20 @@ class ShoppingCart extends Model
         return !empty($co) ? $co->VoucherNumber : ' ';
     }
 
-    public function shoppingcartdetaildata() {
-        return $this->hasMany('App\Models\ShoppingCartDetail', 'ShoppingCart', 'Id');
+    public function scopeOpen($query) {
+        $query->where('Opened', 0);
+    }
+
+    public function scopeClosed($query) {
+        $query->where('Opened', 1);
+    }
+
+    public function scopeOwnOpen($query, $customer, $customerContact) {
+        $query->where('Opened', 0)->where('Customer', $customer)->where('CustomerContact', $customerContact);
+    }
+
+    public function scopeOwnClosed($query, $customer, $customerContact) {
+        $query->where('Opened', 1)->where('Customer', $customer)->where('CustomerContact', $customerContact);
     }
 
 }

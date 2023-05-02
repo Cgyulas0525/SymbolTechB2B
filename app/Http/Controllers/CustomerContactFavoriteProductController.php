@@ -15,8 +15,12 @@ use DataTables;
 use myUser;
 
 use Illuminate\Support\Facades\Cache;
+use App\Models\Product;
 
 use App\Models\CustomerContactFavoriteProduct;
+use App\Models\Customer;
+
+use App\Traits\CustomerContactFavoriteProduct\ProductCategoryProductIndex;
 
 class CustomerContactFavoriteProductController extends AppBaseController
 {
@@ -28,11 +32,13 @@ class CustomerContactFavoriteProductController extends AppBaseController
         $this->customerContactFavoriteProductRepository = $customerContactFavoriteProductRepo;
     }
 
+    use ProductCategoryProductIndex;
+
     public function dwData($data)
     {
         return Datatables::of($data)
               ->addIndexColumn()
-//              ->addColumn('ProductName', function($data) { return $data->product->Name; })
+              ->addColumn('ProductName', function($data) { return $data->product->Name; })
               ->addColumn('action', function($row){
                   $btn = '<a href="' . route('cCFPDestroyMe', [$row->id]) . '"
                              class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="far fa-heart"></i></a>';
@@ -56,25 +62,13 @@ class CustomerContactFavoriteProductController extends AppBaseController
 
             if ($request->ajax()) {
 
-//                $data = CustomerContactFavoriteProduct::all();
+//                $data = CustomerContactFavoriteProduct::with('productName')->get();
 
-                $data = DB::table('CustomerContactFavoriteProduct as t1')
-                          ->join('Product as t2', 't2.id', '=', 't1.Product_id')
-                          ->select('t1.id', 't2.Name as ProductName')
-                          ->whereNull('t1.deleted_at')
-                          ->get();
+                Cache::pull('allCustomerContactFavoriteProduct');
+                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
+                    return CustomerContactFavoriteProduct::with('productName')->get();
+                });
 
-//                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
-//                    return CustomerContactFavoriteProduct::all();
-//                });
-//                Cache::pull('allCustomerContactFavoriteProduct');
-//                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
-//                    return DB::table('CustomerContactFavoriteProduct as t1')
-//                        ->join('Product as t2', 't2.id', '=', 't1.Product_id')
-//                        ->select('t1.id', 't2.Name as ProductName')
-//                        ->whereNull('t1.deleted_at')
-//                        ->get();
-//                });
                 return $this->dwData($data);
 
             }
@@ -202,34 +196,37 @@ class CustomerContactFavoriteProductController extends AppBaseController
         return redirect(route('customerContactFavoriteProducts.index'));
     }
 
-    public function productCategoryProductindex(Request $request, $category)
-    {
-        if( \myUser::check() ){
-
-            if ($request->ajax()) {
-
-                $data = DB::table('product')
-                        ->where(function($query) use ($category) {
-                            if (is_null($category) || $category == -999999) {
-                                $query->whereNotNull('ProductCategory');
-                            } else {
-                                $query->where('ProductCategory', '=', $category);
-                            }
-                        })
-                        ->whereNotIn('Id', function ($query) {
-                            return $query->from('customercontactfavoriteproduct')->select('product_id')->where('customercontact_id', myUser::user()->customercontact_id)->get();
-                        })
-                        ->get();
-
-                return Datatables::of($data)
-                    ->addIndexColumn()
-                    ->make(true);
-
-            }
-
-            return back();
-        }
-    }
+//    public function productCategoryProductIndex(Request $request, $category)
+//    {
+//        if( myUser::check() ){
+//
+//            if ($request->ajax()) {
+//
+//                $data = DB::table('product')
+//                        ->where(function($query) use ($category) {
+//                            if (is_null($category) || $category == -999999) {
+//                                $query->whereNotNull('ProductCategory');
+//                            } else {
+//                                $query->where('ProductCategory', $category);
+//                            }
+//                        })
+//                        ->whereNotIn('Id', function ($query) {
+//                            return $query->from('customercontactfavoriteproduct')
+//                                         ->select('product_id')
+//                                         ->where('customercontact_id', myUser::user()->customercontact_id)
+//                                         ->get();
+//                        })
+//                        ->get();
+//
+//                return Datatables::of($data)
+//                    ->addIndexColumn()
+//                    ->make(true);
+//
+//            }
+//
+//            return back();
+//        }
+//    }
 
     public function destroyMe($id)
     {

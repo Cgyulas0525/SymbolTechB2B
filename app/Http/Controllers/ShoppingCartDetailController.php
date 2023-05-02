@@ -9,7 +9,6 @@ use App\Models\ShoppingCart;
 use App\Repositories\ShoppingCartDetailRepository;
 use Flash;
 use Response;
-use logClass;
 
 use App\Services\ShoppingCartService;
 use App\Services\ShoppingCartDetailService;
@@ -19,6 +18,8 @@ use App\Traits\ShoppingCart\FavoriteProductIndexTrait;
 use App\Traits\ShoppingCart\CustomerOfferProductIndexTrait;
 use App\Traits\ShoppingCart\CustomerContractProductIndexTrait;
 use App\Traits\ShoppingCart\ShoppingCartDetailIndexTrait;
+use App\Traits\ShoppingCart\BeforeSCDDestroyTrait;
+use App\Traits\ShoppingCart\ShoppingCartDetailDestroyTrait;
 
 class ShoppingCartDetailController extends AppBaseController
 {
@@ -34,7 +35,8 @@ class ShoppingCartDetailController extends AppBaseController
         $this->shoppingCartDetailService = new ShoppingCartDetailService();
     }
 
-    use ProductIndexTrait, FavoriteProductIndexTrait, CustomerOfferProductIndexTrait, CustomerContractProductIndexTrait, ShoppingCartDetailIndexTrait;
+    use ProductIndexTrait, FavoriteProductIndexTrait, CustomerOfferProductIndexTrait, CustomerContractProductIndexTrait,
+        ShoppingCartDetailIndexTrait, BeforeSCDDestroyTrait, ShoppingCartDetailDestroyTrait;
 
     /**
      * Show the form for creating a new ShoppingCartDetail.
@@ -131,32 +133,4 @@ class ShoppingCartDetailController extends AppBaseController
         return redirect(route('shoppingCartDetails.index'));
     }
 
-    /**
-     * Remove the specified ShoppingCartDetail from storage.
-     *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        $shoppingCartDetail = $this->shoppingCartDetailRepository->find($id);
-        $shoppingCart = ShoppingCart::where('Id', $shoppingCartDetail->ShoppingCart)->first();
-
-        if (empty($shoppingCartDetail)) {
-            return redirect(route('shoppingCartDetails.index'));
-        }
-
-        $modifiedShoppingCart = $this->shoppingCartService->shoppingCartValueUpdate($shoppingCart, $shoppingCartDetail);
-        logClass::modifyRecord( "ShoppingCart", $shoppingCart, $modifiedShoppingCart);
-
-        $this->shoppingCartDetailService->shoppingCartDetailDelete($shoppingCartDetail);
-
-        logClass::insertDeleteRecord( 5, "ShoppingCartDetail", $id);
-
-        return view('shopping_carts.edit')->with('shoppingCart', $shoppingCart);
-
-    }
 }

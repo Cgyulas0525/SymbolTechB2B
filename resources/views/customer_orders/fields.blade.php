@@ -11,7 +11,7 @@
     <div class="clearfix"></div>
     <div class="box box-primary">
         <div class="box-body"  >
-            <table class="table table-hover table-bordered partners-table" style="width: 100%;"></table>
+            <table class="table table-hover table-bordered partners-table w-100"></table>
         </div>
     </div>
     <div class="text-center"></div>
@@ -39,7 +39,7 @@
 
             table = $('.partners-table').DataTable({
                 serverSide: true,
-                scrollY: 200,
+                scrollY: 400,
                 scrollX: true,
                 paging: false,
                 select: true,
@@ -56,7 +56,7 @@
                     },
 
                     {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'ProductName', name: 'ProductName'},
-                    {title: <?php echo "'" . langClass::trans('Mennyiség') . "'"; ?>, data: 'Quantity', width: '150px', name: 'Quantity', id: 'Quntity'},
+                    {title: <?php echo "'" . langClass::trans('Mennyiség') . "'"; ?>, data: 'Quantity', width: '150px', name: 'Quantity', id: 'Quantity'},
                     {title: <?php echo "'" . langClass::trans('Me.egys') . "'"; ?>, data: 'QuantityUnitName', name: 'QuantityUnitName'},
                     {title: <?php echo "'" . langClass::trans('Egys.ár') . "'"; ?>, data: 'UnitPrice', name: 'UnitPrice', id: 'UnitPrice'},
                     {title: <?php echo "'" . langClass::trans('Netto') . "'"; ?>, data: 'NetValue', name: 'NetValue', id: 'NetValueD'},
@@ -64,8 +64,8 @@
                     {title: <?php echo "'" . langClass::trans('Bruttó') . "'"; ?>, data: 'GrossValue', name: 'GrossValue', id: 'GrossValueD'},
                     {title: <?php echo "'" . langClass::trans('Pénznem') . "'"; ?>, data: 'CurrencyName', name: 'CurrencyName'},
                     {title: <?php echo "'" . langClass::trans('Státusz') . "'"; ?>, data: 'StatusName', name: 'StatusName'},
-                    {title: 'Id', data: 'Id', name: 'Id', id: 'Id'},
-                    {title: 'Product', data: 'Product', name: 'Product', id: 'Product'},
+                    {title: 'Id', data: 'Id', name: 'Id'},
+                    {title: 'Product', data: 'Product', name: 'Product'},
                     {title: 'VatRate', data: 'VatRate', name: 'VatRate', id: 'VatRate'},
                 ],
                 columnDefs: [
@@ -93,7 +93,7 @@
         $('#saveBtn').click(function (e) {
             if ( table.rows( { selected: true } ).count() > 0) {
                 swal.fire({
-                    title: <?php echo "'" . langClass::trans("Tétetek kosárba másolás!") . "'"; ?>,
+                    title: <?php echo "'" . langClass::trans("Tételek kosárba másolás!") . "'"; ?>,
                     text: <?php echo "'" . langClass::trans("Biztosan kosárba másolja a tételeket?") . "'"; ?>,
                     icon: "warning",
                     showCancelButton: true,

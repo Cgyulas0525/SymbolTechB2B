@@ -27,7 +27,7 @@
                    </table>
                        <!-- /.card-body -->
                 </div>
-                <a href="{{ route('customerIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BCustomerUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-12 col-md-12 col-xs-12" style="margin-top: 10px;">
@@ -44,7 +44,7 @@
                     </div>
                     <div class="text-center"></div>
                 </div>
-                <a href="{{ route('customerIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('B2BCustomerUserIndex') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>
@@ -89,23 +89,24 @@
                     {title: <?php echo "'" . langClass::trans('Telephely') . "'"; ?>, data: 'CustomerAddressName', name: 'CustomerAddressName'},
                     {title: <?php echo "'" . langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
                 ],
-                buttons: [
-                    {
-                        text: 'Mind +',
-                        action: function () {
-                            table.rows().select();
-                        }
-                    },
-                    {
-                        text: 'Mind -',
-                        action: function () {
-                            table.rows().deselect();
-                        }
-                    }
-                ],
-                fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-                    RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);
-                },
+                buttons: []
+                // buttons: [
+                //     {
+                //         text: 'Mind +',
+                //         action: function () {
+                //             table.rows().select();
+                //         }
+                //     },
+                //     {
+                //         text: 'Mind -',
+                //         action: function () {
+                //             table.rows().deselect();
+                //         }
+                //     }
+                // ],
+                // fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                //     RCB(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+                // },
             });
 
         });

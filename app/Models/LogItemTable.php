@@ -126,5 +126,11 @@ class LogItemTable extends Model
         return LogItemTableDetail::where('logitemtable_id', $this->id)->get()->count();
     }
 
+    public function logitem() {
+        return $this->belongsTo(LogItem::class, 'logitem_id', 'id');
+    }
 
+    public function logitemtabledetail() {
+        return $this->hasMany(LogItemTableDetail::class, 'logitemtable_id', 'id');
+    }
 }

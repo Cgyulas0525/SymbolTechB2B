@@ -167,4 +167,43 @@ class Users extends Model
         return LogItem::where('user_id', $this->id)->get()->count();
     }
 
+    public function customercontacts() {
+        return $this->belongsTo(CustomerContact::class, 'customercontact_id', 'Id' );
+    }
+
+    public function scopeCustomerContactScope($query) {
+        $query->whereNotNull('customercontact_id');
+    }
+
+    public function scopeCustomerContactAdministrator($query, $administrator) {
+        $query->whereNotNull('customercontact_id')->where('rendszergazda', $administrator);
+    }
+
+    public function scopeEmployeeScope($query) {
+        $query->whereNotNull('employee_id');
+    }
+
+    public function scopeEmployeeAdministrator($query, $administrator) {
+        $query->whereNotNull('employee_id')->where('rendszergazda', $administrator);
+    }
+
+    public function scopeAdministrator($query) {
+        $query->where('rendszergazda', 2);
+    }
+
+    public function scopeB2BCustomer($query) {
+        $query->where('rendszergazda', 0);
+    }
+
+    public function scopeInternalUser($query) {
+        $query->where('rendszergazda', 1);
+    }
+
+    public function logitem() {
+        return $this->hasMany(LogItem::class, 'user_id', 'id');
+    }
+
+    public function xmlImport() {
+        return $this->hasMany(XMLImport::class, 'user_id', 'id');
+    }
 }

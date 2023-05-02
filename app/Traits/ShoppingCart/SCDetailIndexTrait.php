@@ -15,6 +15,7 @@ trait SCDetailIndexTrait {
             if ($request->ajax()) {
 
                 $data = ShoppingCartDetail::where('ShoppingCart', $id)->get();
+
                 return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('CurrencyName', function($data) { return $data->CurrencyName; })
@@ -22,8 +23,10 @@ trait SCDetailIndexTrait {
                     ->addColumn('QuantityUnitName', function($data) { return $data->QuantityUnitName; })
                     ->addColumn('VatRate', function($data) { return $data->VatRate; })
                     ->addColumn('action', function($row){
-                        $btn = '<a href="' . route('shoppingCartDetailDestroy', [$row->Id]) . '"
+                        $btn = '<a href="' . route('beforeSCDDestroy', [$row->Id]) . '"
                                  class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="fa fa-trash"></i></a>';
+//                        $btn = '<a href="' . route('shoppingCartDetailDestroy', [$row->Id]) . '"
+//                                 class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="fa fa-trash"></i></a>';
                         return $btn;
                     })
                     ->rawColumns(['action'])

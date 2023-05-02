@@ -132,8 +132,12 @@ class CustomerCategory extends Model
         'IsCompany' => 'nullable'
     ];
 
-    public function customer() {
-        return $this->hasMany('App\Models\Customer', 'CustomerCategory');
+    public function customerRelation() {
+        return $this->hasMany(Customer::class, 'CustomerCategory', 'Id');
+    }
+
+    public function customerOfferCustomerRelation() {
+        return $this->hasMany(CustomerOfferCustomer::class, 'CustomerCategory', 'Id');
     }
 
 

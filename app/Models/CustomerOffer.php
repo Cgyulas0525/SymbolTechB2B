@@ -113,5 +113,13 @@ class CustomerOffer extends Model
         return !empty($this->VoucherSequence) ? VoucherSequence::find($this->VoucherSequence)->Name : '';
     }
 
+    public function customerOfferCustomerRelation() {
+        return $this->hasMany(CustomerOfferCustomer::class, 'CustomerOffer', 'Id');
+    }
+
+    public function customerOfferDetailRelation() {
+        return $this->hasMany(CustomerOfferDetail::class, 'CustomerOffer', 'Id');
+    }
+
 
 }

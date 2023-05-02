@@ -111,4 +111,16 @@ class CustomerOfferCustomer extends Model
         return Customer::where('Id', $this->Customer)->first()->Name;
     }
 
+    public function customerOfferRelation() {
+        return $this->belongsTo(CustomerOffer::class, 'CustomerOffer', 'Id');
+    }
+
+    public function customerRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
+    }
+
+    public function customerCategoryRelation() {
+        return $this->belongsTo(CustomerCategory::class, 'CustomerCategory', 'Id');
+    }
+
 }

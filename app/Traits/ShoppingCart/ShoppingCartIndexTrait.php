@@ -8,11 +8,14 @@ use DB;
 use DataTables;
 
 trait ShoppingCartIndexTrait {
+
     public function index(Request $request)
     {
         if( myUser::check() ){
 
             if ($request->ajax()) {
+
+                // TODO ide kell egy kérdés: csak a sajátját vagy a céges összest láthatja?
 
                 $data = DB::table('ShoppingCart as t1')
                     ->join('ShoppingCartDetail as t2', 't2.ShoppingCart', '=', 't1.Id')

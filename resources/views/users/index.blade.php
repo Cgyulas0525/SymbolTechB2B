@@ -56,7 +56,8 @@
                     {title: <?php echo "'" . langClass::trans('Kép') . "'"; ?>, data: 'kep', sClass: "text-center", width: '150px', name: 'action', orderable: false, searchable: false},
                     {title: <?php echo "'" . langClass::trans('Beosztás') . "'"; ?>, data: 'rgnev', name: 'rgnev'},
                     {title: <?php echo "'" . langClass::trans('Belépés') . "'"; ?>, data: 'B2BLoginCount', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'B2BLoginCount'},
-                ]
+                ],
+                buttons: []
             });
 
         });

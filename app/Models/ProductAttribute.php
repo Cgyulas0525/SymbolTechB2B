@@ -100,5 +100,7 @@ class ProductAttribute extends Model
         'RowModify' => 'nullable'
     ];
 
-
+    public function productAttributesRelation() {
+        return $this->hasMany(ProductAttributes::class, 'ProductAttribute', 'Id');
+    }
 }

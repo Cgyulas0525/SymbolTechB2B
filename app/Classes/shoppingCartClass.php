@@ -13,6 +13,8 @@ use App\Models\ExcelImport;
 use App\Models\Vat;
 use App\Classes\ShoppingCart\ShoppingCartOpened;
 
+use App\Models\ShoppingCart;
+
 use App\Actions\ShoppingCartDetail\ShoppingCartDetailInsertGetIdAction;
 use App\Actions\ShoppingCart\ShoppingCartInsertGetIdAction;
 use App\Actions\ShoppingCart\ShoppingCartValueUpdate;
@@ -24,39 +26,40 @@ Class shoppingCartClass {
         return ShoppingCartDetail::where('ShoppingCart', $request->get('id'))->get();
     }
 
-    public static function oneRecorCopyCustomerOrderDetailToShoppingCart($id, $productId, ShoppingCartOpened $scc)
-    {
-        $customerOrderDetail = CustomerOrderDetail::find($id);
+//    public static function oneRecorCopyCustomerOrderDetailToShoppingCart($id, $productId)
+//    {
+//        $customerOrderDetail = CustomerOrderDetail::find($id);
+//
+//        if ( !empty($customerOrderDetail)) {
+//
+//            $scc = new ShoppingCartOpened();
+//
+//            $shoppingCart = ShoppingCart::OwnOpen(myUser::user()->customerId, myUser::user()->customercontact_id)->first();
+//            $product = Product::with('vatRelation')->find($productId);
+//            $shoppingCartDetail = ShoppingCartDetail::where('ShoppingCart', $shoppingCart->Id)->where('Product', $productId)->first();
+//            $productPrice = productPriceClass::getProductPrice($productId, $customerOrderDetail->Quantity, $product->QuantityUnit, $customerOrderDetail->Currency);
+//
+//            $netValue = ($customerOrderDetail->Quantity * $productPrice);
+//            $vatValue = ($customerOrderDetail->Quantity * $productPrice * $product->vatRelation->Rate) / 100;
+//
+//            if ( empty($shoppingCart)) {
+//                $action = new ShoppingCartInsertGetIdAction();
+//                $action->handle($netValue, $vatValue);
+//            } else {
+//                $action = new ShoppingCartValueUpdate();
+//                $action->handle($shoppingCart, $netValue, $vatValue);
+//            }
+//
+//
+//            if ( empty($shoppingCartDetail) ) {
+//                $action = new ShoppingCartDetailInsertGetIdAction();
+//                $action->handle($shoppingCart, $productId, $product, $customerOrderDetail->Quantity, $productPrice, $netValue, $vatValue);
+//            }
+//
+//        }
+//    }
 
-        if ( !empty($customerOrderDetail)) {
-
-            $shoppingCart = $scc->openedShoppingCart();
-            $product = Product::find($productId);
-            $shoppingCartDetail = ShoppingCartDetail::where('ShoppingCart', $shoppingCart->Id)->where('Product', $productId)->first();
-            $productPrice = productPriceClass::getProductPrice($productId, $customerOrderDetail->Quantity, $product->QuantityUnit, $customerOrderDetail->Currency);
-            $vat = Vat::find($product->Vat);
-
-            $netValue = ($customerOrderDetail->Quantity * $productPrice);
-            $vatValue = ($customerOrderDetail->Quantity * $productPrice) * (( 100 + $vat->Rate) / 100);
-
-            if ( empty($shoppingCart)) {
-                $action = new ShoppingCartInsertGetIdAction();
-                $action->handle($netValue, $vatValue);
-            } else {
-                $action = new ShoppingCartValueUpdate();
-                $action->handle($shoppingCart, $netValue, $vatValue);
-            }
-
-
-            if ( empty($shoppingCartDetail) ) {
-                $action = new ShoppingCartDetailInsertGetIdAction();
-                $action->handle($shoppingCart, $productId, $product, $customerOrderDetail->Quantity, $productPrice, $netValue, $vatValue);
-            }
-
-        }
-    }
-
-    public static function oneRecordCopyShoppingCartDetailToShoppingCart($id, $productId, ShoppingCartOpened $scc)
+    public static function oneRecordCopyShoppingCartDetailToShoppingCart($id, $productId)
     {
         $shoppingCartDetailFrom = ShoppingCartDetail::find($id);
 

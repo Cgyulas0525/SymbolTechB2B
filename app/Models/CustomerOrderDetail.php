@@ -524,34 +524,126 @@ class CustomerOrderDetail extends Model
         'StatusName'
     ];
 
+    public function customerOrderRelation() {
+        return $this->belongsTo(CustomerOrder::class, 'CustomerOrder', 'Id');
+    }
+
+    public function currencyRelation() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
+    }
+
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
+
+    public function vatRelation() {
+        return $this->belongsTo(Vat::class, 'Vat', 'Id');
+    }
+
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
+    }
+
+    public function priceCategoryRelation() {
+        return $this->belongsTo(PriceCategory::class, 'PriceCategory', 'Id');
+    }
+
+    public function customerOfferDetailRelation() {
+        return $this->belongsTo(CustomerOfferDetail::class, 'CustomerOfferDetail', 'Id');
+    }
+
+    public function customerContractDetailRelation() {
+        return $this->belongsTo(CustomerContractDetail::class, 'CustomerContractDetail', 'Id');
+    }
+
+    public function customerOrderDetailStatusRelation() {
+        return $this->belongsTo(CustomerOrderDetailStatus::class, 'DetailStatus', 'Id');
+    }
+
+    // Append fields
+
     public function getProductNameAttribute() {
-        $product = Product::where('Id', $this->Product)->first();
-        return !empty($this->Product) ? !empty($product) ? $product->Name : ' ' : ' ';
+        if (!empty($this->Product)) {
+            $name = Product::where('Id', $this->Product)->first()->Name;
+            if (!empty($name)) {
+                return $name;
+            } else {
+                return ' ';
+            }
+        } else {
+            return ' ';
+        }
+        return ' ';
     }
 
     public function getQuantityUnitNameAttribute() {
-        $quantityUnit = QuantityUnit::where('Id', $this->QuantityUnit)->first();
-        return !empty($this->QuantityUnit) ? !empty($quantityUnit) ? $quantityUnit->Name : ' ' : ' ';
+        if (!empty($this->QuantityUnit)) {
+            $name = QuantityUnit::where('Id', $this->QuantityUnit)->first()->Name;
+            if (!empty($name)) {
+                return $name;
+            } else {
+                return ' ';
+            }
+        } else {
+            return ' ';
+        }
+        return ' ';
     }
 
     public function getCurrencyNameAttribute() {
-        $currency = Currency::where('Id', $this->Currency)->first();
-        return !empty($this->Currency) ? !empty($currency) ? $currency->Name : ' ' : ' ';
+        if (!empty($this->Currency)) {
+            $name = Currency::where('Id', $this->Currency)->first()->Name;
+            if (!empty($name)) {
+                return $name;
+            } else {
+                return ' ';
+            }
+        } else {
+            return ' ';
+        }
+        return ' ';
     }
 
     public function getVatNameAttribute() {
-        $vat = Vat::where('Id', $this->Vat)->first();
-        return !empty($this->Vat) ? !empty($vat) ? $vat->Name : ' ' : ' ';
+        if (!empty($this->Vat)) {
+            $name = Vat::where('Id', $this->Vat)->first()->Name;
+            if (!empty($name)) {
+                return $name;
+            } else {
+                return ' ';
+            }
+        } else {
+            return ' ';
+        }
+        return ' ';
     }
 
     public function getVatRateAttribute() {
-        $vat = Vat::where('Id', $this->Vat)->first();
-        return !empty($this->Vat) ? !empty($vat) ? $vat->Rate : 0 : 0;
+        if (!empty($this->Vat)) {
+            $name = Vat::where('Id', $this->Vat)->first()->Rate;
+            if (!empty($name)) {
+                return $name;
+            } else {
+                return ' ';
+            }
+        } else {
+            return ' ';
+        }
+        return ' ';
     }
 
     public function getStatusNameAttribute() {
-        $status = CustomerOrderDetailStatus::where('Id', $this->DetailStatus)->first();
-        return !empty($this->DetailStatus) ? !empty($status) ? $status->Name : ' ' : ' ';
+        if (!empty($this->DetailStatus)) {
+            $name = CustomerOrderDetailStatus::where('Id', $this->DetailStatus)->first()->Name;
+            if (!empty($name)) {
+                return $name;
+            } else {
+                return ' ';
+            }
+        } else {
+            return ' ';
+        }
+        return ' ';
     }
 
 }

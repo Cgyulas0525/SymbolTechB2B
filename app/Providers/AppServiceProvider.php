@@ -5,13 +5,10 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Users;
 use App\Observers\UsersObserver;
-use App\Models\ShoppingCart;
-use App\Observers\ShoppingCartObserver;
-use App\Models\ShoppingCartDetail;
-use App\Observers\ShoppingCartDetailObserver;
 
 use Illuminate\Foundation\AliasLoader;
 use App\Classes\langClass;
+use App\Classes\logClass;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->booting(function() {
             $loader = AliasLoader::getInstance();
             $loader->alias('langClass', langClass::class);
+            $loader->alias('logClass', logClass::class);
         });
     }
 
@@ -47,14 +45,12 @@ class AppServiceProvider extends ServiceProvider
                 'excelQuantity' => 0
             ]);
 
-        Users::observe(UsersObserver::class);
-        ShoppingCart::observe(ShoppingCartObserver::class);
-        ShoppingCartDetail::observe(ShoppingCartDetailObserver::class);
 
         /* hogy lehessen forcing https */
         if ($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
 
+        Users::observe(UsersObserver::class);
     }
 }

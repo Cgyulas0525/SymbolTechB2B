@@ -9,6 +9,7 @@ use DB;
 use myUser;
 
 trait FavoriteProductIndexTrait {
+
     public function favoriteProductIndex(Request $request)
     {
         if( myUser::check() ){

@@ -586,8 +586,45 @@ class Customer extends Model
         'Name' => 'required|string|max:100'
     ];
 
-    public function customerContacData() {
+    public function paymentMethodRelation() {
+        return $this->belongTo(PaymentMethod::class, 'PaymentMethod', 'Id');
+    }
+
+    public function customerCategoryRelation() {
+        return $this->belongsTo(CustomerCategory::class, 'CustomerCategory', 'Id');
+    }
+
+    public function priceCategoryRelation() {
+        return $this->belongsTo(PriceCategory::class, 'PriceCategory', 'Id');
+    }
+
+    public function currencyRelation() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
+    }
+
+    public function customercontactRelation() {
         return $this->hasMany(CustomerContact::class, 'Customer', 'Id');
     }
+
+    public function customerOfferCustomerRelation() {
+        return $this->hasMany(CustomerOfferCustomer::class, 'Customer', 'Id');
+    }
+
+    public function customerOrderRelation() {
+        return $this->hasMany(CustomerOrder::class, 'Customer', 'Id');
+    }
+
+    public function logitemRelation() {
+        return $this->hasMany(LogItem::class, 'customer_id', 'Id');
+    }
+
+    public function productCustomerCodeRelation() {
+        return $this->hasMany(ProductCustomerCode::class, 'Customer', 'Id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'Customer', 'Id');
+    }
+
 
 }

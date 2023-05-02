@@ -185,6 +185,26 @@ class ShoppingCartDetail extends Model
         'VatRate'
     ];
 
+    public function shoppingCartRelation() {
+        return $this->belongsTo(ShoppingCart::class, 'ShoppingCart', 'Id');
+    }
+
+    public function currencyRelation() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
+    }
+
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
+
+    public function vatRelation() {
+        return $this->belongsTo(Vat::class, 'Vat', 'Id');
+    }
+
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
+    }
+
     public function getProductNameAttribute() {
         $product = Product::where('Id', $this->Product)->first();
         return !empty($this->Product) ? !empty($product) ? $product->Name : ' ' : ' ';
@@ -208,10 +228,6 @@ class ShoppingCartDetail extends Model
     public function getVatRateAttribute() {
         $vat = Vat::where('Id', $this->Vat)->first();
         return !empty($this->Vat) ? !empty($vat) ? $vat->Rate : 0 : 0;
-    }
-
-    public function shoppingcartdata() {
-        return $this->belongsTo('App\Models\ShoppingCart',  'ShoppingCart', 'Id');
     }
 
 }

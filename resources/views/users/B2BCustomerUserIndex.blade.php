@@ -57,7 +57,8 @@
                     {title: <?php echo "'" . langClass::trans('Email') . "'"; ?>, data: 'email', name: 'email'},
                     {title: <?php echo "'" . langClass::trans('Telephely') . "'"; ?>, data: 'CustomerAddressName', name: 'CustomerAddressName'},
                     {title: <?php echo "'" . langClass::trans('Szállítási mód') . "'"; ?>, data: 'TransportModeName', name: 'TransportModeName'},
-                ]
+                ],
+                buttons: []
             });
 
         });

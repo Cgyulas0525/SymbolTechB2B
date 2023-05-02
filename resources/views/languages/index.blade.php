@@ -55,7 +55,8 @@
                     {title: <?php echo "'" . langClass::trans('Tétel') . "'"; ?>, data: 'DetailNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'DetailNumber'},
                     {title: <?php echo "'" . langClass::trans('Fordított') . "'"; ?>, data: 'TranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'TranslatedNumber'},
                     {title: <?php echo "'" . langClass::trans('Fordítatlan') . "'"; ?>, data: 'UnTranslatedNumber', render: $.fn.dataTable.render.number( '.', ',', 0), sClass: "text-right", width:'75px', name: 'UnTranslatedNumber'},
-                ]
+                ],
+                buttons: []
             });
 
         });

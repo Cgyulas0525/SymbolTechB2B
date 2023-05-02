@@ -178,4 +178,28 @@ class CustomerOfferDetail extends Model
         return QuantityUnit::where('Id', $this->QuantityUnit)->first()->Name;
     }
 
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'CustomerOfferDetail', 'Id');
+    }
+
+    public function customerOfferRelation() {
+        return $this->belongsTo(CustomerOffer::class, 'CustomerOffer', 'Id');
+    }
+
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
+
+    public function currencyRelation() {
+        return $this->belongsTo(Currency::class, 'Currency', 'Id');
+    }
+
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
+    }
+
+    public function priceCategoryRelation() {
+        return $this->belongsTo(PriceCategory::class, 'PriceCategory', 'Id');
+    }
+
 }

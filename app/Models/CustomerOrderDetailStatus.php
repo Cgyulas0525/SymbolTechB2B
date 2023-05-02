@@ -95,5 +95,8 @@ class CustomerOrderDetailStatus extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'DetailStatus', 'Id');
+    }
 
 }

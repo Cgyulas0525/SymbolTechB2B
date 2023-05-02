@@ -107,8 +107,20 @@ class PriceCategory extends Model
         'GrossPrices' => 'required'
     ];
 
-    public function customer() {
-        return $this->hasMany('App\Models\Customer', 'PriceCategory');
+    public function customerRelation() {
+        return $this->hasMany(Customer::class, 'PriceCategory', 'Id');
+    }
+
+    public function customerOfferDetailRelation() {
+        return $this->hasMany(CustomerOfferDetail::class, 'PriceCategory', 'Id');
+    }
+
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'PriceCategory', 'Id');
+    }
+
+    public function productPriceRelation() {
+        return $this->hasMany(ProductPrice::class, 'PriceCategory', 'Id');
     }
 
 

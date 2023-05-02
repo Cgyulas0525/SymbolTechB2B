@@ -152,12 +152,29 @@ class CustomerContact extends Model
         'RowModify' => 'nullable'
     ];
 
-    public function CustomerData() {
-        return $this->belongsTo('App\Models\Customer', 'Customer', 'Id');
+    public function CustomerDataRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
     }
 
-    public function customercontactfavoriteproduct() {
-        $this->hasMany(CustomerContactFavoriteProduct::class, 'customercontact_id', 'Id');
+    public function customerAddressRelation() {
+        return $this->belongsTo(CustomerAddress::class, 'CustomerAddress', 'Id');
     }
+
+    public function customercontactfavoriteproductRelation() {
+        return $this->hasMany(CustomerContactFavoriteProduct::class, 'customercontact_id', 'Id');
+    }
+
+    public function usersRelation() {
+        return $this->hasMany(Users::class, 'customercontact_id', 'Id');
+    }
+
+    public function customerOrderRelation() {
+        return $this->hasMany(CustomerOrder::class, 'CustomerContact', 'Id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'CustomerContact', 'Id');
+    }
+
 
 }

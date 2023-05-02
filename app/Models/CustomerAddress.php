@@ -247,24 +247,40 @@ class CustomerAddress extends Model
         'IsPerson' => 'required'
     ];
 
-    public function CustomerAdat() {
-        return $this->belongsTo('App\Models\Customer', 'Customer');
+    public function CustomerRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
     }
 
-    public function PaymentMethodAdat() {
-        return $this->belongsTo('App\Models\PaymentMethod', 'PaymentMethod');
+    public function PaymentMethodRelation() {
+        return $this->belongsTo(PaymentMethod::class, 'PaymentMethod', 'Id');
     }
 
-    public function TransportModeAdat() {
-        return $this->belongsTo('App\Models\TransportMode', 'TransportMode');
+    public function TransportModeRelation() {
+        return $this->belongsTo(TransportMode::class, 'TransportMode', 'Id');
     }
 
-    public function AgentAdat() {
-        return $this->belongsTo('App\Models\Employee', 'Agent');
+    public function AgentRelation() {
+        return $this->belongsTo(Employee::class, 'Agent', 'Id');
     }
 
-    public function CustomerBid() {
-        return $this->hasMany('App\Models\CustomerBid', 'CustomerAddress');
+    public function CustomerBidRelation() {
+        return $this->hasMany(CustomerBid::class, 'CustomerAddress', 'Id');
+    }
+
+    public function customerContractRelation() {
+        return $this->hasMany(CustomerContract::class, 'CustomerAddress', 'Id');
+    }
+
+    public function customerContactRelation() {
+        return $this->hasMany(CustomerContact::class, 'CustomerAddress', 'Id');
+    }
+
+    public function customerOrderRelation() {
+        return $this->hasMany(CustomerOrder::class, 'CustomerAddress', 'Id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'CustomerAddress', 'Id');
     }
 
 }

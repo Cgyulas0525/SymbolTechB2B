@@ -726,8 +726,60 @@ class Product extends Model
         'IsFragile' => 'required'
     ];
 
-    public function customercontactfavoriteproduct() {
+    public function customercontactfavoriteproductRelation() {
         return $this->hasMany(CustomerContactFavoriteProduct::class, 'product_id', 'Id');
+    }
+
+    public function shoppingCartDetailRelation() {
+        return $this->hasMany(ShoppingCartDetail::class, 'Product', 'Id');
+    }
+
+    public function customerContractDetailRelation() {
+        return $this->hasMany(CustomerContractDetail::class, 'Product', 'Id');
+    }
+
+    public function customerOfferDetailRelation() {
+        return $this->hasMany(CustomerOfferDetail::class, 'Product', 'Id');
+    }
+
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'Product', 'Id');
+    }
+
+    public function productCustomerCodeRelation() {
+        return $this->hasMany(ProductCustomerCode::class, 'Product', 'Id');
+    }
+
+    public function productLangRelation() {
+        return $this->hasMany(ProductLang::class, 'Product', 'Id');
+    }
+
+    public function productPriceRelation() {
+        return $this->hasMany(ProductPrice::class, 'Product', 'Id');
+    }
+
+    public function productAttributesRelation() {
+        return $this->hasMany(ProductAttributes::class, 'Product', 'Id');
+    }
+
+    public function warehouseBalanceRelation() {
+        return $this->hasMany(WarehouseBalance::class, 'Product', 'Id');
+    }
+
+    public function warehouseDailyBalanceRelation() {
+        return $this->hasMany(WarehouseDailyBalance::class, 'Product', 'Id');
+    }
+
+    public function vatRelation() {
+        return $this->belongsTo(Vat::class, 'Vat', 'Id');
+    }
+
+    public function productCategoryRelation() {
+        return $this->belongsTo(ProductCategory::class, 'ProductCategory', 'Id');
+    }
+
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
     }
 
 

@@ -37,7 +37,6 @@
             </div>
 
             <div class="card-footer">
-{{--                {!! Form::submit('Ment', ['class' => 'btn btn-primary']) !!}--}}
                 <a href="{{ route('shoppingCarts.edit', $shoppingCart->Id) }}" class="btn btn-success">{{ langClass::trans('Kosár módosítás') }}</a>
                 <a href="{{ route('shoppingCarts.index') }}" class="btn btn-default">{{ langClass::trans('Kosár') }}</a>
             </div>

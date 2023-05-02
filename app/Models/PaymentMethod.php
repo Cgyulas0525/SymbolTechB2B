@@ -123,20 +123,32 @@ class PaymentMethod extends Model
         'RowModify' => 'nullable'
     ];
 
-    public function customer() {
-        return $this->hasMany('App\Models\Customer', 'PaymentMethod');
+    public function customerRelation() {
+        return $this->hasMany(Customer::class, 'PaymentMethod', 'Id');
     }
 
-    public function CustomerAddress() {
+    public function CustomerAddressRelation() {
         return $this->hasMany('App\Models\CustomerAddress', 'PaymentMethod');
     }
 
-    public function customerSupplierPaymentMethod() {
+    public function customerSupplierPaymentMethodRelation() {
         return $this->hasMany('App\Models\Customer', 'SupplierPaymentMethod');
     }
 
-    public function CustomerBid() {
+    public function CustomerBidRelation() {
         return $this->hasMany('App\Models\CustomerBid', 'PaymentMethod');
+    }
+
+    public function customerOrderRelation() {
+        return $this->hasMany(CustomerOrder::class, 'PaymentMethod', 'Id');
+    }
+
+    public function customerContractRelation() {
+        return $this->hasMany(CustomerContract::class, 'PaymentMethod', 'Id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'PaymentMethod', 'Id');
     }
 
 }

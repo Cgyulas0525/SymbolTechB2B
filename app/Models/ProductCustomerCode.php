@@ -85,5 +85,12 @@ class ProductCustomerCode extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
+
+    public function customerRelation() {
+        return $this->belongsTo(Customer::class, 'Customer', 'Id');
+    }
 
 }

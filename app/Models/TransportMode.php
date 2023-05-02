@@ -101,16 +101,20 @@ class TransportMode extends Model
         'RowModify' => 'nullable'
     ];
 
-    public function customer() {
-        return $this->hasMany('App\Models\Customer', 'TransportMode');
+    public function customerRelation() {
+        return $this->hasMany(Customer::class, 'TransportMode', 'Id');
     }
 
-    public function CustomerAddress() {
-        return $this->hasMany('App\Models\CustomerAddress', 'TransportMode');
+    public function CustomerAddressRelation() {
+        return $this->hasMany(CustomerAddress::class, 'TransportMode', 'id');
     }
 
-    public function CustomerBid() {
-        return $this->hasMany('App\Models\CustomerBid', 'TransportMode');
+    public function CustomerBidRelation() {
+        return $this->hasMany(CustomerBid::class, 'TransportMode', 'id');
+    }
+
+    public function shoppingCartRelation() {
+        return $this->hasMany(ShoppingCart::class, 'TransportMode', 'Id');
     }
 
 

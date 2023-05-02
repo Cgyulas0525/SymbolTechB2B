@@ -40,7 +40,7 @@ class XMLImportDetail extends Model
     use HasFactory;
 
     public $table = 'xmlimportdetail';
-    
+
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
@@ -81,5 +81,8 @@ class XMLImportDetail extends Model
         'deleted_at' => 'nullable'
     ];
 
-    
+    public function xmlImport() {
+        return $this->belongsTo(XMLImport::class, 'xmlimport_id', 'id');
+    }
+
 }

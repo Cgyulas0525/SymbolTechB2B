@@ -85,5 +85,14 @@ class WarehouseDailyBalance extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
+
+    public function warehauseRelation() {
+        return $this->belongsTo(Warehouse::class, 'Warehouse', 'Id');
+    }
+
+
 
 }

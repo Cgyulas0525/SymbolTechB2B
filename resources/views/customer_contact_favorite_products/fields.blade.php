@@ -16,7 +16,7 @@
                 {!! Form::select('productcategory', ddwClass::productCategoryDDW(), null,['class'=>'select2 form-control', 'id' => 'productCategory']) !!}
             </div>
             <div class="mylabel8 col-sm-2">
-                <a href="#" class="btn btn-dark mind" title={{ langClass::trans('Minden termék') }}><i class="fas fa-warehouse"></i></a>
+{{--                <a href="#" class="btn btn-dark mind" title={{ langClass::trans('Minden termék') }}><i class="fas fa-warehouse"></i></a>--}}
                 <a href="#" class="btn btn-primary kedvenc" title={{ langClass::trans('Kedvenc') }}><i class="fas fa-hand-holding-heart"></i></a>
             </div>
         </div>
@@ -26,7 +26,7 @@
         <div class="clearfix"></div>
         <div class="box box-primary">
             <div class="box-body"  >
-                <table class="table table-hover table-bordered partners-table" style="width: 100%;"></table>
+                <table class="table table-hover table-bordered partners-table w-100"></table>
             </div>
         </div>
         <div class="text-center"></div>
@@ -61,9 +61,9 @@
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Mind"]],
                 order: [[0, 'asc']],
                 dom: 'Bfrtip',
-                ajax: "{{ route('productCategoryProductindex', $category ) }}",
+                ajax: "{{ route('productCategoryProductIndex', $category ) }}",
                 columns: [
-                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'Name', name: 'Name'},
+                    {title: <?php echo "'" . langClass::trans('Termék') . "'"; ?>, data: 'Name', name: `Name`},
                 ],
                 buttons: [],
 
@@ -71,14 +71,15 @@
 
             function filteredData() {
                 let productCategory = $('#productCategory').val().length != 0 ? $('#productCategory').val() : -999999;
-                let url = '{{ route('productCategoryProductindex', [":category"]) }}';
+                let url = '{{ route('productCategoryProductIndex', [":category"]) }}';
                 url = url.replace(':category',  productCategory);
                 table.ajax.url(url).load();
             }
 
             $('.mind').click(function () {
                 $('#productCategory').val('');
-                let url = '{{ route('productCategoryProductindex', -999999) }}';
+                let url = '{{ route('productCategoryProductIndex', [':category']) }}';
+                url = url.replace(':category', -999999);
                 table.ajax.url(url).load();
             });
 

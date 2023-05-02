@@ -90,5 +90,37 @@ class QuantityUnit extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function shoppingCartDetailRelation() {
+        return $this->hasMany(ShoppingCartDetail::class, 'QuantityUnit', 'Id');
+    }
+
+    public function customerContractDetailRelation() {
+        return $this->hasMany(CustomerContractDetail::class, 'QuantityUnit', 'Id');
+    }
+
+    public function customerOfferDetailRelation() {
+        return $this->hasMany(CustomerOfferDetail::class, 'QuantityUnit', 'Id');
+    }
+
+    public function customerOrderDetailRelation() {
+        return $this->hasMany(CustomerOrderDetail::class, 'QuantityUnit', 'Id');
+    }
+
+    public function productRelation() {
+        return $this->hasMany(Product::class, 'QuantityUnit', 'Id');
+    }
+
+    public function productCategoryRelation() {
+        return $this->hasMany(ProductCategory::class, 'QuantityUnit', 'Id');
+    }
+
+    public function productPriceRelation() {
+        return $this->hasMany(ProductPrice::class, 'QuantityUnit', 'Id');
+    }
+
+    public function quantityUnitLangRelation() {
+        return $this->hasMany(QuantityUnitLang::class, 'QuantityUnit', 'Id');
+    }
+
 
 }

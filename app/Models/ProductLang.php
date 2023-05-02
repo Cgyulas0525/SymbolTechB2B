@@ -110,5 +110,8 @@ class ProductLang extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function productRelation() {
+        return $this->belongsTo(Product::class, 'Product', 'Id');
+    }
 
 }

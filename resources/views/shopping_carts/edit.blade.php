@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-6">
-                    <h4>{{ langClass::trans('Kosár') }} ( {{ langClass::trans('Tétel: ') }} {{ $shoppingCart->shoppingcartdetaildata->count() }} db)</h4>
+                    <h4>{{ langClass::trans('Kosár') }} ( {{ langClass::trans('Tétel: ') }} {{ $shoppingCart->shoppingCartDetailRelation->count() }} db)</h4>
                 </div>
                 <div class="col-lg-6 col-md-6 col-xs-12">
 {{--                    <form style="border: 4px solid #a1a1a1;margin-top: 15px;padding: 10px;" action="{{ route('importExcel') }}" class="form-horizontal  pull-right" method="post" enctype="multipart/form-data">--}}

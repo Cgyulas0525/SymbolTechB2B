@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateShoppingCartRequest;
 use App\Imports\excelImportImport;
 use App\Repositories\ShoppingCartRepository;
 
+use Doctrine\DBAL\Driver\PDO\Exception;
 use Illuminate\Http\Request;
 use Flash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -122,7 +123,7 @@ class ShoppingCartController extends AppBaseController
      */
     public function editShoppingCart(ShoppingCartOpened $scc)
     {
-        $shoppingCart = $scc->openedShoppingCart();
+        $shoppingCart = ShoppingCart::OwnOpen(myUser::user()->customerId, myUser::user()->customercontact_id)->first();
 
         if (empty($shoppingCart)) {
             return view('shopping_carts.create');
@@ -147,12 +148,23 @@ class ShoppingCartController extends AppBaseController
             return redirect(route('shoppingCarts.index'));
         }
 
-        $input = $request->all();
-        $modifiedShoppingCart = $this->shoppingCartService->shoppingCartUpdate($input, $id);
+        DB::beginTransaction();
 
-        logClass::modifyRecord( "ShoppingCart", $shoppingCart, $modifiedShoppingCart);
+        try {
 
-        return redirect(route('shoppingCarts.edit', $id));
+            $input = $request->all();
+            $modifiedShoppingCart = $this->shoppingCartService->shoppingCartUpdate($input, $id);
+
+            logClass::modifyRecord( "ShoppingCart", $shoppingCart, $modifiedShoppingCart);
+
+            DB::commit();
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            throw new Exception($e->getMessage());
+        }
+
+        return redirect(route('editShoppingCart'));
 
     }
 

@@ -80,5 +80,8 @@ class QuantityUnitLang extends Model
         'RowModify' => 'nullable'
     ];
 
+    public function quantityUnitRelation() {
+        return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
+    }
 
 }
