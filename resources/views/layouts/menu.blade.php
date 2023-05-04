@@ -38,8 +38,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('customerOrders.index') }}"
-               class="nav-link {{ Request::is('customerOrders*') ? 'active' : '' }}">
+            <a href="{{ route('customerOrderIndex',  ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}"
+               class="nav-link {{ Request::is('customerOrder*') ? 'active' : '' }}">
                 <i class="fas fa-cart-arrow-down"></i>
                 <p> {{ langClass::trans('Megrendelések') }}</p>
             </a>

@@ -54,10 +54,9 @@ Route::get('communicationIndex', [SettingController::class, 'communicationIndex'
 Route::get('export/{table}', [DivisionExportController::class, 'export'])->name('DivisionExport');
 Route::get('XMLImport', [DivisionExportController::class, 'XMLImport'])->name('XMLImport');
 
-Route::resource('customerOrders', App\Http\Controllers\CustomerOrderController::class);
-Route::get('index/{id}', [CustomerOrderController::class, 'index'])->name('customerOrderIndex');
+Route::resource('customerOrders', CustomerOrderController::class);
 
-Route::resource('users', App\Http\Controllers\UsersController::class);
+Route::resource('users', UsersController::class);
 Route::get('B2BCustomerUserIndex', [UsersController::class, 'B2BCustomerUserIndex'])->name('B2BCustomerUserIndex');
 Route::get('B2BCustomerIndex', [UsersController::class, 'B2BCustomerIndex'])->name('B2BCustomerIndex');
 Route::get('B2BCustomerUserCreate', [UsersController::class, 'B2BCustomerUserCreate'])->name('B2BCustomerUserCreate');
@@ -80,7 +79,7 @@ Route::get('indexBetween/{startDate}/{endDate}/{customer}/{user}', [LogItemContr
 Route::get('indexLogItemTableDetail/{id}', [LogItemController::class, 'indexLogItemTableDetail'])->name('indexLogItemTableDetail');
 Route::get('logItemTableDetailIndex/{id}', [LogItemController::class, 'logItemTableDetailIndex'])->name('logItemTableDetailIndex');
 
-Route::resource('shoppingCarts', App\Http\Controllers\ShoppingCartController::class);
+Route::resource('shoppingCarts', ShoppingCartController::class);
 Route::get('editShoppingCart', [ShoppingCartController::class, 'editShoppingCart'])->name('editShoppingCart');
 Route::get('cartDestroy/{id}', [ShoppingCartController::class, 'cartDestroy'])->name('cartDestroy');
 Route::get('shoppingCartDetailIndex/{id}', [ShoppingCartController::class, 'shoppingCartDetailIndex'])->name('shoppingCartDetailIndex');
@@ -88,7 +87,7 @@ Route::get('sCDIndex/{id}', [ShoppingCartController::class, 'sCDIndex'])->name('
 Route::get('close/{id}', [ShoppingCartController::class, 'close'])->name('shoppingCartClose');
 Route::get('open/{id}', [ShoppingCartController::class, 'open'])->name('shoppingCartOpen');
 
-Route::resource('shoppingCartDetails', App\Http\Controllers\ShoppingCartDetailController::class);
+Route::resource('shoppingCartDetails', ShoppingCartDetailController::class);
 //Route::get('index/{id}', [ShoppingCartDetailController::class, 'index'])->name('shoppingCartDetailIndex');
 Route::get('create/{id}', [ShoppingCartDetailController::class, 'create'])->name('shoppingCartDetailCreate');
 Route::get('destroy/{id}', [ShoppingCartDetailController::class, 'destroy'])->name('shoppingCartDetailDestroy');
@@ -98,12 +97,19 @@ Route::get('customerContractProductIndex', [ShoppingCartDetailController::class,
 Route::get('favoriteProductIndex', [ShoppingCartDetailController::class, 'favoriteProductIndex'])->name('favoriteProductIndex');
 Route::get('beforeSCDDestroy/{id}', [ShoppingCartDetailController::class, 'beforeSCDDestroy'])->name('beforeSCDDestroy');
 
+
+//Route::get('index/{id}', [CustomerOrderController::class, 'index'])->name('customerOrderIndex');
+
+
+Route::get('customerOrderIndex/{customerContact}/{year}', [CustomerOrderController::class, 'customerOrderIndex'])->name('customerOrderIndex');
+
+
 Route::get('customerOrderDetailIndex/{id}', [CustomerOrderController::class, 'customerOrderDetailIndex'])->name('customerOrderDetailIndex');
-Route::get('indexAllThisYear', [CustomerOrderController::class, 'indexAllThisYear'])->name('indexAllThisYear');
-Route::get('indexOwn', [CustomerOrderController::class, 'indexOwn'])->name('indexOwn');
-Route::get('indexYearAllOwn', [CustomerOrderController::class, 'indexYearAllOwn'])->name('indexYearAllOwn');
-Route::get('indexSC', [CustomerOrderController::class, 'indexSC'])->name('indexSC');
-Route::get('indexSCThisYear', [CustomerOrderController::class, 'indexSCThisYear'])->name('indexSCThisYear');
+//Route::get('indexAllThisYear', [CustomerOrderController::class, 'indexAllThisYear'])->name('indexAllThisYear');
+//Route::get('indexOwn', [CustomerOrderController::class, 'indexOwn'])->name('indexOwn');
+//Route::get('indexYearAllOwn', [CustomerOrderController::class, 'indexYearAllOwn'])->name('indexYearAllOwn');
+//Route::get('indexSC', [CustomerOrderController::class, 'indexSC'])->name('indexSC');
+//Route::get('indexSCThisYear', [CustomerOrderController::class, 'indexSCThisYear'])->name('indexSCThisYear');
 Route::get('indexCOLastTreeMonth', [CustomerOrderController::class, 'indexCOLastTreeMonth'])->name('indexCOLastTreeMonth');
 Route::get('editSc/{id}', [CustomerOrderController::class, 'editSc'])->name('editSc');
 

@@ -10,7 +10,6 @@ use Illuminate\Foundation\AliasLoader;
 use App\Classes\langClass;
 use App\Classes\logClass;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -44,7 +43,6 @@ class AppServiceProvider extends ServiceProvider
                 'excelCode' => 0,
                 'excelQuantity' => 0
             ]);
-
 
         /* hogy lehessen forcing https */
         if ($this->app->environment('production')) {

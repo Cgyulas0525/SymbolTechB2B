@@ -10,17 +10,16 @@ use Response;
 use App\Models\ShoppingCart;
 
 use App\Traits\CustomerOrder\CustomerOrderIndexTrait;
-use App\Traits\CustomerOrder\CustomerOrderDetailIndexTrait;
-
-//use App\Traits\CustomerOrder\CustomerOrderIndexAllThisYearTrait;
-//use App\Traits\CustomerOrder\CustomerOrderIndexOwnTrait;
-//use App\Traits\CustomerOrder\CustomerOrderIndexYearAllOwnTrait;
-//use App\Traits\CustomerOrder\CustomerOrderIndexSCTrait;
-//use App\Traits\CustomerOrder\CustomerOrderIndexSCThisYearTrait;
+use App\Traits\CustomerOrder\CustomerOrderIndexAllThisYearTrait;
+use App\Traits\CustomerOrder\CustomerOrderIndexOwnTrait;
+use App\Traits\CustomerOrder\CustomerOrderIndexYearAllOwnTrait;
+use App\Traits\CustomerOrder\CustomerOrderIndexSCTrait;
+use App\Traits\CustomerOrder\CustomerOrderIndexSCThisYearTrait;
 use App\Traits\CustomerOrder\CustomerOrderIndexCOLastThreeMonthTrait;
-//use App\Traits\CustomerOrder\ShoppingCartDetailIndexTrait;
+use App\Traits\CustomerOrder\CustomerOrderDetailIndexTrait;
+use App\Traits\CustomerOrder\ShoppingCartDetailIndexTrait;
 
-class CustomerOrderController extends AppBaseController
+class OLDCustomerOrderController extends AppBaseController
 {
     /** @var  CustomerOrderRepository */
     private $customerOrderRepository;
@@ -30,11 +29,9 @@ class CustomerOrderController extends AppBaseController
         $this->customerOrderRepository = $customerOrderRepo;
     }
 
-    use CustomerOrderIndexTrait, CustomerOrderDetailIndexTrait, CustomerOrderIndexCOLastThreeMonthTrait;
-
-    //    use CustomerOrderIndexTrait, CustomerOrderIndexAllThisYearTrait, CustomerOrderIndexOwnTrait,
-//        CustomerOrderIndexYearAllOwnTrait, CustomerOrderIndexSCTrait, CustomerOrderIndexSCThisYearTrait,
-//        CustomerOrderIndexCOLastThreeMonthTrait, CustomerOrderDetailIndexTrait, ShoppingCartDetailIndexTrait;
+    use CustomerOrderIndexTrait, CustomerOrderIndexAllThisYearTrait, CustomerOrderIndexOwnTrait,
+        CustomerOrderIndexYearAllOwnTrait, CustomerOrderIndexSCTrait, CustomerOrderIndexSCThisYearTrait,
+        CustomerOrderIndexCOLastThreeMonthTrait, CustomerOrderDetailIndexTrait, ShoppingCartDetailIndexTrait;
 
     /**
      * Show the form for editing the specified CustomerOrder.
@@ -48,7 +45,7 @@ class CustomerOrderController extends AppBaseController
         $customerOrder = $this->customerOrderRepository->find($id);
 
         if (empty($customerOrder)) {
-            return redirect(route('customerOrderIndex', ['customerContact' => session('coContact'), 'year' => session('coYear')]));
+            return redirect(route('customerOrders.index'));
         }
 
         return view('customer_orders.edit')->with('customerOrder', $customerOrder);
@@ -66,7 +63,7 @@ class CustomerOrderController extends AppBaseController
         $shoppingCart = ShoppingCart::find($id);
 
         if (empty($shoppingCart)) {
-            return redirect(route('customerOrderIndex'));
+            return redirect(route('customerOrders.index'));
         }
 
         return view('customer_orders.editSC')->with('shoppingCart', $shoppingCart);

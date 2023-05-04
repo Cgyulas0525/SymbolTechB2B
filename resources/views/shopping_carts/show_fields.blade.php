@@ -131,7 +131,7 @@
                 const url = $(this).attr('href');
                 swal.fire({
                     title:  <?php echo "'" . langClass::trans('Biztos törli a tételt?') . "'"; ?>,
-                    text:  <?php echo "'" . langClass::trans('Ez a bejegyzés véglegesen törlődik!') . "'"; ?>,
+                    text:  <?php echo "'" . langClass::trans('Ez a tétel véglegesen törlődik!') . "'"; ?>,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",

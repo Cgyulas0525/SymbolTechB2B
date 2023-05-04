@@ -782,5 +782,11 @@ class Product extends Model
         return $this->belongsTo(QuantityUnit::class, 'QuantityUnit', 'Id');
     }
 
+    public function scopeService($query) {
+        $query->where('Service', 1);
+    }
 
+    public function scopeProduct($query) {
+        $query->where('Service', 0);
+    }
 }

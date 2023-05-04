@@ -49,3 +49,4 @@ Route::get('api/getSUXMLInstall', [MyApiController::class, 'getSUXMLInstall'])->
 Route::get('api/getSUXSDInstall', [MyApiController::class, 'getSUXSDInstall'])->name('getSUXSDInstall');
 
 
+

@@ -8,7 +8,7 @@ use myUser;
 
 trait CustomerOrderIndexTrait {
 
-    public function index(Request $request)
+    public function customerOrderIndex(Request $request, $customerContact, $year)
     {
         if( myUser::check() ){
 
@@ -16,11 +16,12 @@ trait CustomerOrderIndexTrait {
 
                 $cos = new CustomerOrderService();
 
-                return $cos->dwData($cos->allData());
+                return $cos->dwData($cos->allData($customerContact, $year));
 
             }
 
-            return view('customer_orders.index');
+            return view('customer_orders.index')->with(['customerContact' => $customerContact != -99999 ? 0 : 1,
+                                                             'year' => $year]);
         }
 
     }

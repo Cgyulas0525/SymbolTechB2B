@@ -8,7 +8,7 @@ use DataTables;
 
 class CustomerOrderService
 {
-    public function allData()
+    public function allData($customerContact, $year)
     {
 
         return DB::table('customerorder as t1')
@@ -16,9 +16,32 @@ class CustomerOrderService
             ->join('customerorderdetail as t2', 't2.CustomerOrder', '=', 't1.Id')
             ->join('currency as t3', 't3.Id', '=', 't1.Currency')
             ->leftJoin('customerorderstatus as t4', 't4.Id', '=', 't1.CustomerOrderStatus')
+            ->join('product as t5', 't5.Id', '=', 't2.Product')
             ->where('t1.Customer', myUser::user()->customerId)
+            ->where( function($query) use ($customerContact) {
+                if (!is_null($customerContact) && $customerContact != -99999) {
+                    $query->where('t1.CustomerContact', $customerContact);
+                }
+            })
+            ->where('t5.Service', 0)
+            ->where( function($query) use ($year) {
+                if (!is_null($year)) {
+                    $query->whereYear('t1.VoucherDate', $year);
+                }
+            })
+//            ->where( function($query) use ($productCategory) {
+//                if (!is_null($productCategory)) {
+//                    $query->where('t5.ProductCategory', $productCategory);
+//                }
+//            })
+//            ->where( function($query) use ($product) {
+//                if (!is_null($product)) {
+//                    $query->where('t5.Id', $product);
+//                }
+//            })
             ->groupBy('t1.Id', 't1.VoucherNumber', 't1.VoucherDate', 't1.NetValue', 't1.VatValue', 't1.GrossValue', 't3.Name', 't4.Name')
             ->get();
+
     }
 
     public function dwData($data, $sc = null) {

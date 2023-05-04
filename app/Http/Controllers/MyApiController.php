@@ -8,6 +8,7 @@ use Response;
 use DB;
 
 use myUser;
+use Cookie;
 
 use App\Classes\logClass;
 
@@ -281,7 +282,11 @@ class MyApiController extends Controller
 
     public function copyCustomerOrderToShoppingCart(Request $request) {
 
-        $customerOrderDetails = CustomerOrderDetail::where('CustomerOrder', $request->get('Id'))->get();
+        $customerOrderDetails = CustomerOrderDetail::where('CustomerOrder', 58044)
+                                                    ->whereIn('Product', function($query) {
+                                                        $query->from('product')->select('Id')->where('Service', 0)->get();
+                                                    })
+                                                    ->get();
 
         DB::beginTransaction();
 
@@ -425,6 +430,7 @@ class MyApiController extends Controller
         $response = Http::get(substr(url(''), 0, strpos(url(''), 'public')).'storage/apik/SendShoppingCart.php');
         return redirect(route('apis.index'));
     }
+
 
 }
 

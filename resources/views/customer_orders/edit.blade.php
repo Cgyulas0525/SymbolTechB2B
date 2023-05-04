@@ -36,7 +36,8 @@
 
             <div class="card-footer">
                 <a href="#" class="btn btn-primary" id="saveBtn">{{ langClass::trans('Kosárba') }}</a>
-                <a href="{{ route('customerOrders.index') }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
+                <a href="{{ route('customerOrderIndex', ['customerContact' => ( (empty($_COOKIE['coContact']) ? 0 : $_COOKIE['coContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                                                       'year' => empty($_COOKIE['coYear']) ? date('Y') : $_COOKIE['coYear']]) }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
             </div>
 
            {!! Form::close() !!}

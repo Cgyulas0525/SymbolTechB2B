@@ -7,8 +7,6 @@ use App\Models\Customer;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Flash;
-use Response;
-use DB;
 use logClass;
 use utilityClass;
 use App\Models\Users;
@@ -64,6 +62,7 @@ class MyloginController extends Controller
         session(['user_id' => $user->id]);
         session(['user_rendszergazda' => $user->rendszergazda]);
         session(['noAviablePicture' => utilityClass::noAviablePicture()]);
+
         if ($user->id == 0) {
                 session(['user_picture' => NULL ]);
 
