@@ -19,7 +19,9 @@ use App\Traits\ShoppingCart\CustomerOfferProductIndexTrait;
 use App\Traits\ShoppingCart\CustomerContractProductIndexTrait;
 use App\Traits\ShoppingCart\ShoppingCartDetailIndexTrait;
 use App\Traits\ShoppingCart\BeforeSCDDestroyTrait;
+use App\Traits\ShoppingCart\BeforeSCDCopyTrait;
 use App\Traits\ShoppingCart\ShoppingCartDetailDestroyTrait;
+use App\Traits\ShoppingCart\SCDCopyTrait;
 
 class ShoppingCartDetailController extends AppBaseController
 {
@@ -36,7 +38,7 @@ class ShoppingCartDetailController extends AppBaseController
     }
 
     use ProductIndexTrait, FavoriteProductIndexTrait, CustomerOfferProductIndexTrait, CustomerContractProductIndexTrait,
-        ShoppingCartDetailIndexTrait, BeforeSCDDestroyTrait, ShoppingCartDetailDestroyTrait;
+        ShoppingCartDetailIndexTrait, BeforeSCDDestroyTrait, BeforeSCDCopyTrait, ShoppingCartDetailDestroyTrait, SCDCopyTrait;
 
     /**
      * Show the form for creating a new ShoppingCartDetail.

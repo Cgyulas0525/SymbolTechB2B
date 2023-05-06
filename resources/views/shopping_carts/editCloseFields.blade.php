@@ -49,7 +49,7 @@
                     {!! Form::label('CustomerAddress', langClass::trans('Telephely:')) !!}
                 </div>
                 <div class="mylabel8 col-sm-11">
-                    {!! Form::select('CustomerAddress', ddwClass::customerAddressDDW(myUser::user()->customerId), $shoppingCart->CustomerAddress,['class'=>'select2 form-control cellLabel', 'required' => 'true', 'id' => 'CustomerAddress']) !!}
+                    {!! Form::text('CustomerAddress', $shoppingCart->CustomerAddressName, ['class'=>'form-control cellLabel', 'readonly' => 'true', 'id' => 'CustomerAddress']) !!}
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
                         {!! Form::label('TransportMode', langClass::trans('Szállítási mód:')) !!}
                     </div>
                     <div class="mylabel8 col-sm-10">
-                        {!! Form::select('TransportMode', ddwClass::transportmodeDDW(), $shoppingCart->TransportMode,['class'=>'select2 form-control cellLabel', 'required' => 'true', 'id' => 'TransportMode']) !!}
+                        {!! Form::text('TransportMode', $shoppingCart->TransportModeName, ['class'=>'form-control cellLabel', 'readonly' => 'true', 'id' => 'TransportMode']) !!}
                     </div>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                     {!! Form::label('Comment', langClass::trans('Megjegyzés:')) !!}
                 </div>
                 <div class="mylabel8 col-sm-11">
-                    {!! Form::textarea('Comment', $shoppingCart->Comment, ['class' => 'form-control cellLabel', 'rows' => '2', 'placeholder' => 'Megjegyzés', 'id' => 'Comment']) !!}
+                    {!! Form::textarea('Comment', $shoppingCart->Comment, ['class' => 'form-control cellLabel', 'rows' => '2', 'placeholder' => 'Megjegyzés', 'id' => 'Comment', 'readonly' => 'true']) !!}
                 </div>
             </div>
         </div>
@@ -135,7 +135,7 @@
     {!! Form::hidden('DepositPercent', $shoppingCart->DepositPercent, ['class' => 'form-control cellLabel', 'required' => 'true', 'id'=>'DepositPercent']) !!}
 
     <div class="card-footer">
-        {!! Form::submit('Ment', ['class' => 'btn btn-primary']) !!}
+{{--        {!! Form::submit('Ment', ['class' => 'btn btn-primary']) !!}--}}
         <a href="{{ route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
                                                        'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]) }}" class="btn btn-default">{{ langClass::trans('Kilép') }}</a>
     </div>
@@ -149,12 +149,12 @@
                 <h4>Tételek</h4>
             </div>
         </div>
-        <div class="col-lg-10">
-            <div class="card-footer" style="float: left;">
-                <a href="{{ route('shoppingCartDetailCreate', $shoppingCart->Id) }}" class="btn btn-warning pull-right" style="margin-left: 5px; width: 80px;">Új tétel</a>
-                <a href="{{ route('excelImport') }}" class="btn btn-primary pull-right" style="margin-left: 5px;">Excel import</a>
-            </div>
-        </div>
+{{--        <div class="col-lg-10">--}}
+{{--            <div class="card-footer" style="float: left;">--}}
+{{--                <a href="{{ route('shoppingCartDetailCreate', $shoppingCart->Id) }}" class="btn btn-warning pull-right" style="margin-left: 5px; width: 80px;">Új tétel</a>--}}
+{{--                <a href="{{ route('excelImport') }}" class="btn btn-primary pull-right" style="margin-left: 5px;">Excel import</a>--}}
+{{--            </div>--}}
+{{--        </div>--}}
     </div>
     <br>
 </div>
@@ -191,7 +191,7 @@
                 scrollY: 250,
                 scrollX: true,
                 paging: false,
-                select: true,
+                select: false,
                 order: [[0, 'asc']],
                 ajax: "{{ route('shoppingCartDetailIndex', $shoppingCart->Id ) }}",
                 columns: [
@@ -214,7 +214,7 @@
                         visible: false
                     },
                     {
-                        targets: [3,4,5,6],
+                        targets: [1,3,4,5,6],
                         render: $.fn.dataTable.render.number( '.', ',', 4),
                         sClass: 'text-right',
                         width: '150px'
@@ -224,83 +224,19 @@
                         sClass: "text-center",
                         width:'50px'
                     },
-                    {
-                        targets: [1],
-                        render: function ( data, type, full, meta ) {
-                            return '<input class="form-control text-right" type="number" value="'+ data +'" onfocusout="QuantityChange('+meta["row"]+', this.value)" pattern="[0-9]+([\.,][0-9]+)?" step="0.0001" style="width:250px;height:20px;font-size: 15px;"/>';
-                        },
-                    }
+                    // {
+                    //     targets: [1],
+                    //     render: function ( data, type, full, meta ) {
+                    //         return '<input class="form-control text-right" type="number" value="'+ data +'" pattern="[0-9]+([\.,][0-9]+)?" step="0.0001" style="width:250px;height:20px;font-size: 15px;"/>';
+                    //         // return '<input class="form-control text-right" type="number" value="'+ data +'" onfocusout="QuantityChange('+meta["row"]+', this.value)" pattern="[0-9]+([\.,][0-9]+)?" step="0.0001" style="width:250px;height:20px;font-size: 15px;"/>';
+                    //     },
+                    // }
                 ],
                 buttons: [],
             });
 
-            $("#import_file").on("change", function() {
-                console.log($("#import_file").val());
-                alert("Files changed.");
-            });
-
         });
 
-        function dotKill(param) {
-            if ( param.indexOf('.') != -1 && param.indexOf('.') != (param.length - 5) ) {
-                param = param.substr(0, param.indexOf('.')).concat(param.substr(param.indexOf('.') + 1));
-                dotKill(param);
-            } else {
-                vmi = parseFloat(param).toFixed(4);
-            }
-        }
-
-        function dotKillCall(mi) {
-            vmi = 0;
-            dotKill($(mi).val().replace(/\,/g, '.'));
-            return vmi;
-        }
-
-        function QuantityChange(Row, value) {
-
-            var sCId = <?php echo $shoppingCart->Id; ?>;
-
-            var d = table.row(Row).data();
-            var netValue = parseFloat(dotKillCall('#NetValue'));
-            var vatValue = parseFloat(dotKillCall('#VatValue'));
-            var grossValue = parseFloat(dotKillCall('#GrossValue'));
-
-            if ( d.Quantity != value ) {
-
-                netValue = netValue - parseFloat(d.NetValue);
-                vatValue = vatValue - parseFloat(d.VatValue);
-                grossValue = grossValue - parseFloat(d.GrossValue);
-
-                d.NetValue = value * d.UnitPrice;
-                d.VatValue = (d.NetValue / 100) * d.VatRate;
-                d.GrossValue = d.NetValue + d.VatValue;
-                d.Quantity = value;
-
-                netValue = netValue + parseFloat(d.NetValue);
-                vatValue = vatValue + parseFloat(d.VatValue);
-                grossValue = grossValue + parseFloat(d.GrossValue);
-
-                $('#NetValue').val(custom_number_format(netValue, 4, ',', '.'));
-                $('#VatValue').val(custom_number_format(vatValue, 4, ',', '.'));
-                $('#GrossValue').val(custom_number_format(grossValue, 4, ',', '.'));
-
-                $.ajax({
-                    type:"GET",
-                    url:"{{url('api/shoppingCartDetailQuantityUpdate')}}",
-                    data: { Id: d.Id, Quantity: d.Quantity, NetValue: d.NetValue, VatValue: d.VatValue, GrossValue: d.GrossValue },
-                    success: function (response) {
-                        console.log('Response:', response);
-                    },
-                    error: function (response) {
-                        console.log('Error:', response);
-                        // alert('nem ok');
-                    }
-                });
-
-                table.row(Row).invalidate();
-
-            }
-        }
     </script>
 @endsection
 

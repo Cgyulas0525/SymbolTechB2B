@@ -31,14 +31,14 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('shoppingCarts.index') }}"
+            <a href="{{ route('shoppingCartIndex', ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}"
                class="nav-link {{ Request::is('shoppingCarts*') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart"></i>
                 <p> {{ langClass::trans('Kosár') }}</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('customerOrderIndex',  ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}"
+            <a href="{{ route('customerOrderIndex', ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}"
                class="nav-link {{ Request::is('customerOrder*') ? 'active' : '' }}">
                 <i class="fas fa-cart-arrow-down"></i>
                 <p> {{ langClass::trans('Megrendelések') }}</p>

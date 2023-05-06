@@ -32,7 +32,6 @@ class OneRecordCopyShoppingCartDetailToShoppingCartAction
             $netValue = ($shoppingCartDetailFrom->Quantity * $productPrice);
             $vatValue = ($shoppingCartDetailFrom->Quantity * $productPrice * $product->vatRelation->Rate) / 100;
 
-
             if ( empty($shoppingCartDetail) ) {
 
                 if ( empty($shoppingCart)) {

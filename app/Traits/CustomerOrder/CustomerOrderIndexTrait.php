@@ -8,8 +8,8 @@ use myUser;
 
 trait CustomerOrderIndexTrait {
 
-    public function customerOrderIndex(Request $request, $customerContact, $year)
-    {
+    public function customerOrderIndex(Request $request, $customerContact, $year) {
+
         if( myUser::check() ){
 
             if ($request->ajax()) {

@@ -87,8 +87,12 @@ Route::get('sCDIndex/{id}', [ShoppingCartController::class, 'sCDIndex'])->name('
 Route::get('close/{id}', [ShoppingCartController::class, 'close'])->name('shoppingCartClose');
 Route::get('open/{id}', [ShoppingCartController::class, 'open'])->name('shoppingCartOpen');
 
+Route::get('shoppingCartIndex/{customerContact}/{year}', [ShoppingCartController::class, 'shoppingCartIndex'])->name('shoppingCartIndex');
+Route::get('beforeAllSCDCopy/{id}', [ShoppingCartController::class, 'beforeAllSCDCopy'])->name('beforeAllSCDCopy');
+Route::get('scdAllCopy/{id}', [ShoppingCartController::class, 'scdAllCopy'])->name('scdAllCopy');
+
+
 Route::resource('shoppingCartDetails', ShoppingCartDetailController::class);
-//Route::get('index/{id}', [ShoppingCartDetailController::class, 'index'])->name('shoppingCartDetailIndex');
 Route::get('create/{id}', [ShoppingCartDetailController::class, 'create'])->name('shoppingCartDetailCreate');
 Route::get('destroy/{id}', [ShoppingCartDetailController::class, 'destroy'])->name('shoppingCartDetailDestroy');
 Route::get('productIndex', [ShoppingCartDetailController::class, 'productIndex'])->name('productIndex');
@@ -96,20 +100,14 @@ Route::get('customerOfferProductIndex', [ShoppingCartDetailController::class, 'c
 Route::get('customerContractProductIndex', [ShoppingCartDetailController::class, 'customerContractProductIndex'])->name('customerContractProductIndex');
 Route::get('favoriteProductIndex', [ShoppingCartDetailController::class, 'favoriteProductIndex'])->name('favoriteProductIndex');
 Route::get('beforeSCDDestroy/{id}', [ShoppingCartDetailController::class, 'beforeSCDDestroy'])->name('beforeSCDDestroy');
+Route::get('beforeSCDCopy/{id}', [ShoppingCartDetailController::class, 'beforeSCDCopy'])->name('beforeSCDCopy');
 
-
-//Route::get('index/{id}', [CustomerOrderController::class, 'index'])->name('customerOrderIndex');
-
+Route::get('scdCopy/{id}', [ShoppingCartDetailController::class, 'scdCopy'])->name('scdCopy');
 
 Route::get('customerOrderIndex/{customerContact}/{year}', [CustomerOrderController::class, 'customerOrderIndex'])->name('customerOrderIndex');
 
 
 Route::get('customerOrderDetailIndex/{id}', [CustomerOrderController::class, 'customerOrderDetailIndex'])->name('customerOrderDetailIndex');
-//Route::get('indexAllThisYear', [CustomerOrderController::class, 'indexAllThisYear'])->name('indexAllThisYear');
-//Route::get('indexOwn', [CustomerOrderController::class, 'indexOwn'])->name('indexOwn');
-//Route::get('indexYearAllOwn', [CustomerOrderController::class, 'indexYearAllOwn'])->name('indexYearAllOwn');
-//Route::get('indexSC', [CustomerOrderController::class, 'indexSC'])->name('indexSC');
-//Route::get('indexSCThisYear', [CustomerOrderController::class, 'indexSCThisYear'])->name('indexSCThisYear');
 Route::get('indexCOLastTreeMonth', [CustomerOrderController::class, 'indexCOLastTreeMonth'])->name('indexCOLastTreeMonth');
 Route::get('editSc/{id}', [CustomerOrderController::class, 'editSc'])->name('editSc');
 

@@ -16,7 +16,10 @@ Class productPriceClass {
      * @return price: float
      */
     public static function getProductPrice($product, $quantity, $quantityUnit, $currency) {
+
         $ppc = new productPriceClassOBJ($product, $quantity, $quantityUnit, $currency);
+
         return $ppc->getProductPrice();
+
     }
 }

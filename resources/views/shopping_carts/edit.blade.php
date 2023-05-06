@@ -36,7 +36,11 @@
 
             <div class="card-body">
                 <div class="row">
-                    @include('shopping_carts.editFields')
+                    @if ($shoppingCart->Opened === 0)
+                        @include('shopping_carts.editFields')
+                    @else
+                        @include('shopping_carts.editCloseFields')
+                    @endif
                 </div>
             </div>
 

@@ -29,6 +29,8 @@ use App\Traits\ShoppingCart\SCDIndexTrait;
 use App\Traits\Excel\ExcelImportTrait;
 use App\Traits\Excel\ExcelIndexTrait;
 use App\Traits\Excel\ExcelBetoltTrait;
+use App\Traits\ShoppingCart\BeforeAllSCDCopyTrait;
+use App\Traits\ShoppingCart\SCDAllCopyTrait;
 
 use App\Services\ShoppingCartService;
 
@@ -45,7 +47,7 @@ class ShoppingCartController extends AppBaseController
         $this->shoppingCartService = new ShoppingCartService();
     }
 
-    use SCDetailIndexTrait, ExcelImportTrait, ExcelIndexTrait, ExcelBetoltTrait, ShoppingCartIndexTrait, SCDIndexTrait;
+    use ShoppingCartIndexTrait, SCDetailIndexTrait, ExcelImportTrait, ExcelIndexTrait, ExcelBetoltTrait,  SCDIndexTrait, BeforeAllSCDCopyTrait, SCDAllCopyTrait;
 
     /**
      * Show the form for creating a new ShoppingCart.
@@ -75,7 +77,8 @@ class ShoppingCartController extends AppBaseController
         $input = $request->all();
         $this->shoppingCartService->shoppingCartInsert($input);
 
-        return redirect(route('shoppingCarts.index'));
+        return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                                                       'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
     }
 
     /**
@@ -90,7 +93,8 @@ class ShoppingCartController extends AppBaseController
         $shoppingCart = $this->shoppingCartRepository->find($id);
 
         if (empty($shoppingCart)) {
-            return redirect(route('shoppingCarts.index'));
+            return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                                                       'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
         }
 
         return view('shopping_carts.show')->with('shoppingCart', $shoppingCart);
@@ -108,7 +112,8 @@ class ShoppingCartController extends AppBaseController
         $shoppingCart = $this->shoppingCartRepository->find($id);
 
         if (empty($shoppingCart)) {
-            return redirect(route('shoppingCarts.index'));
+            return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
         }
 
         return view('shopping_carts.edit')->with('shoppingCart', $shoppingCart);
@@ -145,7 +150,8 @@ class ShoppingCartController extends AppBaseController
         $shoppingCart = $this->shoppingCartRepository->find($id);
 
         if (empty($shoppingCart)) {
-            return redirect(route('shoppingCarts.index'));
+            return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
         }
 
         DB::beginTransaction();
@@ -182,12 +188,14 @@ class ShoppingCartController extends AppBaseController
         $shoppingCart = $this->shoppingCartRepository->find($id);
 
         if (empty($shoppingCart)) {
-            return redirect(route('shoppingCarts.index'));
+            return redirect(route('shoppingCarts.index', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
         }
 
         $this->shoppingCartRepository->delete($id);
 
-        return redirect(route('shoppingCarts.index'));
+        return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+            'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
     }
 
     public function cartDestroy($id)
@@ -197,7 +205,8 @@ class ShoppingCartController extends AppBaseController
 
         $this->shoppingCartService->shoppingCartDelete($shoppingCart);
 
-        return redirect(route('shoppingCarts.index'));
+        return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+            'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
 
     }
 
@@ -217,7 +226,8 @@ class ShoppingCartController extends AppBaseController
 
         logClass::modifyRecord( "ShoppingCart", $shoppingCart, $modifiedShoppingCart);
 
-        return redirect(route('shoppingCarts.index'));
+        return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+            'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
     }
 
     public function open($id)
@@ -231,7 +241,8 @@ class ShoppingCartController extends AppBaseController
             $this->shoppingCartService->shoppingCartOpenedUpdate($shoppingCart);
         }
 
-        return redirect(route('shoppingCarts.index'));
+        return redirect(route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+            'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]));
     }
 
     public function importExcel(Request $request)

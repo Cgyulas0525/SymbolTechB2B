@@ -9,6 +9,7 @@ use Carbon\Carbon;
 class ShoppingCartDetailInsertGetIdAction
 {
     public function handle($shoppingCart, $productId, $product, $quantity, $productPrice, $netValue, $vatValue) {
+
         $scdId = DB::table('ShoppingCartDetail')
             ->insertGetId([
                 'ShoppingCart' => $shoppingCart->Id,
@@ -25,6 +26,8 @@ class ShoppingCartDetailInsertGetIdAction
                 'VatValue' => $vatValue,
                 'created_at' => Carbon::now()
             ]);
+
         logClass::insertDeleteRecord( 1, "ShoppingCartDetail", $scdId);
+
     }
 }

@@ -5,16 +5,18 @@ namespace App\Traits\ShoppingCart;
 use App\Models\ShoppingCartDetail;
 use Illuminate\Http\Request;
 use DataTables;
+use myUser;
 
 trait ShoppingCartDetailIndexTrait {
 
-    public function index(Request $request, $id)
+    public function shoppingCartDetailIndex(Request $request, $id)
     {
         if( myUser::check() ){
 
             if ($request->ajax()) {
 
                 $data = ShoppingCartDetail::where('ShoppingCart', $id)->get();
+
                 return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){

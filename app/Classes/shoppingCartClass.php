@@ -59,35 +59,34 @@ Class shoppingCartClass {
 //        }
 //    }
 
-    public static function oneRecordCopyShoppingCartDetailToShoppingCart($id, $productId)
-    {
+    public static function oneRecordCopyShoppingCartDetailToShoppingCart($id, $productId) {
         $shoppingCartDetailFrom = ShoppingCartDetail::find($id);
 
-        if ( !empty($shoppingCartDetailFrom)) {
-
-            $shoppingCart = $scc->openedShoppingCart();
-            $product = Product::find($productId);
-            $shoppingCartDetail = ShoppingCartDetail::where('ShoppingCart', $shoppingCart->Id)->where('Product', $productId)->first();
-            $productPrice = productPriceClass::getProductPrice($productId, $shoppingCartDetailFrom->Quantity, $product->QuantityUnit, $shoppingCartDetailFrom->Currency);
-            $vat = Vat::find($product->Vat);
-
-            $netValue = ($shoppingCartDetailFrom->Quantity * $productPrice);
-            $vatValue = ($shoppingCartDetailFrom->Quantity * $productPrice) * (( 100 + $vat->Rate) / 100);
-
-            if ( empty($shoppingCart)) {
-                $action = new ShoppingCartInsertGetIdAction();
-                $action->handle($netValue, $vatValue);
-            } else {
-                $action = new ShoppingCartValueUpdate();
-                $action->handle($shoppingCart, $netValue, $vatValue);
-            }
-
-
-            if ( empty($shoppingCartDetail) ) {
-                $action = new ShoppingCartDetailInsertGetIdAction();
-                $action->handle($shoppingCart, $productId, $product, 0, $productPrice, $netValue, $vatValue);
-            }
-        }
+//        if ( !empty($shoppingCartDetailFrom)) {
+//
+//            $shoppingCart = $scc->openedShoppingCart();
+//            $product = Product::find($productId);
+//            $shoppingCartDetail = ShoppingCartDetail::where('ShoppingCart', $shoppingCart->Id)->where('Product', $productId)->first();
+//            $productPrice = productPriceClass::getProductPrice($productId, $shoppingCartDetailFrom->Quantity, $product->QuantityUnit, $shoppingCartDetailFrom->Currency);
+//            $vat = Vat::find($product->Vat);
+//
+//            $netValue = ($shoppingCartDetailFrom->Quantity * $productPrice);
+//            $vatValue = ($shoppingCartDetailFrom->Quantity * $productPrice * $vat->Rate) / 100);
+//
+//            if ( empty($shoppingCart)) {
+//                $action = new ShoppingCartInsertGetIdAction();
+//                $action->handle($netValue, $vatValue);
+//            } else {
+//                $action = new ShoppingCartValueUpdate();
+//                $action->handle($shoppingCart, $netValue, $vatValue);
+//            }
+//
+//
+//            if ( empty($shoppingCartDetail) ) {
+//                $action = new ShoppingCartDetailInsertGetIdAction();
+//                $action->handle($shoppingCart, $productId, $product, 0, $productPrice, $netValue, $vatValue);
+//            }
+//        }
     }
 
     public static function excelImportToShoppingCartDetail(ShoppingCartOpened $scc)
@@ -106,13 +105,13 @@ Class shoppingCartClass {
                                  ->first();
                 })->first();
                 if (!empty($product)) {
-                    $quantity     = floatval($excelImport->Quantity);
+                    $quantity     = (float)($excelImport->Quantity);
                     $productPrice = productPriceClass::getProductPrice($product->Id, $quantity, $product->QuantityUnit, -1);
                     $shoppingCart = $scc->openedShoppingCart();
                     $vat          = Vat::find($product->Vat);
 
                     $netValue = ($quantity * $productPrice);
-                    $vatValue = ($quantity * $productPrice) * (( 100 + $vat->Rate) / 100);
+                    $vatValue = ($quantity * $productPrice * $vat->Rate) / 100;
 
                     $action = new ShoppingCartDetailInsertGetIdAction();
                     $action->handle($shoppingCart, $product->Id, $product, $quantity, $productPrice, $netValue, $vatValue);

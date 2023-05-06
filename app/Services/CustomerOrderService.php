@@ -8,8 +8,8 @@ use DataTables;
 
 class CustomerOrderService
 {
-    public function allData($customerContact, $year)
-    {
+
+    public function allData($customerContact, $year) {
 
         return DB::table('customerorder as t1')
             ->selectRaw('t1.Id, t1.VoucherNumber, t1.VoucherDate, t1.NetValue, t1.VatValue, t1.GrossValue , t3.Name as currencyName, SUM(1) as DetailNumber, t4.Name as statusName', )
@@ -44,19 +44,17 @@ class CustomerOrderService
 
     }
 
-    public function dwData($data, $sc = null) {
-
-        $func = is_null($sc) ? 'customerOrders.edit' : 'editSc';
+    public function dwData($data) {
 
         return Datatables::of($data)
             ->addIndexColumn()
             ->addColumn('tetelszam', function($data) { return $data->DetailNumber; })
             ->addColumn('currencyName', function($data) { return $data->currencyName; })
             ->addColumn('statusName', function($data) { return $data->statusName; })
-            ->addColumn('action', function($row) use ($func) {
+            ->addColumn('action', function($row) {
                 $btn = '';
                 if ($row->DetailNumber > 0 && $row->NetValue > 0) {
-                    $btn = '<a href="' . route($func, [$row->Id]) . '"
+                    $btn = '<a href="' . route('customerOrders.edit', [$row->Id]) . '"
                                  class="edit btn btn-success btn-sm editProduct" title="Tételek"><i class="far fa-list-alt"></i></a>';
 
                 }
