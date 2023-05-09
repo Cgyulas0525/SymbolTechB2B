@@ -2,6 +2,7 @@
 namespace App\Classes;
 
 use DB;
+use myUser;
 
 Class dashboardClass{
 
@@ -11,6 +12,8 @@ Class dashboardClass{
             ->select(DB::raw('concat(year(t.VoucherDate), if(CAST(month(t.VoucherDate) AS UNSIGNED) < 10, concat("0", month(t.VoucherDate)), month(t.VoucherDate))) nev, Sum(t.GrossValue) osszeg'))
             ->whereBetween('t.VoucherDate', [$from, $to])
             ->where('t.Cancelled', 0)
+            ->where('t.Customer', myUser::user()->customerId)
+//            ->where('t.CustomerContact', myUser::user()->customercontact_id)
             ->groupBy('nev')
             ->orderBy('nev')
             ->get();
@@ -22,6 +25,7 @@ Class dashboardClass{
             ->select(DB::raw('concat(year(t.VoucherDate), if(CAST(month(t.VoucherDate) AS UNSIGNED) < 10, concat("0", month(t.VoucherDate)), month(t.VoucherDate))) nev, Sum(1) osszeg'))
             ->whereBetween('t.VoucherDate', [$from, $to])
             ->where('t.Cancelled', 0)
+            ->where('t.Customer', myUser::user()->customerId)
             ->groupBy('nev')
             ->orderBy('nev')
             ->get();
@@ -34,6 +38,7 @@ Class dashboardClass{
             ->select(DB::raw('concat(year(t.VoucherDate), if(CAST(month(t.VoucherDate) AS UNSIGNED) < 10, concat("0", month(t.VoucherDate)), month(t.VoucherDate))) nev, Sum(1) osszeg'))
             ->whereBetween('t.VoucherDate', [$from, $to])
             ->where('t.Cancelled', 0)
+            ->where('t.Customer', myUser::user()->customerId)
             ->groupBy('nev')
             ->orderBy('nev')
             ->get();
@@ -45,6 +50,7 @@ Class dashboardClass{
             ->select(DB::raw('concat(year(t.VoucherDate), if(CAST(month(t.VoucherDate) AS UNSIGNED) < 10, concat("0", month(t.VoucherDate)), month(t.VoucherDate))) nev, Sum(t.GrossValue) osszeg, Sum(1) darab'))
             ->whereBetween('t.VoucherDate', [$from, $to])
             ->where('t.Cancelled', 0)
+            ->where('t.Customer', myUser::user()->customerId)
             ->groupBy('nev')
             ->orderBy('nev')
             ->get();

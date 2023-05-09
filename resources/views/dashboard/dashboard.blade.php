@@ -37,21 +37,21 @@
                        <tbody>
                        <tr>
                            <td>{{ langClass::trans('Nyitott') }}</td>
-                           <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesek(myUser::user()->customerId), 0, ',', '.')}}</td>
+                           <td class="text-right">{{ number_format(App\Models\CustomerOrder::CustomerContactOpen(myUser::user()->customerId, myUser::user()->customercontact_id)->get()->count(), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
                            <td>{{ langClass::trans('Tétel') }}</td>
-                           <td class="text-right">{{ number_format(customerOrderClass::nyitottMegrendelesTetelSzam(myUser::user()->customerId), 0, ',', '.')}}</td>
+                           <td class="text-right">{{ number_format(customerOrderClass::openContactCustomerOrderDetailCount(myUser::user()->customerId, myUser::user()->customercontact_id), 0, ',', '.')}}</td>
                        </tr>
                        <tr>
                            <td>{{ langClass::trans('Érték') }}</td>
-                           <td class="text-right">{{ number_format(customerOrderClass::openCustomerOrderValue(myUser::user()->customerId), 0, ',', '.')}}</td>
+                           <td class="text-right">{{ number_format(customerOrderClass::openContactCustomerOrderValue(myUser::user()->customerId, myUser::user()->customercontact_id), 0, ',', '.')}}</td>
                        </tr>
                        </tbody>
                    </table>
                        <!-- /.card-body -->
                 </div>
-                <a href="{{ route('customerOrders.index') }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('customerOrderIndex', ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}" class="small-box-footer sajatBox">{{ langClass::trans('Tovább') }} <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-6 col-md-6 col-xs-12 topmargin1em">
@@ -79,7 +79,7 @@
                     </table>
                     <!-- /.card-body -->
                 </div>
-                <a href="{{ route('customerOrders.index') }}" class="small-box-footer sajatBox">Tovább <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('customerOrderIndex', ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}" class="small-box-footer sajatBox">Tovább <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
         @if (env('EURO_CLEAR') == 1)
@@ -94,13 +94,13 @@
                     <div class="clearfix"></div>
                     <div class="box box-primary topmargin1em">
                         <div class="box-body"  >
-                            <table class="table table-hover table-bordered customer-table" style="width: 100%;">
+                            <table class="table table-hover table-bordered customer-table w_100">
                             </table>
                         </div>
                     </div>
                     <div class="text-center"></div>
                 </div>
-                <a href="{{ route('customerOrders.index') }}" class="small-box-footer sajatBox">Tovább <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('customerOrderIndex', ['customerContact' => myUser::user()->customercontact_id, 'year' => date('Y')]) }}" class="small-box-footer sajatBox">Tovább <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -124,7 +124,7 @@
                             <div class="active tab-pane" id="tablazat">
                                 <div>
                                     <div class="box-body"  >
-                                        <table class="table table-bordered table-hover CustomerOrderInterval-table"  style="width: 100%;"></table>
+                                        <table class="table table-bordered table-hover CustomerOrderInterval-table w_100"></table>
                                     </div>
                                 </div>
                             </div>

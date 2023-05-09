@@ -621,4 +621,16 @@ class CustomerOrder extends Model
         return CustomerOrderDetail::where('CustomerOrder', $this->Id)->get()->count();
     }
 
+    public function scopeOpen($query) {
+        $query->where('Closed', 0);
+    }
+
+    public function scopeCustomerOpen($query, $customer) {
+        $query->where('Closed', 0)->where('Customer', $customer);
+    }
+
+    public function scopeCustomerContactOpen($query, $customer, $contact) {
+        $query->where('Closed', 0)->where('Customer', $customer)->where('CustomerContact', $contact);
+    }
+
 }

@@ -38,7 +38,7 @@ class CustomerContactFavoriteProductController extends AppBaseController
     {
         return Datatables::of($data)
               ->addIndexColumn()
-              ->addColumn('ProductName', function($data) { return $data->product->Name; })
+//              ->addColumn('ProductName', function($data) { return $data->ProductName; })
               ->addColumn('action', function($row){
                   $btn = '<a href="' . route('cCFPDestroyMe', [$row->id]) . '"
                              class="btn btn-danger btn-sm deleteProduct" title="Törlés"><i class="far fa-heart"></i></a>';
@@ -62,12 +62,17 @@ class CustomerContactFavoriteProductController extends AppBaseController
 
             if ($request->ajax()) {
 
-//                $data = CustomerContactFavoriteProduct::with('productName')->get();
+                $data = DB::table('customercontactfavoriteproduct as t1')
+                    ->select('t1.*', 't2.Name as ProductName')
+                    ->join('product as t2', 't2.Id', '=', 't1.product_id')
+                    ->where('t1.customercontact_id', myUser::user()->customercontact_id)
+                    ->whereNull('t1.deleted_at')
+                    ->get();
 
-                Cache::pull('allCustomerContactFavoriteProduct');
-                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
-                    return CustomerContactFavoriteProduct::with('productName')->get();
-                });
+//                Cache::pull('allCustomerContactFavoriteProduct');
+//                $data = Cache::remember('allCustomerContactFavoriteProduct', 3600, function() {
+//                    return CustomerContactFavoriteProduct::with('productRelation')->get();
+//                });
 
                 return $this->dwData($data);
 
