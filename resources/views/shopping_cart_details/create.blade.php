@@ -38,7 +38,8 @@
 
             <div class="card-footer">
                 <a href="{{ route('shoppingCarts.edit', $shoppingCart->Id) }}" class="btn btn-success">{{ langClass::trans('Kosár módosítás') }}</a>
-                <a href="{{ route('shoppingCarts.index') }}" class="btn btn-default">{{ langClass::trans('Kosár') }}</a>
+                <a href="{{ route('shoppingCartIndex', ['customerContact' => ( (empty($_COOKIE['scContact']) ? 0 : $_COOKIE['scContact']) == 0 ? myUser::user()->customercontact_id : -99999),
+                                                            'year' => empty($_COOKIE['scYear']) ? date('Y') : $_COOKIE['scYear']]) }}" class="btn btn-default">{{ langClass::trans('Kosár') }}</a>
             </div>
 
             {!! Form::close() !!}
@@ -46,4 +47,3 @@
         </div>
     </div>
 @endsection
-
